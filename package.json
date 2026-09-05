@@ -1,0 +1,32 @@
+{
+  "name": "gaga-livechat",
+  "version": "1.0.0",
+  "description": "Gaga Games livechat AI system",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "migrate:up": "node-pg-migrate up",
+    "migrate:down": "node-pg-migrate down",
+    "gateway:start": "tsx services/gateway/src/index.ts",
+    "test:db": "node --test --import tsx test/db-migration.test.ts",
+    "test:gateway": "node --test --import tsx services/gateway/test/gateway.test.ts",
+    "test": "node --test --import tsx test/db-migration.test.ts services/gateway/test/gateway.test.ts"
+  },
+  "dependencies": {
+    "@fastify/websocket": "^11.0.2",
+    "dotenv": "^16.4.7",
+    "fastify": "^5.2.1",
+    "ioredis": "^5.4.2",
+    "node-pg-migrate": "^7.9.1",
+    "pg": "^8.13.1",
+    "ws": "^8.18.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.11.10",
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
