@@ -154,6 +154,10 @@ export class WebSocketHub {
           text: payload.text,
         });
 
+        const senderName = meta.isAgent
+          ? 'Support Agent'
+          : (meta.player?.nickname || meta.player?.uid || 'Player');
+
         // Siarkan via Redis Pub/Sub ke seluruh instance gateway
         const broadcastEvent: OutboundMessage = {
           event: 'message',
@@ -161,6 +165,7 @@ export class WebSocketHub {
           message_id: savedMsg.id,
           sender_type: savedMsg.sender_type,
           sender_id: savedMsg.sender_id || undefined,
+          sender_name: senderName,
           text: savedMsg.text,
           created_at: savedMsg.created_at.toISOString(),
           translated: savedMsg.translated,
@@ -236,5 +241,15 @@ export class WebSocketHub {
     if (socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(event));
     }
+  }
+
+  close(): void {
+    for (const [socket] of this.clientMeta) {
+      try {
+        socket.terminate();
+      } catch {}
+    }
+    this.rooms.clear();
+    this.clientMeta.clear();
   }
 }

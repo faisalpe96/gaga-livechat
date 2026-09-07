@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gaga LiveChat — Agent Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #1e293b; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+  <!-- Top Navigation -->
+  <header class="bg-slate-900 border-b border-slate-800 px-6 py-3 flex items-center justify-between shadow-md">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded bg-indigo-600 flex items-center justify-center font-bold text-white shadow-sm">G</div>
+      <div>
+        <h1 class="font-bold text-base leading-none text-white tracking-wide">Gaga LiveChat — Agent Console</h1>
+        <p class="text-xs text-slate-400 mt-1">TASK-04 Queue, Claim & Agent Stream</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+        <span class="text-xs text-slate-400 font-medium">Logged in as:</span>
+        <select id="agentSelect" class="bg-slate-900 text-xs text-indigo-300 font-semibold rounded px-2 py-1 border border-slate-700 focus:outline-none focus:border-indigo-500 cursor-pointer">
+          <option value="">Loading agents...</option>
+        </select>
+        <span id="agentLocalesBadge" class="text-[11px] bg-indigo-950 text-indigo-300 border border-indigo-700/50 px-2 py-0.5 rounded font-mono"></span>
+      </div>
+      <button id="btnRefresh" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        Refresh Queue
+      </button>
+      <a href="/demo" target="_blank" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm">
+        Buka Widget Demo &rarr;
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="flex-1 flex overflow-hidden">
+    <!-- Left Sidebar: Queue per Locale & SLA -->
+    <section class="w-96 bg-slate-900/60 border-r border-slate-800 flex flex-col">
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h2 class="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
+            <span>Antrean Percakapan</span>
+            <span id="queueCount" class="bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-xs px-2 py-0.2 rounded-full font-mono">0</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Urut berdasarkan sisa SLA (tercepat pertama)</p>
+        </div>
+        <select id="localeFilter" class="bg-slate-800 text-xs text-slate-300 border border-slate-700 rounded px-2 py-1">
+          <option value="">Semua Bahasa Agent</option>
+          <option value="id-ID">id-ID (Indonesia)</option>
+          <option value="th-TH">th-TH (Thailand)</option>
+          <option value="vi-VN">vi-VN (Vietnam)</option>
+          <option value="fil-PH">fil-PH (Philippines)</option>
+          <option value="ms-MY">ms-MY (Malaysia)</option>
+          <option value="en">en (English)</option>
+        </select>
+      </div>
+
+      <!-- Queue List Scrollable -->
+      <div id="queueListContainer" class="flex-1 overflow-y-auto p-3 space-y-2.5 custom-scrollbar">
+        <div class="text-center py-12 text-slate-500 text-xs">
+          Memuat data antrean...
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Area: Active Conversation / Chat Window -->
+    <section class="flex-1 flex flex-col bg-slate-950">
+      <!-- Chat Header -->
+      <div id="chatHeader" class="bg-slate-900/40 border-b border-slate-800 px-6 py-3 flex items-center justify-between">
+        <div id="activeConvInfo" class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 border border-slate-700 font-mono text-xs">
+            ?
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-slate-300">Pilih sesi antrean di sisi kiri untuk memulai</h3>
+            <p class="text-xs text-slate-500">Klaim percakapan untuk mengambil alih dari bot.</p>
+          </div>
+        </div>
+        <div id="chatActions" class="flex items-center gap-2 hidden">
+          <button id="btnClaim" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            Klaim Percakapan (Ambil Alih)
+          </button>
+          <button id="btnResolve" class="bg-rose-600/90 hover:bg-rose-600 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm hidden">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            Selesaikan (Resolve)
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages Stream -->
+      <div id="messagesContainer" class="flex-1 overflow-y-auto p-6 space-y-3.5 custom-scrollbar flex flex-col justify-end">
+        <div class="flex-1 flex items-center justify-center text-slate-600 text-sm">
+          Tidak ada percakapan yang dipilih
+        </div>
+      </div>
+
+      <!-- Message Input Box -->
+      <div id="inputSection" class="p-4 bg-slate-900/60 border-t border-slate-800 hidden">
+        <form id="replyForm" class="flex gap-2">
+          <input
+            id="replyInput"
+            type="text"
+            placeholder="Ketik balasan sebagai agent..."
+            class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 placeholder-slate-500"
+            autocomplete="off"
+          />
+          <button
+            type="submit"
+            class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm"
+          >
+            Kirim
+          </button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE = window.location.origin;
+    let currentAgent = null;
+    let agentsList = [];
+    let activeConversation = null;
+    let activeMessages = [];
+    let queueItems = [];
+    let pollInterval = null;
+
+    // Elements
+    const agentSelect = document.getElementById('agentSelect');
+    const agentLocalesBadge = document.getElementById('agentLocalesBadge');
+    const localeFilter = document.getElementById('localeFilter');
+    const queueListContainer = document.getElementById('queueListContainer');
+    const queueCount = document.getElementById('queueCount');
+    const btnRefresh = document.getElementById('btnRefresh');
+    const chatHeader = document.getElementById('chatHeader');
+    const activeConvInfo = document.getElementById('activeConvInfo');
+    const chatActions = document.getElementById('chatActions');
+    const btnClaim = document.getElementById('btnClaim');
+    const btnResolve = document.getElementById('btnResolve');
+    const messagesContainer = document.getElementById('messagesContainer');
+    const inputSection = document.getElementById('inputSection');
+    const replyForm = document.getElementById('replyForm');
+    const replyInput = document.getElementById('replyInput');
+
+    async function init() {
+      await loadAgents();
+      await fetchQueue();
+      // Poll queue every 4 seconds
+      pollInterval = setInterval(fetchQueue, 4000);
+
+      btnRefresh.addEventListener('click', fetchQueue);
+      localeFilter.addEventListener('change', fetchQueue);
+      agentSelect.addEventListener('change', (e) => {
+        const found = agentsList.find(a => a.id === e.target.value);
+        if (found) {
+          currentAgent = found;
+          agentLocalesBadge.textContent = 'Locales: ' + found.locales.join(', ');
+          fetchQueue();
+          if (activeConversation) updateActiveState();
+        }
+      });
+
+      btnClaim.addEventListener('click', handleClaim);
+      btnResolve.addEventListener('click', handleResolve);
+      replyForm.addEventListener('submit', handleSendReply);
+    }
+
+    async function loadAgents() {
+      try {
+        const res = await fetch(`${API_BASE}/v1/agents`);
+        const data = await res.json();
+        agentsList = data.agents || [];
+        agentSelect.innerHTML = '';
+        agentsList.forEach((agent, index) => {
+          const opt = document.createElement('option');
+          opt.value = agent.id;
+          opt.textContent = `${agent.name} [${agent.locales.join(', ')}]`;
+          agentSelect.appendChild(opt);
+        });
+        if (agentsList.length > 0) {
+          currentAgent = agentsList[0];
+          agentSelect.value = currentAgent.id;
+          agentLocalesBadge.textContent = 'Locales: ' + currentAgent.locales.join(', ');
+        }
+      } catch (err) {
+        console.error('Failed to load agents:', err);
+      }
+    }
+
+    async function fetchQueue() {
+      if (!currentAgent) return;
+      const locale = localeFilter.value;
+      const url = new URL(`${API_BASE}/v1/queue`);
+      url.searchParams.set('agent_id', currentAgent.id);
+      if (locale) url.searchParams.set('locale', locale);
+
+      try {
+        const res = await fetch(url.toString());
+        const data = await res.json();
+        queueItems = data.queue || [];
+        queueCount.textContent = queueItems.length;
+        renderQueue();
+        if (activeConversation) {
+          const updated = queueItems.find(q => q.id === activeConversation.id);
+          if (updated) {
+            activeConversation = updated;
+            updateActiveState();
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch queue:', err);
+      }
+    }
+
+    function renderQueue() {
+      if (queueItems.length === 0) {
+        queueListContainer.innerHTML = `
+          <div class="text-center py-12 text-slate-500 text-xs">
+            Tidak ada antrean percakapan untuk bahasa agent ini (${currentAgent.locales.join(', ')}).
+          </div>
+        `;
+        return;
+      }
+
+      queueListContainer.innerHTML = '';
+      queueItems.forEach(item => {
+        const isSelected = activeConversation && activeConversation.id === item.id;
+        const card = document.createElement('div');
+        card.className = `p-3 rounded-lg border cursor-pointer transition-all ${
+          isSelected 
+            ? 'bg-slate-800 border-indigo-500 shadow-md ring-1 ring-indigo-500/50' 
+            : 'bg-slate-900 border-slate-800 hover:border-slate-700'
+        }`;
+
+        // SLA calculation
+        let slaBadge = '';
+        if (item.sla_due_at) {
+          const diffMs = new Date(item.sla_due_at).getTime() - Date.now();
+          const diffMin = Math.round(diffMs / 60000);
+          if (diffMin < 0) {
+            slaBadge = `<span class="bg-rose-950 text-rose-300 border border-rose-800 text-[10px] px-1.5 py-0.5 rounded font-bold">SLA Terlewat (${Math.abs(diffMin)}m lalu)</span>`;
+          } else if (diffMin <= 5) {
+            slaBadge = `<span class="bg-amber-950 text-amber-300 border border-amber-800 text-[10px] px-1.5 py-0.5 rounded font-bold">SLA Mendasak (${diffMin}m)</span>`;
+          } else {
+            slaBadge = `<span class="bg-slate-800 text-slate-400 border border-slate-700 text-[10px] px-1.5 py-0.5 rounded">SLA: ${diffMin}m</span>`;
+          }
+        } else {
+          slaBadge = `<span class="bg-slate-800 text-slate-500 border border-slate-700 text-[10px] px-1.5 py-0.5 rounded">SLA Normal</span>`;
+        }
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-1.5">
+            <span class="text-xs font-bold text-white flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+              Player UID: ${item.player_uid}
+            </span>
+            <span class="text-[10px] bg-indigo-950 text-indigo-300 border border-indigo-700/40 px-1.5 py-0.5 rounded font-mono font-medium">${item.locale}</span>
+          </div>
+          <p class="text-xs text-slate-300 font-medium line-clamp-1 mb-2">
+            ${item.bot_summary || item.handoff_reason || 'Pemain menunggu bantuan CS'}
+          </p>
+          <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-800/80">
+            <span>Market: <strong class="text-slate-300 font-normal">${item.market}</strong></span>
+            ${slaBadge}
+          </div>
+        `;
+
+        card.addEventListener('click', () => selectConversation(item));
+        queueListContainer.appendChild(card);
+      });
+    }
+
+    async function selectConversation(item) {
+      activeConversation = item;
+      renderQueue();
+      updateActiveState();
+      await fetchMessages(item.id);
+    }
+
+    function updateActiveState() {
+      if (!activeConversation) return;
+
+      chatActions.classList.remove('hidden');
+      const isAssignedToMe = activeConversation.assigned_agent_id === currentAgent.id;
+      const isClaimedByOther = activeConversation.assigned_agent_id && !isAssignedToMe;
+      const isResolved = activeConversation.status === 'resolved';
+
+      activeConvInfo.innerHTML = `
+        <div class="w-9 h-9 rounded-full bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-300 font-bold text-xs">
+          ${activeConversation.player_uid.slice(-2)}
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="text-sm font-semibold text-white">Player UID: ${activeConversation.player_uid}</h3>
+            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">${activeConversation.locale}</span>
+            <span class="text-[10px] px-2 py-0.5 rounded font-mono font-medium ${
+              activeConversation.status === 'agent_active' ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' :
+              activeConversation.status === 'handoff_queued' ? 'bg-amber-950 text-amber-300 border border-amber-700' :
+              'bg-slate-800 text-slate-400'
+            }">${activeConversation.status}</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">Session ID: <span class="font-mono text-[11px] text-slate-400">${activeConversation.id}</span></p>
+        </div>
+      `;
+
+      if (isResolved) {
+        btnClaim.classList.add('hidden');
+        btnResolve.classList.add('hidden');
+        inputSection.classList.add('hidden');
+      } else if (isAssignedToMe) {
+        btnClaim.classList.add('hidden');
+        btnResolve.classList.remove('hidden');
+        inputSection.classList.remove('hidden');
+      } else if (isClaimedByOther) {
+        btnClaim.classList.remove('hidden');
+        btnClaim.disabled = true;
+        btnClaim.textContent = 'Diklaim Agen Lain';
+        btnClaim.className = 'bg-slate-800 text-slate-500 text-xs font-semibold px-4 py-2 rounded-lg cursor-not-allowed border border-slate-700';
+        btnResolve.classList.add('hidden');
+        inputSection.classList.add('hidden');
+      } else {
+        btnClaim.classList.remove('hidden');
+        btnClaim.disabled = false;
+        btnClaim.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Klaim Percakapan (Ambil Alih)`;
+        btnClaim.className = 'bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer';
+        btnResolve.classList.add('hidden');
+        inputSection.classList.add('hidden');
+      }
+    }
+
+    async function fetchMessages(convId) {
+      try {
+        const res = await fetch(`${API_BASE}/v1/conversations/${convId}/messages`);
+        const data = await res.json();
+        activeMessages = data.messages || [];
+        renderMessages();
+      } catch (err) {
+        console.error('Failed to fetch messages:', err);
+      }
+    }
+
+    function renderMessages() {
+      if (activeMessages.length === 0) {
+        messagesContainer.innerHTML = `
+          <div class="flex-1 flex items-center justify-center text-slate-600 text-sm">
+            Belum ada pesan dalam percakapan ini
+          </div>
+        `;
+        return;
+      }
+
+      messagesContainer.innerHTML = '';
+      activeMessages.forEach(msg => {
+        const isAgent = msg.sender_type === 'agent';
+        const isPlayer = msg.sender_type === 'player';
+        const isSystem = msg.sender_type === 'system';
+
+        const wrapper = document.createElement('div');
+        wrapper.className = `flex flex-col ${isAgent ? 'items-end' : isPlayer ? 'items-start' : 'items-center my-2'}`;
+
+        if (isSystem) {
+          wrapper.innerHTML = `
+            <div class="bg-slate-800/80 text-slate-400 text-xs px-3 py-1 rounded-full border border-slate-700/60 font-mono">
+              ${msg.text}
+            </div>
+          `;
+        } else {
+          wrapper.innerHTML = `
+            <span class="text-[11px] text-slate-500 mb-1 px-1">${msg.sender_type === 'agent' ? (msg.sender_name || 'Agent') : 'Player'}</span>
+            <div class="max-w-md px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+              isAgent 
+                ? 'bg-indigo-600 text-white rounded-br-none shadow-sm' 
+                : 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700/60'
+            }">
+              ${msg.text}
+            </div>
+            <span class="text-[10px] text-slate-600 mt-1 px-1">${new Date(msg.created_at).toLocaleTimeString()}</span>
+          `;
+        }
+
+        messagesContainer.appendChild(wrapper);
+      });
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    async function handleClaim() {
+      if (!activeConversation || !currentAgent) return;
+      try {
+        btnClaim.disabled = true;
+        btnClaim.textContent = 'Mengklaim...';
+        const res = await fetch(`${API_BASE}/v1/conversations/${activeConversation.id}/claim`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ agent_id: currentAgent.id }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert('Gagal klaim: ' + (data.error || 'Terjadi kesalahan'));
+        } else {
+          activeConversation = data;
+          await fetchQueue();
+          updateActiveState();
+        }
+      } catch (err) {
+        alert('Koneksi gagal saat mengklaim: ' + err.message);
+      } finally {
+        btnClaim.disabled = false;
+      }
+    }
+
+    async function handleSendReply(e) {
+      e.preventDefault();
+      const text = replyInput.value.trim();
+      if (!text || !activeConversation || !currentAgent) return;
+
+      try {
+        replyInput.value = '';
+        const res = await fetch(`${API_BASE}/v1/conversations/${activeConversation.id}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text,
+            sender_id: currentAgent.id,
+            sender_type: 'agent'
+          }),
+        });
+        if (res.ok) {
+          await fetchMessages(activeConversation.id);
+        } else {
+          const err = await res.json();
+          alert('Gagal mengirim pesan: ' + err.error);
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    async function handleResolve() {
+      if (!activeConversation) return;
+      if (!confirm('Apakah Anda yakin ingin menyelesaikan dan menutup percakapan ini?')) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/v1/conversations/${activeConversation.id}/resolve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ resolution_reason: 'agent_resolved' }),
+        });
+        if (res.ok) {
+          alert('Percakapan berhasil diselesaikan (resolved).');
+          await fetchQueue();
+          activeConversation = null;
+          activeConvInfo.innerHTML = `
+            <div class="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 border border-slate-700 font-mono text-xs">?</div>
+            <div>
+              <h3 class="text-sm font-semibold text-slate-300">Pilih sesi antrean di sisi kiri untuk memulai</h3>
+              <p class="text-xs text-slate-500">Klaim percakapan untuk mengambil alih dari bot.</p>
+            </div>
+          `;
+          chatActions.classList.add('hidden');
+          inputSection.classList.add('hidden');
+          messagesContainer.innerHTML = '<div class="flex-1 flex items-center justify-center text-slate-600 text-sm">Percakapan telah diselesaikan.</div>';
+        } else {
+          const err = await res.json();
+          alert('Gagal menyelesaikan: ' + err.error);
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

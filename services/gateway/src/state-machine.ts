@@ -8,6 +8,14 @@ export class InvalidStatusTransitionError extends Error {
   }
 }
 
+export class InvalidResolutionReasonError extends Error {
+  public readonly code = 'INVALID_RESOLUTION_REASON';
+  constructor(message?: string) {
+    super(message || "resolution_reason wajib diisi dengan nilai yang sah saat status 'resolved'.");
+    this.name = 'InvalidResolutionReasonError';
+  }
+}
+
 /**
  * Aturan transisi status sesi chat Gaga Games sesuai spec/01-arsitektur.md:
  * - bot_active -> handoff_queued (eskalasi bot)

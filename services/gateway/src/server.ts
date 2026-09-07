@@ -1,10 +1,12 @@
 import Fastify, { FastifyInstance } from 'fastify';
 import fastifyWebsocket from '@fastify/websocket';
+import fs from 'node:fs';
+import path from 'node:path';
 import { Database } from './db.js';
 import { RedisPubSub } from './redis.js';
 import { WebSocketHub } from './websocket-hub.js';
 import { verifyGameSessionToken } from './auth.js';
-import { InvalidStatusTransitionError } from './state-machine.js';
+import { InvalidStatusTransitionError, InvalidResolutionReasonError } from './state-machine.js';
 import { ConversationStatus, ResolutionReason } from './types.js';
 
 export interface ServerOptions {
@@ -28,12 +30,46 @@ export async function buildGatewayServer(opts: ServerOptions = {}): Promise<{
   await pubsub.init();
   const hub = new WebSocketHub(db, pubsub);
 
+  // Enable CORS
+  app.addHook('onRequest', async (req, reply) => {
+    reply.header('Access-Control-Allow-Origin', '*');
+    reply.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    if (req.method === 'OPTIONS') {
+      return reply.code(204).send();
+    }
+  });
+
   await app.register(fastifyWebsocket);
 
   // Health check
   app.get('/health', async () => {
     return { status: 'ok', service: 'chat-gateway' };
   });
+
+  // Demo page
+  const serveDemo = async (_req: any, reply: any) => {
+    const demoPath = path.resolve(process.cwd(), 'services/gateway/public/demo.html');
+    if (fs.existsSync(demoPath)) {
+      const html = fs.readFileSync(demoPath, 'utf-8');
+      return reply.type('text/html').send(html);
+    }
+    return reply.code(404).send('Demo page not found');
+  };
+  app.get('/demo', serveDemo);
+  app.get('/demo.html', serveDemo);
+
+  // Agent Panel page
+  const serveAgentPanel = async (_req: any, reply: any) => {
+    const panelPath = path.resolve(process.cwd(), 'services/gateway/public/agent-panel.html');
+    if (fs.existsSync(panelPath)) {
+      const html = fs.readFileSync(panelPath, 'utf-8');
+      return reply.type('text/html').send(html);
+    }
+    return reply.code(404).send('Agent panel page not found');
+  };
+  app.get('/agent', serveAgentPanel);
+  app.get('/agent-panel', serveAgentPanel);
 
   // WebSocket endpoint: /v1/socket
   app.get('/v1/socket', { websocket: true }, (socket, req) => {
@@ -115,11 +151,39 @@ export async function buildGatewayServer(opts: ServerOptions = {}): Promise<{
           to: err.to,
         });
       }
+      if (err instanceof InvalidResolutionReasonError) {
+        return reply.code(400).send({
+          error: err.message,
+          code: err.code,
+        });
+      }
       return reply.code(500).send({ error: err.message, code: 'INTERNAL_ERROR' });
     }
   });
 
-  // REST: Klaim percakapan oleh agent
+  // REST: Ambil daftar agent
+  app.get('/v1/agents', async (_req, reply) => {
+    const agents = await db.listAgents();
+    return reply.send({ count: agents.length, agents });
+  });
+
+  // REST: Antrean per bahasa / agent (terurut sisa SLA)
+  app.get<{
+    Querystring: {
+      agent_id?: string;
+      locale?: string;
+    };
+  }>('/v1/queue', async (req, reply) => {
+    const { agent_id, locale } = req.query || {};
+    try {
+      const queue = await db.getQueue({ agentId: agent_id, locale });
+      return reply.send({ count: queue.length, queue });
+    } catch (err: any) {
+      return reply.code(400).send({ error: err.message, code: 'QUEUE_ERROR' });
+    }
+  });
+
+  // REST: Klaim percakapan oleh agent (Atomic locking)
   app.post<{
     Params: { id: string };
     Body: { agent_id: string };
@@ -131,24 +195,16 @@ export async function buildGatewayServer(opts: ServerOptions = {}): Promise<{
       return reply.code(400).send({ error: 'agent_id wajib disertakan', code: 'MISSING_AGENT_ID' });
     }
 
-    const conv = await db.getConversation(id);
-    if (!conv) {
-      return reply.code(404).send({ error: `Percakapan '${id}' tidak ditemukan`, code: 'NOT_FOUND' });
-    }
-
-    if (conv.status === 'resolved') {
-      return reply.code(400).send({
-        error: 'Percakapan sudah ditutup dan tidak dapat diklaim',
-        code: 'CONVERSATION_RESOLVED',
-      });
-    }
-
     try {
-      const updated = await db.updateConversationStatus(id, 'agent_active', undefined, undefined, agent_id);
-      await hub.broadcastStatusChange(id, conv.status, 'agent_active');
+      const updated = await db.claimConversationAtomic(id, agent_id);
+      await hub.broadcastStatusChange(id, 'handoff_queued', 'agent_active');
       return reply.send(updated);
     } catch (err: any) {
-      return reply.code(400).send({ error: err.message, code: 'TRANSITION_FAILED' });
+      const statusCode = err.statusCode || 400;
+      return reply.code(statusCode).send({
+        error: err.message,
+        code: err.code || 'CLAIM_FAILED',
+      });
     }
   });
 
@@ -196,12 +252,51 @@ export async function buildGatewayServer(opts: ServerOptions = {}): Promise<{
       message_id: saved.id,
       sender_type: saved.sender_type,
       sender_id: saved.sender_id || undefined,
+      sender_name: sender_type === 'agent' ? 'Support Agent' : 'System',
       text: saved.text,
       created_at: saved.created_at.toISOString(),
       translated: saved.translated,
     });
 
     return reply.code(201).send(saved);
+  });
+
+  // REST: Selesaikan percakapan (resolve)
+  app.post<{
+    Params: { id: string };
+    Body: {
+      resolution_reason?: ResolutionReason;
+      ticket_id?: string;
+    };
+  }>('/v1/conversations/:id/resolve', async (req, reply) => {
+    const { id } = req.params;
+    const { resolution_reason = 'agent_resolved', ticket_id } = req.body || {};
+
+    const conv = await db.getConversation(id);
+    if (!conv) {
+      return reply.code(404).send({ error: `Percakapan '${id}' tidak ditemukan`, code: 'NOT_FOUND' });
+    }
+
+    try {
+      const updated = await db.updateConversationStatus(
+        id,
+        'resolved',
+        resolution_reason,
+        ticket_id
+      );
+      await hub.broadcastStatusChange(id, conv.status, 'resolved', resolution_reason, ticket_id);
+      return reply.send(updated);
+    } catch (err: any) {
+      if (err instanceof InvalidStatusTransitionError) {
+        return reply.code(400).send({
+          error: err.message,
+          code: err.code,
+          from: err.from,
+          to: err.to,
+        });
+      }
+      return reply.code(400).send({ error: err.message, code: 'TRANSITION_FAILED' });
+    }
   });
 
   // REST: Ambil riwayat pesan

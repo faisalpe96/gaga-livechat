@@ -113,6 +113,20 @@ export interface OutboundError {
   message: string;
 }
 
+export interface Agent {
+  id: string;
+  name: string;
+  locales: string[];
+  max_concurrent: number;
+  status: string;
+}
+
+export interface QueueItem extends Conversation {
+  handoff_reason?: string | null;
+  bot_summary?: string | null;
+  queued_at?: Date | null;
+}
+
 export type OutboundEvent =
   | OutboundSessionStarted
   | OutboundMessage

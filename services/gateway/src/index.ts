@@ -2,8 +2,9 @@ import { buildGatewayServer } from './server.js';
 import { config } from './config.js';
 
 async function main() {
-  const { app } = await buildGatewayServer();
+  const { app, db } = await buildGatewayServer();
   try {
+    await db.seedInitialAgents();
     const address = await app.listen({ port: config.port, host: config.host });
     console.log(`Chat Gateway berjalan di ${address}`);
   } catch (err) {

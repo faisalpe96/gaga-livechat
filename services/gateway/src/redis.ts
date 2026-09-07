@@ -40,8 +40,16 @@ export class RedisPubSub {
   }
 
   async close(): Promise<void> {
-    await this.sub.punsubscribe('livechat:conv:*');
-    await this.sub.quit();
-    await this.pub.quit();
+    try {
+      await this.sub.punsubscribe('livechat:conv:*');
+    } catch {}
+    try {
+      await Promise.race([
+        Promise.all([this.sub.quit(), this.pub.quit()]),
+        new Promise((resolve) => setTimeout(resolve, 300)),
+      ]);
+    } catch {}
+    this.sub.disconnect();
+    this.pub.disconnect();
   }
 }

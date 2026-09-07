@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gaga Games - Live Chat Demo (TASK-03)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #1e293b;
+      border-bottom: 1px solid #334155;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 800;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo span {
+      color: #818cf8;
+    }
+    .user-pill {
+      background: #334155;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .user-pill .badge {
+      background: #38bdf8;
+      color: #0f172a;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 11px;
+    }
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 24px;
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      gap: 32px;
+    }
+    @media (max-width: 860px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+    .info-panel {
+      background: #1e293b;
+      border-radius: 16px;
+      border: 1px solid #334155;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .info-panel h2 {
+      font-size: 20px;
+      color: #38bdf8;
+    }
+    .info-box {
+      background: #0f172a;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 13px;
+      line-height: 1.6;
+      border: 1px solid #334155;
+    }
+    .info-box code {
+      color: #f472b6;
+      background: #1e293b;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot.connected { background: #10b981; box-shadow: 0 0 10px #10b981; }
+    .dot.connecting { background: #f59e0b; }
+    .dot.disconnected { background: #ef4444; }
+    .action-btn {
+      background: #334155;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .action-btn:hover {
+      background: #475569;
+    }
+    .action-btn.danger {
+      background: #991b1b;
+      border-color: #b91c1c;
+    }
+    .action-btn.danger:hover {
+      background: #b91c1c;
+    }
+
+    /* Widget Container */
+    .widget-box {
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: 16px;
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      border: 1px solid #cbd5e1;
+    }
+    .widget-header {
+      background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+      color: white;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .widget-title {
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .widget-sub {
+      font-size: 12px;
+      opacity: 0.85;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+    .lang-dropdown {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+    }
+    .lang-dropdown option {
+      background: #3730a3;
+      color: white;
+    }
+    .widget-messages {
+      flex: 1;
+      padding: 16px;
+      background: #f8fafc;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .msg {
+      max-width: 80%;
+      display: flex;
+      flex-direction: column;
+    }
+    .msg.player {
+      align-self: flex-end;
+    }
+    .msg.bot, .msg.agent, .msg.system {
+      align-self: flex-start;
+    }
+    .msg-sender {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 2px;
+    }
+    .msg-bubble {
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .msg.player .msg-bubble {
+      background: #4f46e5;
+      color: white;
+      border-bottom-right-radius: 2px;
+    }
+    .msg.bot .msg-bubble, .msg.agent .msg-bubble {
+      background: #ffffff;
+      color: #1e293b;
+      border: 1px solid #e2e8f0;
+      border-bottom-left-radius: 2px;
+    }
+    .msg.system .msg-bubble {
+      background: #e2e8f0;
+      color: #475569;
+      font-style: italic;
+      font-size: 13px;
+    }
+    .badge-trans {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 10px;
+      background: #fef3c7;
+      color: #b45309;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #fde68a;
+      font-weight: 500;
+    }
+    .widget-input-bar {
+      padding: 12px 14px;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      gap: 8px;
+    }
+    .widget-input-bar input {
+      flex: 1;
+      border: 1px solid #cbd5e1;
+      border-radius: 20px;
+      padding: 8px 14px;
+      font-size: 14px;
+      outline: none;
+    }
+    .widget-input-bar input:focus {
+      border-color: #4f46e5;
+    }
+    .widget-input-bar button {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .widget-input-bar button:hover {
+      background: #4338ca;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      🎮 GAGA <span>GAMES</span> SEA
+    </div>
+    <div class="user-pill">
+      <span>RyuHunter</span>
+      <span class="badge">VIP 4</span>
+      <span style="color: #94a3b8;">SEA-3</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="info-panel">
+      <h2>Halaman Demo Live Chat (TASK-03)</h2>
+      <p style="color: #cbd5e1; font-size: 14px;">
+        Halaman ini memuat widget live chat yang tersambung ke WebSocket Chat Gateway lokal.
+      </p>
+
+      <div class="status-row">
+        <span>Status WebSocket:</span>
+        <span id="connDot" class="dot disconnected"></span>
+        <strong id="connText">Menghubungkan...</strong>
+      </div>
+
+      <div class="info-box">
+        <strong>Konteks Pemain & Sesi Terverifikasi:</strong><br />
+        • UID: <code>77124490</code> (RyuHunter)<br />
+        • Token: <code>token_77124490</code><br />
+        • Server Game: <code>SEA-3</code> | Halaman: <code>/topup</code><br />
+        • Percakapan Aktif: <code id="lblConvId">-</code><br />
+        • Bahasa Aktif: <code id="lblLocale">id-ID</code>
+      </div>
+
+      <div class="info-box">
+        <strong>Fitur yang Teruji di Widget:</strong><br />
+        1. <strong>6 Pasar SEA:</strong> Thailand (th-TH), Philippines (fil-PH), Indonesia (id-ID), Malaysia (ms-MY), Vietnam (vi-VN), Singapore (en).<br />
+        2. <strong>Pergantian Locale Instan:</strong> Mengubah bahasa teks UI dan mengirim <code>set_locale</code> ke Gateway.<br />
+        3. <strong>Auto-Reconnect:</strong> Sambung ulang otomatis jika server terputus.<br />
+        4. <strong>Riwayat Utuh:</strong> Pesan tetap tersimpan di <code>localStorage</code> setelah halaman di-refresh.<br />
+        5. <strong>Penanda Terjemahan:</strong> Badge 🌐 muncul jika balasan pesan memiliki flag <code>translated: true</code>.
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-top: auto;">
+        <button class="action-btn" onclick="simulateAgentReply()">Simulasikan Balasan Agent (REST API)</button>
+        <button class="action-btn danger" onclick="clearHistory()">Reset Riwayat Sesi</button>
+      </div>
+    </div>
+
+    <!-- Live Widget Box -->
+    <div class="widget-box">
+      <div class="widget-header">
+        <div>
+          <div class="widget-title" id="uiTitle">Gaga Live Chat</div>
+          <div class="widget-sub">
+            <span id="widgetDot" class="dot disconnected"></span>
+            <span id="uiStatus">Menghubungkan...</span>
+          </div>
+        </div>
+        <select class="lang-dropdown" id="langSelector" onchange="onLocaleChanged(this.value)">
+          <option value="id-ID">🇮🇩 Bahasa Indonesia</option>
+          <option value="th-TH">🇹🇭 ไทย (Thai)</option>
+          <option value="fil-PH">🇵🇭 Filipino (Tagalog)</option>
+          <option value="ms-MY">🇲🇾 Bahasa Melayu</option>
+          <option value="vi-VN">🇻🇳 Tiếng Việt</option>
+          <option value="en">🇸🇬 English</option>
+        </select>
+      </div>
+
+      <div class="widget-messages" id="messageList">
+        <!-- Messages rendered here -->
+      </div>
+
+      <div class="widget-input-bar">
+        <input
+          type="text"
+          id="chatInput"
+          placeholder="Ketik pesan Anda di sini..."
+          onkeydown="if(event.key === 'Enter') sendMessage()"
+        />
+        <button id="btnSend" onclick="sendMessage()">Kirim</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const I18N = {
+      'id-ID': {
+        title: 'Gaga Live Chat',
+        statusOnline: 'Aktif',
+        statusConnecting: 'Menghubungkan...',
+        statusOffline: 'Koneksi terputus',
+        inputPlaceholder: 'Ketik pesan Anda di sini...',
+        sendButton: 'Kirim',
+        translatedBadge: 'Diterjemahkan otomatis',
+        welcome: 'Halo kak Ryu! Ada yang bisa kami bantu hari ini?'
+      },
+      'th-TH': {
+        title: 'Gaga Live Chat',
+        statusOnline: 'ออนไลน์',
+        statusConnecting: 'กำลังเชื่อมต่อ...',
+        statusOffline: 'การเชื่อมต่อขาดหาย',
+        inputPlaceholder: 'พิมพ์ข้อความของคุณที่นี่...',
+        sendButton: 'ส่ง',
+        translatedBadge: 'แปลโดยอัตโนมัติ',
+        welcome: 'สวัสดีครับ RyuHunter! มีอะไรให้เราช่วยเหลือวันนี้ครับ?'
+      },
+      'fil-PH': {
+        title: 'Gaga Live Chat',
+        statusOnline: 'Online po',
+        statusConnecting: 'Kumokonekta...',
+        statusOffline: 'Nawalan ng koneksyon',
+        inputPlaceholder: 'I-type po ang mensahe dito...',
+        sendButton: 'Ipadala',
+        translatedBadge: 'Awtomatikong isinalin',
+        welcome: 'Kumusta po RyuHunter! May maitutulong po ba kami ngayon?'
+      },
+      'ms-MY': {
+        title: 'Gaga Live Chat',
+        statusOnline: 'Dalam Talian',
+        statusConnecting: 'Menyambung...',
+        statusOffline: 'Terputus talian',
+        inputPlaceholder: 'Taip mesej anda di sini...',
+        sendButton: 'Hantar',
+        translatedBadge: 'Diterjemah secara automatik',
+        welcome: 'Hai RyuHunter! Ada apa yang boleh kami bantu hari ini?'
+      },
+      'vi-VN': {
+        title: 'Gaga Live Chat',
+        statusOnline: 'Trực tuyến',
+        statusConnecting: 'Đang kết nối...',
+        statusOffline: 'Mất kết nối',
+        inputPlaceholder: 'Nhập tin nhắn của bạn tại đây...',
+        sendButton: 'Gửi',
+        translatedBadge: 'Dịch tự động',
+        welcome: 'Xin chào RyuHunter! Chúng tôi có thể hỗ trợ gì cho bạn hôm nay?'
+      },
+      'en': {
+        title: 'Gaga Live Chat',
+        statusOnline: 'Online',
+        statusConnecting: 'Connecting...',
+        statusOffline: 'Disconnected',
+        inputPlaceholder: 'Type your message here...',
+        sendButton: 'Send',
+        translatedBadge: 'Auto-translated',
+        welcome: 'Hello RyuHunter! How can we assist you today?'
+      }
+    };
+
+    let currentLocale = localStorage.getItem('gaga_locale') || 'id-ID';
+    let conversationId = localStorage.getItem('gaga_conv_id') || '';
+    let messages = [];
+    let ws = null;
+    async function fetchHistoryFromServer(convId) {
+      if (!convId) return;
+      try {
+        const res = await fetch(`/v1/conversations/${convId}/messages`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.messages)) {
+            messages = data.messages.map(m => ({
+              id: m.id,
+              sender_type: m.sender_type,
+              sender_name: m.sender_name || (m.sender_type === 'player' ? 'You' : 'Gaga Support'),
+              text: m.text,
+              created_at: m.created_at,
+              translated: !!m.translated
+            }));
+            renderMessages();
+          }
+        }
+      } catch (err) {
+        console.error('Gagal mengambil riwayat dari server:', err);
+      }
+    }
+
+    function updateUIStrings() {
+      const t = I18N[currentLocale] || I18N['en'];
+      document.getElementById('uiTitle').textContent = t.title;
+      document.getElementById('chatInput').placeholder = t.inputPlaceholder;
+      document.getElementById('btnSend').textContent = t.sendButton;
+      document.getElementById('langSelector').value = currentLocale;
+      document.getElementById('lblLocale').textContent = currentLocale;
+
+      // Update connection text
+      const isConn = ws && ws.readyState === WebSocket.OPEN;
+      document.getElementById('uiStatus').textContent = isConn ? t.statusOnline : t.statusOffline;
+      renderMessages();
+    }
+
+    function renderMessages() {
+      const list = document.getElementById('messageList');
+      list.innerHTML = '';
+      const t = I18N[currentLocale] || I18N['en'];
+
+      if (messages.length === 0) {
+        const welcome = document.createElement('div');
+        welcome.style.textAlign = 'center';
+        welcome.style.color = '#94a3b8';
+        welcome.style.fontSize = '13px';
+        welcome.style.marginTop = '40px';
+        welcome.textContent = t.welcome;
+        list.appendChild(welcome);
+        return;
+      }
+
+      messages.forEach(m => {
+        const wrap = document.createElement('div');
+        wrap.className = 'msg ' + (m.sender_type || 'player');
+
+        const sender = document.createElement('span');
+        sender.className = 'msg-sender';
+        sender.textContent = m.sender_name || (m.sender_type === 'player' ? 'You' : 'Gaga Support');
+        wrap.appendChild(sender);
+
+        const bubble = document.createElement('div');
+        bubble.className = 'msg-bubble';
+        bubble.textContent = m.text;
+        wrap.appendChild(bubble);
+
+        if (m.translated) {
+          const trans = document.createElement('span');
+          trans.className = 'badge-trans';
+          trans.textContent = '🌐 ' + t.translatedBadge;
+          wrap.appendChild(trans);
+        }
+
+        list.appendChild(wrap);
+      });
+
+      list.scrollTop = list.scrollHeight;
+    }
+
+    function connectWS() {
+      const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = location.host || '127.0.0.1:3001';
+      const wsUrl = `${protocol}//${host}/v1/socket?token=token_77124490`;
+
+      setConnState('connecting');
+
+      try {
+        ws = new WebSocket(wsUrl);
+
+        ws.onopen = () => {
+          reconnectAttempts = 0;
+          setConnState('connected');
+
+          // Kirim session_start
+          ws.send(JSON.stringify({
+            event: 'session_start',
+            player: {
+              uid: '77124490',
+              nickname: 'RyuHunter',
+              server: 'SEA-3',
+              level: 48,
+              vip_tier: 4
+            },
+            context: {
+              page: '/topup',
+              platform: 'web',
+              app_version: '1.0.0',
+              locale: currentLocale,
+              market: 'ID',
+              client_tz: 'Asia/Jakarta'
+            }
+          }));
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.event === 'session_started') {
+              conversationId = data.conversation_id;
+              localStorage.setItem('gaga_conv_id', conversationId);
+              document.getElementById('lblConvId').textContent = conversationId;
+              fetchHistoryFromServer(conversationId);
+            } else if (data.event === 'message') {
+              if (!messages.some(m => m.id === data.message_id)) {
+                messages.push({
+                  id: data.message_id,
+                  sender_type: data.sender_type,
+                  sender_name: data.sender_name,
+                  text: data.text,
+                  created_at: data.created_at,
+                  translated: !!data.translated
+                });
+                renderMessages();
+              }
+            }
+          } catch (e) {
+            console.error('Failed to parse message:', e);
+          }
+        };
+
+        ws.onclose = () => {
+          setConnState('disconnected');
+          scheduleReconnect();
+        };
+
+        ws.onerror = () => {
+          setConnState('disconnected');
+        };
+      } catch (err) {
+        setConnState('disconnected');
+        scheduleReconnect();
+      }
+    }
+
+    function scheduleReconnect() {
+      reconnectAttempts++;
+      const delay = Math.min(1000 * Math.pow(1.5, reconnectAttempts), 5000);
+      setTimeout(connectWS, delay);
+    }
+
+    function setConnState(state) {
+      const dot = document.getElementById('connDot');
+      const wDot = document.getElementById('widgetDot');
+      const text = document.getElementById('connText');
+      const t = I18N[currentLocale] || I18N['en'];
+
+      dot.className = 'dot ' + state;
+      wDot.className = 'dot ' + state;
+
+      if (state === 'connected') {
+        text.textContent = 'Terhubung (Aktif)';
+        document.getElementById('uiStatus').textContent = t.statusOnline;
+      } else if (state === 'connecting') {
+        text.textContent = 'Menghubungkan...';
+        document.getElementById('uiStatus').textContent = t.statusConnecting;
+      } else {
+        text.textContent = 'Terputus (Mencoba ulang...)';
+        document.getElementById('uiStatus').textContent = t.statusOffline;
+      }
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      if (ws && ws.readyState === WebSocket.OPEN && conversationId) {
+        ws.send(JSON.stringify({
+          event: 'message',
+          conversation_id: conversationId,
+          text: text
+        }));
+        input.value = '';
+      } else {
+        alert('Koneksi sedang terputus atau sesi belum dimulai!');
+      }
+    }
+
+    function onLocaleChanged(newLocale) {
+      currentLocale = newLocale;
+      localStorage.setItem('gaga_locale', currentLocale);
+      updateUIStrings();
+
+      if (ws && ws.readyState === WebSocket.OPEN && conversationId) {
+        ws.send(JSON.stringify({
+          event: 'set_locale',
+          conversation_id: conversationId,
+          locale: newLocale
+        }));
+      }
+    }
+
+    async function simulateAgentReply() {
+      if (!conversationId) {
+        alert('Tunggu sesi dimulai lebih dulu!');
+        return;
+      }
+      try {
+        const res = await fetch(`/v1/conversations/${conversationId}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sender_type: 'agent',
+            sender_id: 'agent_sea_cs',
+            text: 'Halo Ryu! Kami telah memeriksa catatan transaksi pembayaran Anda di SEA-3.',
+            translated: true
+          })
+        });
+        if (!res.ok) {
+          alert('Gagal mengirim simulasi balasan');
+        }
+      } catch (e) {
+        alert('Error memanggil endpoint: ' + e.message);
+      }
+    }
+
+    function clearHistory() {
+      if (confirm('Bersihkan seluruh riwayat pesan di demo ini?')) {
+        messages = [];
+        localStorage.removeItem('gaga_messages');
+        renderMessages();
+      }
+    }
+
+    // Init
+    updateUIStrings();
+    connectWS();
+  </script>
+</body>
+</html>
