@@ -46,6 +46,7 @@ describe('TASK-04: Agent Panel & Queue Management Tests', { timeout: 20000 }, ()
 
   test('1. Agent hanya melihat antrean sesuai agents.locales', async () => {
     // Bersihkan percakapan sebelumnya
+    await db.pool.query('DELETE FROM bot_feedback').catch(() => {});
     await db.pool.query('DELETE FROM messages');
     await db.pool.query('DELETE FROM handoffs');
     await db.pool.query('DELETE FROM conversations');
@@ -108,6 +109,7 @@ describe('TASK-04: Agent Panel & Queue Management Tests', { timeout: 20000 }, ()
   });
 
   test('2. Urut berdasarkan sisa SLA, bukan waktu masuk', async () => {
+    await db.pool.query('DELETE FROM bot_feedback').catch(() => {});
     await db.pool.query('DELETE FROM messages');
     await db.pool.query('DELETE FROM handoffs');
     await db.pool.query('DELETE FROM conversations');
@@ -148,6 +150,7 @@ describe('TASK-04: Agent Panel & Queue Management Tests', { timeout: 20000 }, ()
   });
 
   test('3. Klaim mengunci percakapan dari agent lain (Atomic locking / Race condition test)', async () => {
+    await db.pool.query('DELETE FROM bot_feedback').catch(() => {});
     await db.pool.query('DELETE FROM messages');
     await db.pool.query('DELETE FROM handoffs');
     await db.pool.query('DELETE FROM conversations');
@@ -275,5 +278,83 @@ describe('TASK-04: Agent Panel & Queue Management Tests', { timeout: 20000 }, ()
     assert.equal(finalConv?.status, 'resolved');
     assert.equal(finalConv?.resolution_reason, 'agent_resolved');
     assert.ok(finalConv?.closed_at !== null);
+  });
+
+  test('6. Mode Bayangan (TASK-08): Agent melihat percakapan bot_active beserta ringkasan/drafnya di antrean dan dapat mengklaimnya', async () => {
+    // 6.1 Bersihkan data percakapan
+    await db.pool.query('DELETE FROM bot_feedback').catch(() => {});
+    await db.pool.query('DELETE FROM messages');
+    await db.pool.query('DELETE FROM handoffs');
+    await db.pool.query('DELETE FROM conversations');
+
+    // 6.2 Buat percakapan aktif dari widget pemain dengan status bot_active (belum handoff_queued)
+    const convRes = await db.pool.query(`
+      INSERT INTO conversations (player_uid, market, locale, status, started_at)
+      VALUES ('shadow_player_77', 'ID', 'id-ID', 'bot_active', now())
+      RETURNING id
+    `);
+    const convId = convRes.rows[0].id;
+
+    // 6.3 Pemain mengirim pesan masuk
+    await db.saveMessage({
+      conversation_id: convId,
+      sender_type: 'player',
+      text: 'Halo min, bagaimana cara top up diamond pakai e-wallet?',
+    });
+
+    // 6.4 Bot menghasilkan draf di mode bayangan
+    await db.saveMessage({
+      conversation_id: convId,
+      sender_type: 'bot',
+      text: 'Draf Bot: Anda dapat top up diamond melalui menu Shop > Top Up > E-Wallet.',
+      meta: {
+        is_draft: true,
+        intent: 'topup_guide',
+        confidence: 0.96,
+        sources: ['faq_topup_guide'],
+      },
+    });
+
+    // 6.5 Agent ID (Eksklusif id-ID dan en) meminta antrean
+    const queueRes = await fetch(`${baseUrl}/v1/queue?agent_id=${AGENT_ID}`);
+    assert.equal(queueRes.status, 200);
+    const queueData = await queueRes.json();
+
+    // Verifikasi percakapan bot_active MUNCUL di antrean agent
+    assert.equal(queueData.count, 1, 'Percakapan bot_active harus muncul di antrean agent pada mode bayangan');
+    const item = queueData.queue[0];
+    assert.equal(item.id, convId);
+    assert.equal(item.player_uid, 'shadow_player_77');
+    assert.equal(item.locale, 'id-ID');
+    assert.equal(item.status, 'bot_active');
+    assert.equal(item.bot_summary, 'Halo min, bagaimana cara top up diamond pakai e-wallet?');
+
+    // 6.6 Agent dapat mengambil draf bot untuk percakapan ini
+    const draftRes = await fetch(`${baseUrl}/v1/conversations/${convId}/drafts`);
+    assert.equal(draftRes.status, 200);
+    const draftData = await draftRes.json();
+    assert.ok(draftData.drafts.length >= 1, 'Draf bot harus dapat diambil oleh agent');
+    assert.equal(draftData.drafts[0].text, 'Draf Bot: Anda dapat top up diamond melalui menu Shop > Top Up > E-Wallet.');
+
+    // 6.7 Agent lain yang tidak punya akses ke locale id-ID (Agent TH) tidak melihatnya
+    const queueThRes = await fetch(`${baseUrl}/v1/queue?agent_id=${AGENT_TH}&locale=th-TH`);
+    const queueThData = await queueThRes.json();
+    assert.equal(queueThData.count, 0, 'Agent TH tidak boleh melihat antrean id-ID');
+
+    // 6.8 Agent mengklaim (ambil alih) sesi bot_active ini
+    const claimRes = await fetch(`${baseUrl}/v1/conversations/${convId}/claim`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ agent_id: AGENT_ID }),
+    });
+    assert.equal(claimRes.status, 200);
+    const claimedData = await claimRes.json();
+    assert.equal(claimedData.status, 'agent_active');
+    assert.equal(claimedData.assigned_agent_id, AGENT_ID);
+
+    // 6.9 Setelah diklaim, sesi tidak lagi berada di antrean umum
+    const queueAfterRes = await fetch(`${baseUrl}/v1/queue?agent_id=${AGENT_ID}`);
+    const queueAfterData = await queueAfterRes.json();
+    assert.equal(queueAfterData.count, 0, 'Sesi yang sudah diklaim harus keluar dari antrean');
   });
 });

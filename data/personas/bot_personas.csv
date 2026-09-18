@@ -1,0 +1,13 @@
+persona,locale,display_name,avatar_url
+mira,id-ID,Mira,/assets/agent-mira.png
+mira,ms-MY,Mira,/assets/agent-mira.png
+mira,en,Mira,/assets/agent-mira.png
+mira,fil-PH,Mira,/assets/agent-mira.png
+mira,th-TH,Ploy,/assets/agent-mira.png
+mira,vi-VN,Linh,/assets/agent-mira.png
+reza,id-ID,Reza,/assets/agent-reza.png
+reza,ms-MY,Reza,/assets/agent-reza.png
+reza,en,Ray,/assets/agent-reza.png
+reza,fil-PH,Ray,/assets/agent-reza.png
+reza,th-TH,Ton,/assets/agent-reza.png
+reza,vi-VN,Minh,/assets/agent-reza.png

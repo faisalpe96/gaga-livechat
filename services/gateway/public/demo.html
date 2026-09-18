@@ -3,420 +3,1689 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gaga Games - Live Chat Demo (TASK-03)</title>
+  <title>Gaga Games - In-Game Live Support (Customer UI)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --primary: #25B884;
+      --primary-dark: #167956;
+      --primary-light: #34d399;
+      --accent: #38bdf8;
+      --accent-purple: #a855f7;
+      --gold: #f59e0b;
+      --bg-dark: #070c18;
+      --panel-dark: #0e172a;
+      --card-dark: #162238;
+      --border-dark: #223454;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --bubble-bot: #132238;
+      --bubble-bot-border: #1f3556;
+      --bubble-player: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background: #0f172a;
-      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 15% 15%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
+        radial-gradient(at 85% 85%, rgba(56, 189, 248, 0.1) 0px, transparent 50%),
+        linear-gradient(to bottom, #070d1a, #0b1426);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow-x: hidden;
     }
+
+    /* Top Global Header */
     header {
-      background: #1e293b;
-      border-bottom: 1px solid #334155;
-      padding: 16px 24px;
+      background: rgba(14, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-dark);
+      padding: 14px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
-    .logo {
-      font-size: 20px;
-      font-weight: 800;
-      color: #38bdf8;
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-logo {
       display: flex;
       align-items: center;
       gap: 10px;
+      text-decoration: none;
     }
-    .logo span {
-      color: #818cf8;
+
+    .brand-logo img {
+      height: 32px;
+      width: auto;
+      filter: drop-shadow(0 2px 8px rgba(37, 184, 132, 0.4));
     }
-    .user-pill {
-      background: #334155;
+
+    .brand-badge {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(37, 184, 132, 0.15);
+      color: var(--primary-light);
+      border: 1px solid rgba(37, 184, 132, 0.3);
+    }
+
+    .view-toggles {
+      display: flex;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--border-dark);
+      gap: 4px;
+    }
+
+    .view-toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .view-toggle-btn.active {
+      background: var(--primary-dark);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(22, 121, 86, 0.5);
+    }
+
+    .player-profile-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(22, 34, 56, 0.8);
+      border: 1px solid var(--border-dark);
       padding: 6px 14px;
       border-radius: 9999px;
       font-size: 13px;
+    }
+
+    .avatar-sm {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 12px;
+      color: #070c18;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
     }
-    .user-pill .badge {
-      background: #38bdf8;
-      color: #0f172a;
-      font-weight: 700;
+
+    .vip-tag {
+      background: linear-gradient(135deg, #f59e0b, #b45309);
+      color: #000;
+      font-weight: 800;
+      font-size: 10px;
       padding: 2px 6px;
-      border-radius: 6px;
-      font-size: 11px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
     }
+
+    /* Main App Layout */
     main {
       flex: 1;
-      max-width: 1200px;
+      max-width: 1360px;
       width: 100%;
       margin: 0 auto;
-      padding: 32px 24px;
+      padding: 28px 24px;
       display: grid;
-      grid-template-columns: 1fr 400px;
-      gap: 32px;
+      grid-template-columns: 1fr 430px;
+      gap: 28px;
+      position: relative;
     }
-    @media (max-width: 860px) {
+
+    @media (max-width: 980px) {
       main {
         grid-template-columns: 1fr;
       }
     }
-    .info-panel {
-      background: #1e293b;
-      border-radius: 16px;
-      border: 1px solid #334155;
+
+    /* Left Info & Inspector Panel */
+    .inspector-panel {
+      background: rgba(14, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      border: 1px solid var(--border-dark);
       padding: 24px;
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
-    .info-panel h2 {
+
+    .section-title {
       font-size: 20px;
-      color: #38bdf8;
-    }
-    .info-box {
-      background: #0f172a;
-      border-radius: 10px;
-      padding: 14px;
-      font-size: 13px;
-      line-height: 1.6;
-      border: 1px solid #334155;
-    }
-    .info-box code {
-      color: #f472b6;
-      background: #1e293b;
-      padding: 2px 5px;
-      border-radius: 4px;
-    }
-    .status-row {
+      font-weight: 800;
+      color: #ffffff;
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    .section-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .glass-card {
+      background: rgba(18, 30, 49, 0.7);
+      border-radius: 14px;
+      border: 1px solid var(--border-dark);
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .glass-card h4 {
+      font-size: 13px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .conn-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
       font-size: 14px;
     }
-    .dot {
+
+    .pulse-dot {
       width: 10px;
       height: 10px;
       border-radius: 50%;
-    }
-    .dot.connected { background: #10b981; box-shadow: 0 0 10px #10b981; }
-    .dot.connecting { background: #f59e0b; }
-    .dot.disconnected { background: #ef4444; }
-    .action-btn {
-      background: #334155;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      padding: 8px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      transition: all 0.2s;
-    }
-    .action-btn:hover {
-      background: #475569;
-    }
-    .action-btn.danger {
-      background: #991b1b;
-      border-color: #b91c1c;
-    }
-    .action-btn.danger:hover {
-      background: #b91c1c;
+      position: relative;
     }
 
-    /* Widget Container */
-    .widget-box {
-      background: #ffffff;
-      color: #0f172a;
-      border-radius: 16px;
-      height: 600px;
+    .pulse-dot.connected {
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    .pulse-dot.connected::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      background: #10b981;
+      animation: pulse-ring 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+    }
+
+    .pulse-dot.disconnected {
+      background: #ef4444;
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(2.6); opacity: 0; }
+    }
+
+    .quick-test-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .quick-test-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .test-btn-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .test-scenario-btn {
+      background: rgba(30, 48, 77, 0.6);
+      border: 1px solid var(--border-dark);
+      color: #e2e8f0;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .test-scenario-btn:hover {
+      background: rgba(37, 184, 132, 0.15);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .test-scenario-btn small {
+      color: var(--text-muted);
+      font-weight: 400;
+      font-size: 11px;
+    }
+
+    /* Mockup Showcase Modal/View */
+    .mockup-container {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(5, 10, 20, 0.88);
+      backdrop-filter: blur(16px);
+      z-index: 1000;
+      padding: 40px 20px;
+      overflow-y: auto;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mockup-container.show {
+      display: flex;
+    }
+
+    .mockup-modal-card {
+      background: #0f172a;
+      border: 1px solid var(--border-dark);
+      border-radius: 20px;
+      max-width: 960px;
+      width: 100%;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .mockup-modal-header {
+      padding: 16px 24px;
+      background: #162238;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-dark);
+    }
+
+    .mockup-img-wrap {
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      background: #070c18;
+    }
+
+    .mockup-img-wrap img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    /* RIGHT WIDGET WRAPPER */
+    .widget-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* In-Game Realistic Frame (Interactive Widget) */
+    .chat-widget-card {
+      background: #0c1424;
+      border-radius: 24px;
+      height: 680px;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-      border: 1px solid #cbd5e1;
+      box-shadow: 
+        0 20px 50px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 0 40px rgba(16, 185, 129, 0.08);
+      position: relative;
     }
-    .widget-header {
-      background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+
+    /* Widget Top Bar */
+    .chat-widget-header {
+      background: linear-gradient(135deg, #10b981 0%, #065f46 100%);
       color: white;
-      padding: 14px 18px;
+      min-height: 60px;
+      padding: 10px 14px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 20px rgba(6, 95, 70, 0.3);
+      position: relative;
+      z-index: 50;
+      gap: 10px;
+    }
+
+    .header-mascot-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .mascot-avatar-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .mascot-avatar-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .mascot-online-dot {
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #22c55e;
+      border: 1.5px solid #065f46;
+      box-shadow: 0 0 6px #22c55e;
+    }
+
+    .header-titles {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .bot-display-name {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #botHeaderName {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .bot-badge-official {
+      background: rgba(255, 255, 255, 0.2);
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1.5px 5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+
+    .bot-subtext {
+      font-size: 10.5px;
+      opacity: 0.9;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-actions {
+      position: relative;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .header-menu-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .header-menu-btn:hover {
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    .header-menu-popover {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 10px;
+      width: 170px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .header-menu-popover.show {
+      display: flex;
+    }
+
+    .header-menu-popover-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .header-menu-popover-label {
+      font-size: 11px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .header-menu-popover select {
+      width: 100%;
+      background: #1e293b;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+
+    .header-menu-popover .popover-action-btn {
+      width: 100%;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+      transition: background 0.2s;
+      box-sizing: border-box;
+    }
+
+    .header-menu-popover .popover-action-btn:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .persona-test-btn {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: #1e293b;
+      color: #cbd5e1;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .persona-test-btn:hover {
+      background: #334155;
+      color: white;
+    }
+
+    .persona-test-btn.active {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+      color: #34d399;
+    }
+
+    /* Stage Status Pill Bar */
+    .stage-indicator-bar {
+      background: #09101c;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-dark);
+      font-size: 11px;
+    }
+
+    .stage-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.02em;
+    }
+
+    .stage-chip.greeting {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .stage-chip.data_collection {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .stage-chip.resolution {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .stage-chip.escalation {
+      background: rgba(168, 85, 247, 0.15);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    /* Live Message Body */
+    .chat-body {
+      flex: 1;
+      padding: 16px;
+      background: #080e1a;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      scroll-behavior: smooth;
+    }
+
+    .chat-body::-webkit-scrollbar {
+      width: 5px;
+    }
+    .chat-body::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+
+    /* Interactive Top-up Investigation Checklist Card */
+    .checklist-card {
+      background: linear-gradient(145deg, #111e33 0%, #0d1728 100%);
+      border: 1px solid #1e365b;
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      animation: fadeInSlide 0.3s ease-out;
+    }
+
+    .checklist-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .widget-title {
+
+    .checklist-title {
+      font-size: 13px;
       font-weight: 700;
-      font-size: 15px;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .widget-sub {
+
+    .checklist-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.2);
+      color: #7dd3fc;
+    }
+
+    .checklist-progress-bar {
+      width: 100%;
+      height: 5px;
+      background: #1a2a44;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin: 2px 0 6px 0;
+    }
+
+    .checklist-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #38bdf8);
+      border-radius: 9999px;
+      width: 25%;
+      transition: width 0.4s ease;
+    }
+
+    .checklist-items {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       font-size: 12px;
-      opacity: 0.85;
+      padding: 4px 6px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .checklist-item.done {
+      color: #e2e8f0;
+    }
+
+    .checklist-item.pending {
+      color: #94a3b8;
+    }
+
+    .checklist-item-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chk-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .chk-icon.done {
+      background: #10b981;
+      color: #042f2e;
+    }
+
+    .chk-icon.pending {
+      border: 1.5px dashed #475569;
+      color: transparent;
+    }
+
+    .chk-value {
+      font-family: monospace;
+      font-size: 11px;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.1);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    /* Message Bubbles */
+    .msg-row {
+      display: flex;
+      gap: 10px;
+      max-width: 88%;
+      animation: fadeInSlide 0.25s ease-out;
+    }
+
+    .msg-row.player {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .msg-row.bot, .msg-row.agent {
+      align-self: flex-start;
+    }
+
+    .msg-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .msg-avatar.bot {
+      background: #167956;
+      border: 1px solid #25B884;
+    }
+
+    .msg-avatar.agent {
+      background: #1e3a8a;
+      border: 1px solid #3b82f6;
+    }
+
+    .msg-avatar.player {
+      background: #d97706;
+      border: 1px solid #f59e0b;
+      font-weight: 800;
+      font-size: 11px;
+      color: #070c18;
+    }
+
+    .bubble-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .msg-sender-lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-top: 2px;
     }
-    .lang-dropdown {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      border-radius: 8px;
-      padding: 4px 8px;
-      font-size: 12px;
-      outline: none;
-      cursor: pointer;
+
+    .msg-row.player .msg-sender-lbl {
+      justify-content: flex-end;
     }
-    .lang-dropdown option {
-      background: #3730a3;
-      color: white;
-    }
-    .widget-messages {
-      flex: 1;
-      padding: 16px;
-      background: #f8fafc;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .msg {
-      max-width: 80%;
-      display: flex;
-      flex-direction: column;
-    }
-    .msg.player {
-      align-self: flex-end;
-    }
-    .msg.bot, .msg.agent, .msg.system {
-      align-self: flex-start;
-    }
-    .msg-sender {
-      font-size: 11px;
-      color: #64748b;
-      margin-bottom: 2px;
-    }
-    .msg-bubble {
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 14px;
-      line-height: 1.4;
+
+    .bubble-content {
+      padding: 11px 15px;
+      border-radius: 16px;
+      font-size: 13.5px;
+      line-height: 1.5;
       word-break: break-word;
     }
-    .msg.player .msg-bubble {
-      background: #4f46e5;
-      color: white;
-      border-bottom-right-radius: 2px;
+
+    .msg-row.player .bubble-content {
+      background: var(--bubble-player);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
     }
-    .msg.bot .msg-bubble, .msg.agent .msg-bubble {
-      background: #ffffff;
-      color: #1e293b;
-      border: 1px solid #e2e8f0;
-      border-bottom-left-radius: 2px;
+
+    .msg-row.bot .bubble-content {
+      background: var(--bubble-bot);
+      color: #f1f5f9;
+      border: 1px solid var(--bubble-bot-border);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
     }
-    .msg.system .msg-bubble {
-      background: #e2e8f0;
-      color: #475569;
-      font-style: italic;
-      font-size: 13px;
+
+    .msg-row.agent .bubble-content {
+      background: #172554;
+      color: #eff6ff;
+      border: 1px solid #1d4ed8;
+      border-bottom-left-radius: 4px;
     }
+
     .badge-trans {
       display: inline-block;
-      margin-top: 4px;
+      margin-top: 5px;
       font-size: 10px;
-      background: #fef3c7;
-      color: #b45309;
-      padding: 2px 6px;
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      padding: 2px 7px;
       border-radius: 4px;
-      border: 1px solid #fde68a;
-      font-weight: 500;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      font-weight: 600;
     }
-    .widget-input-bar {
-      padding: 12px 14px;
-      background: #ffffff;
-      border-top: 1px solid #e2e8f0;
+
+    /* Typing indicator animation */
+    .typing-indicator-row {
+      display: none;
+      align-self: flex-start;
+      align-items: center;
+      gap: 10px;
+      margin-left: 40px;
+    }
+
+    .typing-indicator-row.active {
       display: flex;
+    }
+
+    .typing-bubble {
+      background: var(--bubble-bot);
+      border: 1px solid var(--bubble-bot-border);
+      padding: 8px 14px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .typing-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Interactive Quick-Reply Chips Section */
+    .quick-chips-wrapper {
+      background: #09101d;
+      padding: 8px 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .quick-chips-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 8px;
     }
-    .widget-input-bar input {
-      flex: 1;
-      border: 1px solid #cbd5e1;
-      border-radius: 20px;
-      padding: 8px 14px;
-      font-size: 14px;
-      outline: none;
+
+    .quick-chips-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
-    .widget-input-bar input:focus {
-      border-color: #4f46e5;
+
+    .quick-chip-livechat {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #f59e0b;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 9999px;
+      padding: 4px 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
-    .widget-input-bar button {
-      background: #4f46e5;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      padding: 8px 18px;
-      font-size: 13px;
+
+    .quick-chip-livechat:hover {
+      background: rgba(245, 158, 11, 0.28);
+      border-color: #f59e0b;
+      color: #fbbf24;
+      transform: translateY(-1px);
+    }
+
+    .category-chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .category-chip {
+      background: rgba(22, 36, 58, 0.85);
+      color: #e2e8f0;
+      border: 1px solid #1e3556;
+      padding: 5px 11px;
+      border-radius: 9999px;
+      font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      text-overflow: clip;
+      overflow: visible;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      user-select: none;
     }
-    .widget-input-bar button:hover {
-      background: #4338ca;
+
+    .category-chip:hover {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: #10b981;
+      color: #34d399;
+      transform: translateY(-1px);
+    }
+
+    .category-chip.active {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+      color: #6ee7b7;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.35);
+    }
+
+    .quick-chip {
+      background: rgba(22, 36, 58, 0.9);
+      color: #e2e8f0;
+      border: 1px solid #1e3556;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .quick-chip:hover {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+      color: #34d399;
+      transform: translateY(-1px);
+    }
+
+    .btn-attach {
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .btn-attach:hover {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+      color: #34d399;
+      transform: scale(1.05);
+    }
+
+    .btn-attach.highlight-pulse {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+      color: #6ee7b7;
+      animation: pulseAttach 1.4s infinite ease-in-out;
+    }
+
+    @keyframes pulseAttach {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); transform: scale(1); }
+      50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); transform: scale(1.08); border-color: #34d399; color: #fff; }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); transform: scale(1); }
+    }
+
+    /* Input Footer */
+    .chat-input-footer {
+      padding: 12px 14px;
+      background: #0c1424;
+      border-top: 1px solid var(--border-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-input-footer input {
+      flex: 1;
+      background: #142036;
+      border: 1px solid #233758;
+      border-radius: 9999px;
+      padding: 10px 18px;
+      color: white;
+      font-size: 13.5px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .chat-input-footer input:focus {
+      border-color: var(--primary);
+      background: #182742;
+      box-shadow: 0 0 0 2px rgba(37, 184, 132, 0.2);
+    }
+
+    .chat-input-footer input::placeholder {
+      color: #64748b;
+    }
+
+    .btn-send-circle {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+      flex-shrink: 0;
+    }
+
+    .btn-send-circle:hover {
+      transform: scale(1.05);
+      background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+    }
+
+    /* Floating Game Launcher Mode (Interactive Simulator) */
+    .floating-game-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000;
+      background-image: 
+        radial-gradient(circle at 30% 30%, rgba(56, 189, 248, 0.15), transparent 40%),
+        radial-gradient(circle at 70% 70%, rgba(16, 185, 129, 0.15), transparent 40%),
+        url('/customer_chat_ui.jpg');
+      background-size: cover;
+      background-position: center;
+      z-index: 500;
+    }
+
+    .floating-game-screen.active {
+      display: block;
+    }
+
+    .floating-overlay-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(3, 7, 18, 0.7);
+      backdrop-filter: blur(4px);
+    }
+
+    .game-top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .floating-launcher-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 600;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .floating-launcher-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .launcher-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: #ef4444;
+      color: white;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 9999px;
+      border: 2px solid #064e3b;
+    }
+
+    .floating-chat-popup {
+      position: fixed;
+      bottom: 96px;
+      right: 24px;
+      width: 410px;
+      height: 640px;
+      max-height: calc(100vh - 120px);
+      z-index: 600;
+      animation: popupSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (max-width: 440px) {
+      .floating-chat-popup {
+        width: calc(100vw - 20px);
+        right: 10px;
+        bottom: 80px;
+        min-width: 300px;
+      }
+    }
+
+    @keyframes popupSlide {
+      0% { opacity: 0; transform: translateY(20px) scale(0.96); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes fadeInSlide {
+      0% { opacity: 0; transform: translateY(6px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
+
+  <!-- Top Global Bar -->
   <header>
-    <div class="logo">
-      🎮 GAGA <span>GAMES</span> SEA
+    <div class="brand-group">
+      <a href="#" class="brand-logo">
+        <img src="/logo-mark.png" alt="Gaga Games" />
+        <span style="font-size: 16px; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">Gaga<span style="color: #34d399;">Support</span></span>
+      </a>
+      <span class="brand-badge">24/7 AI-Agent</span>
     </div>
-    <div class="user-pill">
-      <span>RyuHunter</span>
-      <span class="badge">VIP 4</span>
-      <span style="color: #94a3b8;">SEA-3</span>
+
+    <!-- View Modes -->
+    <div class="view-toggles">
+      <button class="view-toggle-btn active" id="btnModeSplit" onclick="switchViewMode('split')">
+        🖥️ Mode Split Dev
+      </button>
+      <button class="view-toggle-btn" id="btnModeInGame" onclick="switchViewMode('ingame')">
+        🎮 Mode Floating In-Game
+      </button>
+      <button class="view-toggle-btn" onclick="openMockupModal()">
+        🖼️ Lihat Desain Mockup UI
+      </button>
+    </div>
+
+    <!-- Player Profile -->
+    <div class="player-profile-pill">
+      <div class="avatar-sm">R</div>
+      <div>
+        <strong style="color: #f8fafc;">RyuHunter</strong>
+        <span style="color: #94a3b8; font-size: 11px; margin-left: 4px;">SEA-3</span>
+      </div>
+      <span class="vip-tag">VIP 4</span>
     </div>
   </header>
 
-  <main>
-    <div class="info-panel">
-      <h2>Halaman Demo Live Chat (TASK-03)</h2>
-      <p style="color: #cbd5e1; font-size: 14px;">
-        Halaman ini memuat widget live chat yang tersambung ke WebSocket Chat Gateway lokal.
-      </p>
-
-      <div class="status-row">
-        <span>Status WebSocket:</span>
-        <span id="connDot" class="dot disconnected"></span>
-        <strong id="connText">Menghubungkan...</strong>
+  <!-- Split View Main Container -->
+  <main id="splitMain">
+    <!-- Left Inspector -->
+    <div class="inspector-panel">
+      <div>
+        <h2 class="section-title">
+          <span>🎮</span> Desain Antarmuka Customer Live Chat
+        </h2>
+        <p class="section-desc" style="margin-top: 6px;">
+          Antarmuka widget pemain telah diperbarui dengan tema <strong>Emerald-Navy Glassmorphism</strong>, karakter maskot <strong>GagaBot</strong>, <strong>Slot Checklist Interaktif</strong>, serta <strong>Quick-Reply Chips</strong> untuk navigasi kilat di dalam game.
+        </p>
       </div>
 
-      <div class="info-box">
-        <strong>Konteks Pemain & Sesi Terverifikasi:</strong><br />
-        • UID: <code>77124490</code> (RyuHunter)<br />
-        • Token: <code>token_77124490</code><br />
-        • Server Game: <code>SEA-3</code> | Halaman: <code>/topup</code><br />
-        • Percakapan Aktif: <code id="lblConvId">-</code><br />
-        • Bahasa Aktif: <code id="lblLocale">id-ID</code>
+      <div class="status-badge-row glass-card">
+        <div class="conn-status">
+          <span id="connDot" class="pulse-dot disconnected"></span>
+          <span id="connText">Menghubungkan WebSocket...</span>
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted);">
+          Sesi ID: <code id="lblConvId" style="color: #38bdf8;">-</code>
+        </div>
       </div>
 
-      <div class="info-box">
-        <strong>Fitur yang Teruji di Widget:</strong><br />
-        1. <strong>6 Pasar SEA:</strong> Thailand (th-TH), Philippines (fil-PH), Indonesia (id-ID), Malaysia (ms-MY), Vietnam (vi-VN), Singapore (en).<br />
-        2. <strong>Pergantian Locale Instan:</strong> Mengubah bahasa teks UI dan mengirim <code>set_locale</code> ke Gateway.<br />
-        3. <strong>Auto-Reconnect:</strong> Sambung ulang otomatis jika server terputus.<br />
-        4. <strong>Riwayat Utuh:</strong> Pesan tetap tersimpan di <code>localStorage</code> setelah halaman di-refresh.<br />
-        5. <strong>Penanda Terjemahan:</strong> Badge 🌐 muncul jika balasan pesan memiliki flag <code>translated: true</code>.
+      <div class="glass-card">
+        <h4>✨ 4 Komponen Utama UI Customer</h4>
+        <div style="display: flex; flex-direction: column; gap: 8px; color: #cbd5e1; font-size: 12.5px;">
+          <div>🤖 <strong>Maskot GagaBot:</strong> Karakter robot ramah dengan indikator online pulsing, memandu pemain secara empatik.</div>
+          <div>📋 <strong>Investigation Checklist:</strong> Melacak kelengkapan data (Order ID, Nominal, Metode Bayar, Jam) secara visual dan transparan.</div>
+          <div>⚡ <strong>Quick-Reply Chips:</strong> Tombol pill instan untuk respon cepat (QRIS, DANA, Top-up Belum Masuk, dsb) tanpa harus mengetik panjang di HP.</div>
+          <div>🌐 <strong>Dukungan 6 Bahasa SEA:</strong> Penggantian instan untuk pasar ID, TH, PH, MY, VN, dan SG.</div>
+        </div>
       </div>
 
-      <div style="display: flex; gap: 10px; margin-top: auto;">
-        <button class="action-btn" onclick="simulateAgentReply()">Simulasikan Balasan Agent (REST API)</button>
-        <button class="action-btn danger" onclick="clearHistory()">Reset Riwayat Sesi</button>
+      <div class="quick-test-box">
+        <div class="quick-test-label">Skenario Uji Kilat (Klik untuk mencoba)</div>
+        <div class="test-btn-grid">
+          <button class="test-scenario-btn" onclick="sendQuickMessage('Halo min')">
+            <span>👋 Sapaan Santai</span>
+            <small>"Halo min"</small>
+          </button>
+          <button class="test-scenario-btn" onclick="sendQuickMessage('hallo topup saya belum masuk')">
+            <span>💎 Keluhan Top-up Masuk</span>
+            <small>"hallo topup saya belum masuk"</small>
+          </button>
+          <button class="test-scenario-btn" onclick="sendQuickMessage('order ID #GG83749 nominal 50rb pake QRIS')">
+            <span>📝 Kirim Data Transaksi</span>
+            <small>"order ID #GG83749..."</small>
+          </button>
+          <button class="test-scenario-btn" onclick="sendQuickMessage('parah banget udah 1 jam gak masuk, rugi saya!')">
+            <span>😡 Pemain Kesal (Empati)</span>
+            <small>"parah banget udah 1 jam..."</small>
+          </button>
+        </div>
+      </div>
+
+      <!-- QA Persona Switcher (outside widget) -->
+      <div class="quick-test-box">
+        <div class="quick-test-label">🎭 QA Test: Persona Bot (Simulasi Sistem)</div>
+        <div style="font-size: 11px; color: #94a3b8; margin-bottom: 8px; line-height: 1.4;">
+          Sesuai spec/08-persona-bot.md, pemain tidak memilih bot langsung di widget. Gunakan switcher QA ini untuk menguji respon kepribadian agent:
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button id="btnPersonaMira" class="persona-test-btn active" onclick="onPersonaChanged('mira')">
+            👩 Mira (Ramah & Hangat)
+          </button>
+          <button id="btnPersonaReza" class="persona-test-btn" onclick="onPersonaChanged('reza')">
+            👨 Reza (Ringkas & Cepat)
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-top: auto; display: flex; gap: 10px;">
+        <button class="view-toggle-btn" style="background: #dc2626; color: white; padding: 10px 16px;" onclick="clearHistory()">
+          🗑️ Bersihkan Riwayat & Buka Sesi Baru
+        </button>
       </div>
     </div>
 
-    <!-- Live Widget Box -->
-    <div class="widget-box">
-      <div class="widget-header">
-        <div>
-          <div class="widget-title" id="uiTitle">Gaga Live Chat</div>
-          <div class="widget-sub">
-            <span id="widgetDot" class="dot disconnected"></span>
-            <span id="uiStatus">Menghubungkan...</span>
+    <!-- Right Widget Column -->
+    <div class="widget-column" id="widgetContainer">
+      <div class="chat-widget-card" id="chatWidgetInner">
+        <!-- Header -->
+        <div class="chat-widget-header">
+          <div class="header-mascot-group">
+            <!-- 1. Avatar Persona with Online Dot -->
+            <div class="mascot-avatar-circle" id="headerAvatarBox">
+              <img id="headerAvatarImg" src="/assets/agent-mira.png" alt="Persona Avatar" />
+              <span class="mascot-online-dot"></span>
+            </div>
+
+            <!-- 2. Nama Persona (Line 1) & Status (Line 2) -->
+            <div class="header-titles">
+              <div class="bot-display-name">
+                <span id="botHeaderName">Mira</span>
+                <span class="bot-badge-official" id="botHeaderBadge">Live CS</span>
+              </div>
+              <div class="bot-subtext">
+                <span id="botHeaderSubtext">Online</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Compact Icon Button & Header Popover Menu -->
+          <div class="header-actions">
+            <button class="header-menu-btn" id="btnHeaderMenu" title="Menu & Pengaturan" onclick="toggleHeaderMenu(event)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="12" cy="5" r="2"/>
+                <circle cx="12" cy="12" r="2"/>
+                <circle cx="12" cy="19" r="2"/>
+              </svg>
+            </button>
+
+            <!-- Header Dropdown Popover Menu -->
+            <div class="header-menu-popover" id="headerMenuPopover">
+              <div class="header-menu-popover-item">
+                <span class="header-menu-popover-label">Bahasa / Locale</span>
+                <select id="langSelector" onchange="onLocaleChanged(this.value)">
+                  <option value="id-ID">🇮🇩 Indonesia</option>
+                  <option value="th-TH">🇹🇭 ไทย (Thai)</option>
+                  <option value="fil-PH">🇵🇭 Filipino</option>
+                  <option value="ms-MY">🇲🇾 Melayu</option>
+                  <option value="vi-VN">🇻🇳 Tiếng Việt</option>
+                  <option value="en">🇸🇬 English</option>
+                </select>
+              </div>
+              <div class="header-menu-popover-item">
+                <button class="popover-action-btn" onclick="clearHistory(); toggleHeaderMenu(event);" title="Refresh sesi percakapan">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 8v4h4"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M21 16v4h-4"/></svg>
+                  <span>Mulai Sesi Baru</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-        <select class="lang-dropdown" id="langSelector" onchange="onLocaleChanged(this.value)">
-          <option value="id-ID">🇮🇩 Bahasa Indonesia</option>
-          <option value="th-TH">🇹🇭 ไทย (Thai)</option>
-          <option value="fil-PH">🇵🇭 Filipino (Tagalog)</option>
-          <option value="ms-MY">🇲🇾 Bahasa Melayu</option>
-          <option value="vi-VN">🇻🇳 Tiếng Việt</option>
-          <option value="en">🇸🇬 English</option>
-        </select>
-      </div>
 
-      <div class="widget-messages" id="messageList">
-        <!-- Messages rendered here -->
-      </div>
+        <!-- Stage Indicator Bar -->
+        <div class="stage-indicator-bar">
+          <span style="color: #64748b;">Tahap Penanganan:</span>
+          <span id="stageBadge" class="stage-chip greeting">🟢 Sapaan Awal</span>
+        </div>
 
-      <div class="widget-input-bar">
-        <input
-          type="text"
-          id="chatInput"
-          placeholder="Ketik pesan Anda di sini..."
-          onkeydown="if(event.key === 'Enter') sendMessage()"
-        />
-        <button id="btnSend" onclick="sendMessage()">Kirim</button>
+        <!-- Chat Body -->
+        <div class="chat-body" id="messageList">
+          <!-- Messages will render here -->
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator-row" id="typingIndicator">
+          <div class="msg-avatar bot" style="overflow: hidden; padding: 0; background: transparent; border: 1.5px solid rgba(255,255,255,0.25); width: 28px; height: 28px; border-radius: 50%;">
+            <img id="typingAvatarImg" src="/assets/agent-mira.png" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+          </div>
+          <div class="typing-bubble">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span id="typingSenderLabel" style="font-size: 11px; color: #94a3b8; margin-left: 6px;">Mira sedang membalas...</span>
+          </div>
+        </div>
+
+        <!-- Issue Categories & Live Chat Action Bar -->
+        <div class="quick-chips-wrapper">
+          <div class="quick-chips-header">
+            <span class="quick-chips-title" id="lblCategoryHeader">Kategori Kendala:</span>
+            <!-- Separate Live Chat Handoff Chip -->
+            <button class="quick-chip-livechat" id="chipLiveChat" onclick="sendQuickMessage('Hubungkan dengan CS Manusia')">
+              <span>🎧</span> <span id="chipLiveChatLabel">Live Chat</span>
+            </button>
+          </div>
+          <div class="category-chips-row" id="quickChipsBar">
+            <button class="category-chip" data-category="account_login" onclick="selectCategory('account_login')">
+              <span>🔐</span> <span id="lblCatAccount">Akun & Login</span>
+            </button>
+            <button class="category-chip" data-category="payment_topup" onclick="selectCategory('payment_topup')">
+              <span>💳</span> <span id="lblCatPayment">Pembayaran & Top-up</span>
+            </button>
+            <button class="category-chip" data-category="technical" onclick="selectCategory('technical')">
+              <span>⚙️</span> <span id="lblCatTechnical">Teknis</span>
+            </button>
+            <button class="category-chip" data-category="gameplay_item" onclick="selectCategory('gameplay_item')">
+              <span>🎮</span> <span id="lblCatGameplay">Gameplay & Item</span>
+            </button>
+            <button class="category-chip" data-category="feedback_other" onclick="selectCategory('feedback_other')">
+              <span>💬</span> <span id="lblCatFeedback">Feedback & Lainnya</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Evidence Inline Hint (Syarat 1) -->
+        <div id="evidenceHintBanner" style="display: none; background: rgba(16, 185, 129, 0.12); border-top: 1px solid rgba(16, 185, 129, 0.3); padding: 7px 14px; font-size: 11.5px; color: #6ee7b7; align-items: center; justify-content: space-between;">
+          <span>📎 <span id="evidenceHintText">Tips: Gunakan tombol lampiran (📎) untuk melampirkan foto/screenshot bukti pembayaran.</span></span>
+          <button onclick="dismissEvidenceHint()" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 14px; padding: 0 4px;" title="Tutup petunjuk">×</button>
+        </div>
+
+        <!-- Input Bar: Attach Button visible in ALL states (bot_active, handoff_queued, agent_active) -->
+        <div class="chat-input-footer">
+          <input type="file" id="demoFileInput" accept="image/png,image/jpeg,image/webp" style="display: none;" onchange="handleDemoFileUpload(this)" />
+          <button class="btn-attach" id="btnAttachFile" onclick="triggerDemoAttach()" title="Lampirkan File / Foto Bukti (📎)" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+            </svg>
+          </button>
+          <input
+            type="text"
+            id="chatInput"
+            placeholder="Ketik keluhan atau pertanyaan Anda..."
+            onkeydown="if(event.key === 'Enter') sendMessage()"
+          />
+          <button class="btn-send-circle" id="btnSend" onclick="sendMessage()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </main>
 
+  <!-- In-Game Floating Simulation Screen -->
+  <div class="floating-game-screen" id="inGameScreen">
+    <div class="floating-overlay-backdrop"></div>
+    <div class="game-top-bar">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <img src="/logo-full-light.png" alt="Gaga Games" style="height: 28px; width: auto;" />
+        <span style="font-size: 16px; font-weight: 800; color: #fff; letter-spacing: 1px; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 12px;">GAGA STRIKE</span>
+        <span style="background: rgba(255,255,255,0.15); padding: 2px 8px; border-radius: 4px; font-size: 11px;">SERVER: SEA-3</span>
+      </div>
+      <button class="view-toggle-btn" style="background: #1e293b; color: #fff;" onclick="switchViewMode('split')">
+        ✕ Tutup Simulasi In-Game
+      </button>
+    </div>
+
+    <!-- Floating Circular Launcher Button -->
+    <div class="floating-launcher-btn" onclick="toggleFloatingWidget()" title="Buka Live Chat GagaBot">
+      <img src="/logo-mark.png" alt="Gaga" style="width: 32px; height: auto; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />
+      <span class="launcher-badge">1</span>
+    </div>
+
+    <!-- Floating Widget Container -->
+    <div class="floating-chat-popup" id="floatingWidgetContainer" style="display: none;">
+      <!-- Cloned or mounted here -->
+    </div>
+  </div>
+
+  <!-- High-Res Mockup Image Viewer Modal -->
+  <div class="mockup-container" id="mockupModal" onclick="if(event.target === this) closeMockupModal()">
+    <div class="mockup-modal-card">
+      <div class="mockup-modal-header">
+        <div style="font-weight: 700; font-size: 16px; color: #38bdf8; display: flex; align-items: center; gap: 8px;">
+          <span>🎨</span> Visual Concept: Modern In-Game Live Support UI
+        </div>
+        <button class="icon-btn" onclick="closeMockupModal()">✕</button>
+      </div>
+      <div class="mockup-img-wrap">
+        <img src="/customer_chat_ui.jpg" alt="Mockup Visual Customer UI" />
+      </div>
+      <div style="padding: 16px 24px; background: #0c1424; border-top: 1px solid var(--border-dark); font-size: 13px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+        <span>Desain mencakup: Maskot GagaBot, Checklist Investigasi, Quick-Chips, & Handover Agen CS.</span>
+        <button class="view-toggle-btn active" onclick="closeMockupModal()">Tutup Pratinjau</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const I18N = {
       'id-ID': {
-        title: 'Gaga Live Chat',
-        statusOnline: 'Aktif',
+        title: 'Gaga Live Support',
+        statusOnline: 'Online • Siap membantu',
         statusConnecting: 'Menghubungkan...',
         statusOffline: 'Koneksi terputus',
-        inputPlaceholder: 'Ketik pesan Anda di sini...',
+        inputPlaceholder: 'Ketik keluhan atau pertanyaan Anda...',
         sendButton: 'Kirim',
         translatedBadge: 'Diterjemahkan otomatis',
-        welcome: 'Halo kak Ryu! Ada yang bisa kami bantu hari ini?'
+        welcome: 'Halo Kak RyuHunter! Selamat datang di Gaga Games Support. Ada kendala topup atau game yang bisa saya bantu?',
+        checklistTitle: 'Top-up Investigation Checklist',
+        stageGreeting: '🟢 Sapaan Awal',
+        stageData: '🟡 Pengumpulan Data Transaksi',
+        stageResolution: '🔵 Penelusuran Solusi',
+        stageEscalation: '🟣 Eskalasi ke Tim CS',
+        liveChatChip: 'Live Chat',
+        quickReplyLiveChat: 'Live Chat',
+        categoryHeader: 'Kategori Kendala',
+        categoryAccount: 'Akun & Login',
+        categoryPayment: 'Pembayaran & Top-up',
+        categoryTechnical: 'Teknis',
+        categoryGameplay: 'Gameplay & Item',
+        categoryFeedback: 'Feedback & Lainnya'
       },
       'th-TH': {
-        title: 'Gaga Live Chat',
-        statusOnline: 'ออนไลน์',
+        title: 'Gaga Live Support',
+        statusOnline: 'ออนไลน์ • พร้อมช่วยเหลือ',
         statusConnecting: 'กำลังเชื่อมต่อ...',
         statusOffline: 'การเชื่อมต่อขาดหาย',
         inputPlaceholder: 'พิมพ์ข้อความของคุณที่นี่...',
         sendButton: 'ส่ง',
         translatedBadge: 'แปลโดยอัตโนมัติ',
-        welcome: 'สวัสดีครับ RyuHunter! มีอะไรให้เราช่วยเหลือวันนี้ครับ?'
+        welcome: 'สวัสดีครับคุณ RyuHunter! มีปัญหาเรื่องเติมเงินหรือในเกมให้ช่วยไหมครับ?',
+        checklistTitle: 'รายการตรวจสอบการเติมเงิน',
+        stageGreeting: '🟢 ทักทายเบื้องต้น',
+        stageData: '🟡 รวบรวมข้อมูลรายการ',
+        stageResolution: '🔵 กำลังตรวจสอบแนวทางแก้',
+        stageEscalation: '🟣 ส่งต่อเจ้าหน้าที่',
+        liveChatChip: 'Live Chat',
+        quickReplyLiveChat: 'Live Chat',
+        categoryHeader: 'หมวดหมู่ปัญหา',
+        categoryAccount: 'บัญชีและเข้าสู่ระบบ',
+        categoryPayment: 'การชำระเงินและเติมเงิน',
+        categoryTechnical: 'ปัญหาทางเทคนิค',
+        categoryGameplay: 'การเล่นและไอเทม',
+        categoryFeedback: 'ข้อเสนอแนะและอื่นๆ'
       },
       'fil-PH': {
-        title: 'Gaga Live Chat',
-        statusOnline: 'Online po',
+        title: 'Gaga Live Support',
+        statusOnline: 'Online po • Handa tumulong',
         statusConnecting: 'Kumokonekta...',
         statusOffline: 'Nawalan ng koneksyon',
         inputPlaceholder: 'I-type po ang mensahe dito...',
         sendButton: 'Ipadala',
         translatedBadge: 'Awtomatikong isinalin',
-        welcome: 'Kumusta po RyuHunter! May maitutulong po ba kami ngayon?'
+        welcome: 'Kumusta po RyuHunter! May maitutulong po ba kami sa inyong top-up o account ngayon?',
+        checklistTitle: 'Listahan ng Pagsusuri sa Top-up',
+        stageGreeting: '🟢 Pagbati',
+        stageData: '🟡 Pangangalap ng Datos',
+        stageResolution: '🔵 Pagsusuri ng Solusyon',
+        stageEscalation: '🟣 Ipinasa sa CS Team',
+        liveChatChip: 'Live Chat',
+        quickReplyLiveChat: 'Live Chat',
+        categoryHeader: 'Kategorya ng Problema',
+        categoryAccount: 'Account at Pag-login',
+        categoryPayment: 'Pagbabayad at Top-up',
+        categoryTechnical: 'Teknikal',
+        categoryGameplay: 'Gameplay at Item',
+        categoryFeedback: 'Puna at Iba pa'
       },
       'ms-MY': {
-        title: 'Gaga Live Chat',
-        statusOnline: 'Dalam Talian',
+        title: 'Gaga Live Support',
+        statusOnline: 'Dalam Talian • Sedia membantu',
         statusConnecting: 'Menyambung...',
         statusOffline: 'Terputus talian',
         inputPlaceholder: 'Taip mesej anda di sini...',
         sendButton: 'Hantar',
         translatedBadge: 'Diterjemah secara automatik',
-        welcome: 'Hai RyuHunter! Ada apa yang boleh kami bantu hari ini?'
+        welcome: 'Hai RyuHunter! Ada masalah mengenai tambah nilai (top-up) atau akaun yang boleh kami bantu?',
+        checklistTitle: 'Senarai Semakan Siasatan Top-up',
+        stageGreeting: '🟢 Sapaan Awal',
+        stageData: '🟡 Pengumpulan Maklumat',
+        stageResolution: '🔵 Penyelesaian',
+        stageEscalation: '🟣 Eskalasi ke CS Manusia',
+        liveChatChip: 'Live Chat',
+        quickReplyLiveChat: 'Live Chat',
+        categoryHeader: 'Kategori Isu',
+        categoryAccount: 'Akaun & Log Masuk',
+        categoryPayment: 'Pembayaran & Tambah Nilai',
+        categoryTechnical: 'Teknikal',
+        categoryGameplay: 'Permainan & Item',
+        categoryFeedback: 'Maklum Balas & Lain-lain'
       },
       'vi-VN': {
-        title: 'Gaga Live Chat',
-        statusOnline: 'Trực tuyến',
+        title: 'Gaga Live Support',
+        statusOnline: 'Trực tuyến • Sẵn sàng hỗ trợ',
         statusConnecting: 'Đang kết nối...',
         statusOffline: 'Mất kết nối',
         inputPlaceholder: 'Nhập tin nhắn của bạn tại đây...',
         sendButton: 'Gửi',
         translatedBadge: 'Dịch tự động',
-        welcome: 'Xin chào RyuHunter! Chúng tôi có thể hỗ trợ gì cho bạn hôm nay?'
+        welcome: 'Xin chào RyuHunter! Bạn có gặp vấn đề gì về nạp kim cương cần hỗ trợ không?',
+        checklistTitle: 'Danh mục Điều tra Giao dịch',
+        stageGreeting: '🟢 Chào hỏi',
+        stageData: '🟡 Thu thập Thông tin',
+        stageResolution: '🔵 Đang xử lý',
+        stageEscalation: '🟣 Chuyển tiếp CSKH',
+        liveChatChip: 'Live Chat',
+        quickReplyLiveChat: 'Live Chat',
+        categoryHeader: 'Chủ đề hỗ trợ',
+        categoryAccount: 'Tài khoản & Đăng nhập',
+        categoryPayment: 'Thanh toán & Nạp tiền',
+        categoryTechnical: 'Kỹ thuật',
+        categoryGameplay: 'Lối chơi & Vật phẩm',
+        categoryFeedback: 'Góp ý & Khác'
       },
       'en': {
-        title: 'Gaga Live Chat',
-        statusOnline: 'Online',
+        title: 'Gaga Live Support',
+        statusOnline: 'Online • Ready to assist',
         statusConnecting: 'Connecting...',
         statusOffline: 'Disconnected',
         inputPlaceholder: 'Type your message here...',
         sendButton: 'Send',
         translatedBadge: 'Auto-translated',
-        welcome: 'Hello RyuHunter! How can we assist you today?'
+        welcome: 'Hello RyuHunter! Welcome to Gaga Support. How can I assist you with your top-up or game today?',
+        checklistTitle: 'Top-up Investigation Checklist',
+        stageGreeting: '🟢 Greeting',
+        stageData: '🟡 Data Collection',
+        stageResolution: '🔵 Resolution',
+        stageEscalation: '🟣 Escalation to Agent',
+        liveChatChip: 'Live Chat',
+        quickReplyLiveChat: 'Live Chat',
+        categoryHeader: 'Issue Category',
+        categoryAccount: 'Account & Login',
+        categoryPayment: 'Payment & Top-up',
+        categoryTechnical: 'Technical',
+        categoryGameplay: 'Gameplay & Items',
+        categoryFeedback: 'Feedback & Others'
       }
     };
 
@@ -424,21 +1693,147 @@
     let conversationId = localStorage.getItem('gaga_conv_id') || '';
     let messages = [];
     let ws = null;
+    let reconnectAttempts = 0;
+    let currentStage = 'greeting';
+    let currentBotPersona = localStorage.getItem('gaga_persona') || 'mira';
+    let currentBotName = currentBotPersona === 'reza' ? 'Reza' : 'Mira';
+    let currentBotAvatar = currentBotPersona === 'reza' ? '/assets/agent-reza.png' : '/assets/agent-mira.png';
+    let isHumanAgent = false;
+    let selectedCategory = null;
+    let slots = {
+      order_id: null,
+      amount: null,
+      payment_method: null,
+      transaction_time: null
+    };
+
+    function toggleHeaderMenu(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('headerMenuPopover');
+      if (menu) {
+        menu.classList.toggle('show');
+      }
+    }
+
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('headerMenuPopover');
+      const btn = document.getElementById('btnHeaderMenu');
+      if (menu && menu.classList.contains('show')) {
+        if (!menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+          menu.classList.remove('show');
+        }
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const menu = document.getElementById('headerMenuPopover');
+        if (menu && menu.classList.contains('show')) {
+          menu.classList.remove('show');
+        }
+      }
+    });
+
+    function updatePersonaUI() {
+      const btnMira = document.getElementById('btnPersonaMira');
+      const btnReza = document.getElementById('btnPersonaReza');
+      if (btnMira) btnMira.classList.toggle('active', currentBotPersona === 'mira');
+      if (btnReza) btnReza.classList.toggle('active', currentBotPersona === 'reza');
+
+      if (!isHumanAgent) {
+        const nameEl = document.getElementById('botHeaderName');
+        const imgEl = document.getElementById('headerAvatarImg');
+        const badgeEl = document.getElementById('botHeaderBadge');
+        const typingEl = document.getElementById('typingSenderLabel');
+        const typingImg = document.getElementById('typingAvatarImg');
+        if (nameEl) nameEl.textContent = currentBotName;
+        if (imgEl) imgEl.src = currentBotAvatar;
+        if (badgeEl) badgeEl.textContent = 'Live CS';
+        if (typingEl) typingEl.textContent = `${currentBotName} sedang membalas...`;
+        if (typingImg) typingImg.src = currentBotAvatar;
+      }
+    }
+
+    async function onPersonaChanged(newPersona) {
+      currentBotPersona = newPersona === 'reza' ? 'reza' : 'mira';
+      localStorage.setItem('gaga_persona', currentBotPersona);
+      currentBotName = currentBotPersona === 'reza' ? 'Reza' : 'Mira';
+      currentBotAvatar = currentBotPersona === 'reza' ? '/assets/agent-reza.png' : '/assets/agent-mira.png';
+      updatePersonaUI();
+      if (conversationId) {
+        try {
+          await fetch(`/v1/conversations/${conversationId}/persona`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ persona: currentBotPersona })
+          });
+        } catch (e) {}
+      }
+      renderMessages();
+    }
+
+    // Audio chime feedback using Web Audio API
+    function playChime(freq = 600) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.15);
+      } catch (e) {}
+    }
+
     async function fetchHistoryFromServer(convId) {
       if (!convId) return;
       try {
         const res = await fetch(`/v1/conversations/${convId}/messages`);
         if (res.ok) {
           const data = await res.json();
+          if (data.bot_persona) currentBotPersona = data.bot_persona;
+          if (data.bot_name) currentBotName = data.bot_name;
+          if (data.bot_avatar) currentBotAvatar = data.bot_avatar;
+          updatePersonaUI();
+
           if (Array.isArray(data.messages)) {
-            messages = data.messages.map(m => ({
-              id: m.id,
-              sender_type: m.sender_type,
-              sender_name: m.sender_name || (m.sender_type === 'player' ? 'You' : 'Gaga Support'),
-              text: m.text,
-              created_at: m.created_at,
-              translated: !!m.translated
-            }));
+            messages = data.messages.map(m => {
+              let sName = m.sender_name;
+              if (m.sender_type === 'player') {
+                sName = 'RyuHunter';
+              } else if (m.sender_type === 'bot') {
+                if (!sName || sName.toLowerCase().includes('bot') || sName.toLowerCase().includes('gaga')) {
+                  sName = currentBotName || (currentBotPersona === 'reza' ? 'Reza' : 'Mira');
+                }
+              } else if (m.sender_type === 'agent') {
+                sName = sName || 'Support Agent';
+              }
+              return {
+                id: m.id,
+                sender_type: m.sender_type,
+                sender_name: sName,
+                avatar_url: m.avatar_url || (m.sender_type === 'bot' ? currentBotAvatar : undefined),
+                bot_persona: m.bot_persona || currentBotPersona,
+                text: m.text,
+                created_at: m.created_at,
+                meta: m.meta || {},
+                translated: !!m.translated
+              };
+            });
+
+            // Restore stage & slots from latest message meta if available
+            const lastWithMeta = [...messages].reverse().find(m => m.meta && (m.meta.stage || m.meta.collected_slots));
+            if (lastWithMeta && lastWithMeta.meta) {
+              if (lastWithMeta.meta.stage) updateStageUI(lastWithMeta.meta.stage);
+              if (lastWithMeta.meta.collected_slots) {
+                slots = { ...slots, ...lastWithMeta.meta.collected_slots };
+              }
+            }
             renderMessages();
           }
         }
@@ -447,61 +1842,301 @@
       }
     }
 
+    function updateStageUI(stage) {
+      currentStage = stage || 'greeting';
+      const badge = document.getElementById('stageBadge');
+      const t = I18N[currentLocale] || I18N['en'];
+      badge.className = 'stage-chip ' + currentStage;
+      if (currentStage === 'data_collection') {
+        badge.textContent = t.stageData;
+      } else if (currentStage === 'resolution') {
+        badge.textContent = t.stageResolution;
+      } else if (currentStage === 'escalation') {
+        badge.textContent = t.stageEscalation;
+      } else {
+        badge.textContent = t.stageGreeting;
+      }
+    }
+
     function updateUIStrings() {
       const t = I18N[currentLocale] || I18N['en'];
-      document.getElementById('uiTitle').textContent = t.title;
       document.getElementById('chatInput').placeholder = t.inputPlaceholder;
-      document.getElementById('btnSend').textContent = t.sendButton;
       document.getElementById('langSelector').value = currentLocale;
-      document.getElementById('lblLocale').textContent = currentLocale;
-
-      // Update connection text
-      const isConn = ws && ws.readyState === WebSocket.OPEN;
-      document.getElementById('uiStatus').textContent = isConn ? t.statusOnline : t.statusOffline;
+      const liveChatLabel = document.getElementById('chipLiveChatLabel');
+      if (liveChatLabel) {
+        liveChatLabel.textContent = t.liveChatChip || 'Live Chat';
+      }
+      const lblCatHeader = document.getElementById('lblCategoryHeader');
+      if (lblCatHeader) lblCatHeader.textContent = (t.categoryHeader || 'Kategori Kendala') + ':';
+      const lblCatAccount = document.getElementById('lblCatAccount');
+      if (lblCatAccount) lblCatAccount.textContent = t.categoryAccount || 'Akun & Login';
+      const lblCatPayment = document.getElementById('lblCatPayment');
+      if (lblCatPayment) lblCatPayment.textContent = t.categoryPayment || 'Pembayaran & Top-up';
+      const lblCatTechnical = document.getElementById('lblCatTechnical');
+      if (lblCatTechnical) lblCatTechnical.textContent = t.categoryTechnical || 'Teknis';
+      const lblCatGameplay = document.getElementById('lblCatGameplay');
+      if (lblCatGameplay) lblCatGameplay.textContent = t.categoryGameplay || 'Gameplay & Item';
+      const lblCatFeedback = document.getElementById('lblCatFeedback');
+      if (lblCatFeedback) lblCatFeedback.textContent = t.categoryFeedback || 'Feedback & Lainnya';
+      updateStageUI(currentStage);
       renderMessages();
+    }
+
+    const CATEGORY_CHECKLIST_DEFINITIONS = {
+      account_login: {
+        title: 'Investigasi Akun & Login',
+        items: [
+          { key: 'nickname_or_uid', label: 'Nickname / UID', sessionVal: '77124490 (UID Sesi)' },
+          { key: 'login_issue_desc', label: 'Gejala Masalah Login' },
+          { key: 'last_login_time', label: 'Waktu Terakhir Login' },
+          { key: 'login_method', label: 'Metode Login (Google/Apple/Gaga)' },
+          { key: 'device_info', label: 'Model HP & Status Ganti Device', sessionVal: 'Android (Web QA)' },
+          { key: 'error_message', label: 'Pesan / Kode Error (Opsional)' },
+        ]
+      },
+      payment_topup: {
+        title: 'Investigasi Pembayaran & Top-up',
+        items: [
+          { key: 'order_id', label: 'Order ID / Bukti Transaksi' },
+          { key: 'amount', label: 'Nominal Transaksi' },
+          { key: 'payment_method', label: 'Metode Pembayaran' },
+          { key: 'transaction_time', label: 'Waktu Transaksi' },
+          { key: 'balance_deducted', label: 'Status Saldo Terpotong' },
+        ]
+      },
+      technical: {
+        title: 'Investigasi Kendala Teknis',
+        items: [
+          { key: 'activity_when_happened', label: 'Aktivitas Saat Terjadi' },
+          { key: 'error_code_or_msg', label: 'Pesan / Kode Error' },
+          { key: 'device_and_os', label: 'Model Perangkat & Versi OS', sessionVal: 'Android 14 / Chrome' },
+          { key: 'app_version', label: 'Versi Aplikasi Game', sessionVal: 'v1.0.0' },
+          { key: 'connection_type', label: 'Tipe Koneksi (Wi-Fi/4G/5G)' },
+          { key: 'is_reproducible', label: 'Keterulangan Masalah' },
+        ]
+      },
+      gameplay_item: {
+        title: 'Investigasi Gameplay & Item',
+        items: [
+          { key: 'item_or_feature_name', label: 'Nama Item / Fitur' },
+          { key: 'event_name', label: 'Nama Event Terkait' },
+          { key: 'incident_time', label: 'Waktu Kejadian' },
+          { key: 'expected_vs_actual', label: 'Ekspektasi vs Kejadian' },
+          { key: 'screenshot_proof', label: 'Screenshot / Bukti Visual' },
+        ]
+      },
+      feedback_other: {
+        title: 'Feedback & Masukan Bebas',
+        items: []
+      }
+    };
+
+    function renderChecklistHtml() {
+      const activeCat = selectedCategory || (messages.some(m => m.text && (m.text.toLowerCase().includes('topup') || m.text.toLowerCase().includes('diamond'))) ? 'payment_topup' : null);
+
+      if (!activeCat && currentStage !== 'data_collection') return '';
+
+      // Kategori Feedback: Bebas tanpa form interogasi bertahap (Syarat 7)
+      if (activeCat === 'feedback_other') {
+        return `
+          <div class="checklist-card" style="border-left: 3px solid #10b981;">
+            <div class="checklist-header">
+              <div class="checklist-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>Feedback & Masukan Pemain</span>
+              </div>
+            </div>
+            <div style="font-size: 11px; color: #94a3b8; padding: 4px 0 2px 0; line-height: 1.5;">
+              Kategori ini bersifat catatan bebas. Tidak ada interogasi checklist bertahap. Tuliskan tanggapan atau masukanmu secara langsung.
+            </div>
+          </div>
+        `;
+      }
+
+      const catDef = CATEGORY_CHECKLIST_DEFINITIONS[activeCat] || CATEGORY_CHECKLIST_DEFINITIONS.payment_topup;
+      const items = catDef.items;
+      if (!items || items.length === 0) return '';
+
+      const filledCount = items.filter(i => !!(slots[i.key] || i.sessionVal)).length;
+      const progressPercent = Math.round((filledCount / items.length) * 100);
+
+      let itemsHtml = items.map(i => {
+        const val = slots[i.key] || i.sessionVal;
+        const isDone = !!val;
+        return `
+          <div class="checklist-item ${isDone ? 'done' : 'pending'}">
+            <div class="checklist-item-left">
+              <span class="chk-icon ${isDone ? 'done' : 'pending'}">${isDone ? '✓' : ''}</span>
+              <span>${i.label}</span>
+            </div>
+            <div>
+              ${isDone ? `<span class="chk-value">${escapeHtml(val)}</span>` : `<span style="font-size: 10.5px; color: #64748b;">Belum ada</span>`}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      return `
+        <div class="checklist-card">
+          <div class="checklist-header">
+            <div class="checklist-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2">
+                <path d="M9 11l3 3L22 4"></path>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+              </svg>
+              <span>${catDef.title}</span>
+            </div>
+            <span class="checklist-badge">${filledCount}/${items.length} Terkumpul</span>
+          </div>
+          <div class="checklist-progress-bar">
+            <div class="checklist-progress-fill" style="width: ${progressPercent}%;"></div>
+          </div>
+          <div class="checklist-items">
+            ${itemsHtml}
+          </div>
+        </div>
+      `;
     }
 
     function renderMessages() {
       const list = document.getElementById('messageList');
-      list.innerHTML = '';
       const t = I18N[currentLocale] || I18N['en'];
+      list.innerHTML = '';
 
+      // Welcome message if empty
       if (messages.length === 0) {
-        const welcome = document.createElement('div');
-        welcome.style.textAlign = 'center';
-        welcome.style.color = '#94a3b8';
-        welcome.style.fontSize = '13px';
-        welcome.style.marginTop = '40px';
-        welcome.textContent = t.welcome;
-        list.appendChild(welcome);
+        const welcomeWrap = document.createElement('div');
+        welcomeWrap.className = 'msg-row bot';
+        welcomeWrap.innerHTML = `
+          <div class="msg-avatar bot" style="overflow: hidden; padding: 0; background: transparent; border: 1.5px solid rgba(255,255,255,0.25);">
+            <img src="${currentBotAvatar || '/assets/agent-mira.png'}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+          </div>
+          <div class="bubble-wrap">
+            <div class="msg-sender-lbl"><span>${currentBotName || 'Mira'}</span><span style="font-size: 9px; opacity: 0.6;">Baru saja</span></div>
+            <div class="bubble-content">${t.welcome}</div>
+          </div>
+        `;
+        list.appendChild(welcomeWrap);
         return;
       }
 
-      messages.forEach(m => {
+      // Render messages
+      messages.forEach((m, idx) => {
         const wrap = document.createElement('div');
-        wrap.className = 'msg ' + (m.sender_type || 'player');
+        const isPlayer = m.sender_type === 'player';
+        const isAgent = m.sender_type === 'agent';
+        const isSystem = m.sender_type === 'system';
 
-        const sender = document.createElement('span');
-        sender.className = 'msg-sender';
-        sender.textContent = m.sender_name || (m.sender_type === 'player' ? 'You' : 'Gaga Support');
-        wrap.appendChild(sender);
-
-        const bubble = document.createElement('div');
-        bubble.className = 'msg-bubble';
-        bubble.textContent = m.text;
-        wrap.appendChild(bubble);
-
-        if (m.translated) {
-          const trans = document.createElement('span');
-          trans.className = 'badge-trans';
-          trans.textContent = '🌐 ' + t.translatedBadge;
-          wrap.appendChild(trans);
+        if (isSystem) {
+          wrap.className = 'msg-row system';
+          wrap.style.justifyContent = 'center';
+          wrap.style.margin = '10px 0';
+          wrap.innerHTML = `
+            <div style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 6px 14px; font-size: 11.5px; color: #bae6fd; text-align: center; max-width: 85%;">
+              <span style="font-weight: 600;">ℹ️ Sistem:</span> ${escapeHtml(m.text)}
+            </div>
+          `;
+          list.appendChild(wrap);
+          return;
         }
 
+        wrap.className = `msg-row ${m.sender_type || 'bot'}`;
+
+        let avatarHtml = '';
+        let senderTitle = '';
+
+        if (isPlayer) {
+          avatarHtml = `<div class="msg-avatar player">R</div>`;
+          senderTitle = 'RyuHunter (Anda)';
+        } else if (isAgent) {
+          avatarHtml = `
+            <div class="msg-avatar agent" title="Human Support Agent">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+          `;
+          senderTitle = m.sender_name || 'Support Agent';
+        } else {
+          // Bot message: Persona avatar & Name strictly without "Bot" / "Assistant"
+          const persona = m.bot_persona || m.meta?.bot_persona || currentBotPersona || 'mira';
+          const avatarSrc = m.avatar_url || m.meta?.avatar_url || (persona === 'reza' ? '/assets/agent-reza.png' : '/assets/agent-mira.png');
+          avatarHtml = `
+            <div class="msg-avatar bot" style="overflow: hidden; padding: 0; background: transparent; border: 1.5px solid rgba(255,255,255,0.25);">
+              <img src="${avatarSrc}" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+            </div>
+          `;
+          let rawName = m.sender_name;
+          if (!rawName || rawName.toLowerCase().includes('bot') || rawName.toLowerCase().includes('gaga')) {
+            rawName = currentBotName || (persona === 'reza' ? 'Reza' : 'Mira');
+          }
+          senderTitle = rawName;
+        }
+
+        wrap.innerHTML = `
+          ${avatarHtml}
+          <div class="bubble-wrap">
+            <div class="msg-sender-lbl">
+              <span>${senderTitle}</span>
+              ${isAgent ? '<span class="vip-tag">Live Agent</span>' : ''}
+            </div>
+            <div class="bubble-content">
+              <div>${escapeHtml(m.text)}</div>
+              ${(m.meta?.attachment_url || m.attachment_url) ? `
+                <div style="margin-top: 8px;">
+                  <a href="${m.meta?.attachment_url || m.attachment_url}" target="_blank" rel="noopener">
+                    <img src="${m.meta?.attachment_url || m.attachment_url}" alt="Attachment" style="max-width: 100%; max-height: 180px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); display: block;" />
+                  </a>
+                </div>
+              ` : ''}
+            </div>
+            ${m.translated ? `<span class="badge-trans">🌐 ${t.translatedBadge}</span>` : ''}
+          </div>
+        `;
+
         list.appendChild(wrap);
+
+        // If this message triggers or belongs to data_collection, render checklist right after
+        if (idx === messages.length - 1 && (currentStage === 'data_collection' || slots.order_id || slots.amount)) {
+          const checklistContainer = document.createElement('div');
+          checklistContainer.innerHTML = renderChecklistHtml();
+          if (checklistContainer.firstElementChild) {
+            list.appendChild(checklistContainer.firstElementChild);
+          }
+        }
       });
 
       list.scrollTop = list.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function setTyping(isTyping, senderData) {
+      const el = document.getElementById('typingIndicator');
+      if (!el) return;
+      if (isTyping) {
+        if (senderData?.sender_name) {
+          const lbl = document.getElementById('typingSenderLabel');
+          if (lbl) lbl.textContent = `${senderData.sender_name} sedang membalas...`;
+        }
+        if (senderData?.avatar_url) {
+          const avatar = document.getElementById('typingAvatarImg');
+          if (avatar) avatar.src = senderData.avatar_url;
+        }
+        el.classList.add('active');
+        const list = document.getElementById('messageList');
+        if (list) list.scrollTop = list.scrollHeight;
+      } else {
+        el.classList.remove('active');
+      }
     }
 
     function connectWS() {
@@ -518,7 +2153,6 @@
           reconnectAttempts = 0;
           setConnState('connected');
 
-          // Kirim session_start
           ws.send(JSON.stringify({
             event: 'session_start',
             player: {
@@ -534,7 +2168,8 @@
               app_version: '1.0.0',
               locale: currentLocale,
               market: 'ID',
-              client_tz: 'Asia/Jakarta'
+              client_tz: 'Asia/Jakarta',
+              bot_persona: currentBotPersona
             }
           }));
         };
@@ -546,22 +2181,103 @@
               conversationId = data.conversation_id;
               localStorage.setItem('gaga_conv_id', conversationId);
               document.getElementById('lblConvId').textContent = conversationId;
+              isHumanAgent = false;
+              if (data.bot_persona) currentBotPersona = data.bot_persona;
+              if (data.bot_name) currentBotName = data.bot_name;
+              if (data.bot_avatar) currentBotAvatar = data.bot_avatar;
+              if (data.category) {
+                selectedCategory = data.category;
+                document.querySelectorAll('.category-chip').forEach(btn => {
+                  if (btn.getAttribute('data-category') === data.category) {
+                    btn.classList.add('active');
+                  } else {
+                    btn.classList.remove('active');
+                  }
+                });
+              } else if (selectedCategory) {
+                ws.send(JSON.stringify({
+                  event: 'set_category',
+                  conversation_id: conversationId,
+                  category: selectedCategory
+                }));
+              }
+              updatePersonaUI();
               fetchHistoryFromServer(conversationId);
+            } else if (data.event === 'status_change') {
+              if (data.new_status === 'agent_active') {
+                isHumanAgent = true;
+                const agentName = data.agent_name || 'Support Agent';
+                document.getElementById('botHeaderName').textContent = agentName;
+                document.getElementById('botHeaderBadge').textContent = 'Human Agent';
+                document.getElementById('headerAvatarImg').src = '/assets/agent-avatar.png';
+                const typingEl = document.getElementById('typingSenderLabel');
+                if (typingEl) typingEl.textContent = `${agentName} sedang membalas...`;
+                updateStageUI('escalation');
+              }
+            } else if (data.event === 'typing') {
+              setTyping(data.is_typing, data);
+            } else if (data.event === 'category_set' || data.event === 'category_changed') {
+              if (data.category) {
+                selectedCategory = data.category;
+                document.querySelectorAll('.category-chip').forEach(btn => {
+                  if (btn.getAttribute('data-category') === data.category) {
+                    btn.classList.add('active');
+                  } else {
+                    btn.classList.remove('active');
+                  }
+                });
+              }
             } else if (data.event === 'message') {
+              setTyping(false);
+              playChime(640);
+
               if (!messages.some(m => m.id === data.message_id)) {
+                const meta = data.meta || {};
+                if (meta.stage) updateStageUI(meta.stage);
+                if (meta.collected_slots) {
+                  slots = { ...slots, ...meta.collected_slots };
+                }
+
+                // Slot heuristic extractor for interactive feedback
+                extractSlotsFromText(data.text);
+
+                let sName = data.sender_name;
+                if (data.sender_type === 'bot') {
+                  if (!sName || sName.toLowerCase().includes('bot') || sName.toLowerCase().includes('gaga')) {
+                    sName = currentBotName || (meta.bot_persona === 'reza' || currentBotPersona === 'reza' ? 'Reza' : 'Mira');
+                  }
+                } else if (data.sender_type === 'player') {
+                  sName = 'RyuHunter';
+                }
+
                 messages.push({
                   id: data.message_id,
                   sender_type: data.sender_type,
-                  sender_name: data.sender_name,
+                  sender_name: sName,
+                  avatar_url: data.avatar_url || meta.avatar_url || (data.sender_type === 'bot' ? currentBotAvatar : undefined),
+                  bot_persona: meta.bot_persona || currentBotPersona,
                   text: data.text,
                   created_at: data.created_at,
+                  meta: meta,
                   translated: !!data.translated
                 });
                 renderMessages();
+
+                if (data.sender_type === 'bot') {
+                  const isEvidence =
+                    Boolean(meta.needs_evidence) ||
+                    meta.evidence_type === 'attachment' ||
+                    /lampirkan|screenshot|bukti|struk|order id|tangkapan layar|receipt|proof/i.test(data.text);
+                  if (isEvidence) {
+                    showEvidenceHint();
+                  }
+                } else if (data.sender_type === 'player') {
+                  dismissEvidenceHint();
+                }
               }
             }
           } catch (e) {
-            console.error('Failed to parse message:', e);
+            console.error('Failed to parse socket message:', e);
           }
         };
 
@@ -579,6 +2295,26 @@
       }
     }
 
+    function extractSlotsFromText(text) {
+      if (!text) return;
+      const lower = text.toLowerCase();
+      // Heuristic extraction for interactive demo checklist
+      const orderMatch = text.match(/#?GG\d{4,8}|order\s*id\s*[:=]?\s*([a-zA-Z0-9_-]+)/i);
+      if (orderMatch) slots.order_id = orderMatch[0];
+
+      const amountMatch = text.match(/(?:rp\.?|idr)\s*([\d\.,]+)|(\d+)\s*(?:rb|ribu|diamond)/i);
+      if (amountMatch) slots.amount = amountMatch[0];
+
+      if (lower.includes('qris')) slots.payment_method = 'QRIS';
+      else if (lower.includes('dana')) slots.payment_method = 'DANA';
+      else if (lower.includes('gopay')) slots.payment_method = 'GoPay';
+      else if (lower.includes('ovo')) slots.payment_method = 'OVO';
+      else if (lower.includes('bank') || lower.includes('transfer')) slots.payment_method = 'Transfer Bank';
+
+      const timeMatch = text.match(/(\d{1,2}[:\.]\d{2})/);
+      if (timeMatch) slots.transaction_time = timeMatch[0] + ' WIB';
+    }
+
     function scheduleReconnect() {
       reconnectAttempts++;
       const delay = Math.min(1000 * Math.pow(1.5, reconnectAttempts), 5000);
@@ -587,23 +2323,37 @@
 
     function setConnState(state) {
       const dot = document.getElementById('connDot');
-      const wDot = document.getElementById('widgetDot');
       const text = document.getElementById('connText');
-      const t = I18N[currentLocale] || I18N['en'];
 
-      dot.className = 'dot ' + state;
-      wDot.className = 'dot ' + state;
+      dot.className = 'pulse-dot ' + state;
 
       if (state === 'connected') {
-        text.textContent = 'Terhubung (Aktif)';
-        document.getElementById('uiStatus').textContent = t.statusOnline;
+        text.textContent = 'Terhubung ke Gateway WebSocket (Online)';
       } else if (state === 'connecting') {
-        text.textContent = 'Menghubungkan...';
-        document.getElementById('uiStatus').textContent = t.statusConnecting;
+        text.textContent = 'Menghubungkan ke Gateway...';
       } else {
-        text.textContent = 'Terputus (Mencoba ulang...)';
-        document.getElementById('uiStatus').textContent = t.statusOffline;
+        text.textContent = 'Terputus (Mencoba menyambung kembali...)';
       }
+    }
+
+    function selectCategory(categoryKey) {
+      selectedCategory = categoryKey;
+      document.querySelectorAll('.category-chip').forEach(btn => {
+        if (btn.getAttribute('data-category') === categoryKey) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      if (ws && ws.readyState === WebSocket.OPEN && conversationId) {
+        ws.send(JSON.stringify({
+          event: 'set_category',
+          conversation_id: conversationId,
+          category: categoryKey
+        }));
+      }
+      renderMessages();
     }
 
     function sendMessage() {
@@ -612,15 +2362,122 @@
       if (!text) return;
 
       if (ws && ws.readyState === WebSocket.OPEN && conversationId) {
-        ws.send(JSON.stringify({
+        extractSlotsFromText(text);
+        const payload = {
           event: 'message',
           conversation_id: conversationId,
           text: text
-        }));
+        };
+        if (selectedCategory) {
+          payload.category = selectedCategory;
+        }
+        ws.send(JSON.stringify(payload));
         input.value = '';
+        playChime(480);
       } else {
         alert('Koneksi sedang terputus atau sesi belum dimulai!');
       }
+    }
+
+    function sendQuickMessage(text) {
+      const input = document.getElementById('chatInput');
+      input.value = text;
+      sendMessage();
+    }
+
+    function triggerDemoAttach() {
+      const fileInput = document.getElementById('demoFileInput');
+      if (fileInput) fileInput.click();
+    }
+
+    function showEvidenceHint() {
+      const hint = document.getElementById('evidenceHintBanner');
+      if (hint) hint.style.display = 'flex';
+      highlightAttachButton();
+    }
+
+    function dismissEvidenceHint() {
+      const hint = document.getElementById('evidenceHintBanner');
+      if (hint) hint.style.display = 'none';
+    }
+
+    function highlightAttachButton() {
+      const btn = document.getElementById('btnAttachFile');
+      if (!btn) return;
+      btn.classList.add('highlight-pulse');
+      setTimeout(() => {
+        btn.classList.remove('highlight-pulse');
+      }, 6000);
+    }
+
+    async function handleDemoFileUpload(input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      input.value = '';
+
+      if (file.size > 5 * 1024 * 1024) {
+        alert(currentLocale === 'id-ID' ? 'Ukuran file melebihi batas 5MB' : 'File size exceeds 5MB limit');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const b64 = reader.result;
+          const res = await fetch('/v1/attachments/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              file_base64: b64,
+              filename: file.name,
+              conversation_id: conversationId || undefined
+            })
+          });
+
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            alert(err.error || 'Gagal mengunggah file');
+            return;
+          }
+
+          const data = await res.json();
+          const att = data.attachment || (data.attachments && data.attachments[0]);
+          if (att) {
+            const textVal = document.getElementById('chatInput').value.trim();
+            const msgPayload = {
+              event: 'message',
+              conversation_id: conversationId,
+              text: textVal || `[Attachment: ${att.safe_filename}]`,
+              category: selectedCategory || undefined,
+              attachment_url: att.signed_url,
+              meta: {
+                attachment_url: att.signed_url,
+                filename: att.safe_filename,
+                file_size: att.file_size,
+                mime_type: att.mime_type
+              }
+            };
+
+            // Satisfy slots if evidence
+            if (selectedCategory === 'payment_topup') {
+              slots.order_id = att.signed_url;
+            } else if (selectedCategory === 'gameplay_item') {
+              slots.screenshot_proof = att.signed_url;
+            }
+
+            if (ws && ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify(msgPayload));
+            }
+
+            document.getElementById('chatInput').value = '';
+            dismissEvidenceHint();
+            renderMessages();
+          }
+        } catch (e) {
+          alert('Upload failed: ' + e.message);
+        }
+      };
+      reader.readAsDataURL(file);
     }
 
     function onLocaleChanged(newLocale) {
@@ -637,39 +2494,64 @@
       }
     }
 
-    async function simulateAgentReply() {
-      if (!conversationId) {
-        alert('Tunggu sesi dimulai lebih dulu!');
-        return;
-      }
-      try {
-        const res = await fetch(`/v1/conversations/${conversationId}/messages`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            sender_type: 'agent',
-            sender_id: 'agent_sea_cs',
-            text: 'Halo Ryu! Kami telah memeriksa catatan transaksi pembayaran Anda di SEA-3.',
-            translated: true
-          })
-        });
-        if (!res.ok) {
-          alert('Gagal mengirim simulasi balasan');
-        }
-      } catch (e) {
-        alert('Error memanggil endpoint: ' + e.message);
-      }
-    }
-
     function clearHistory() {
-      if (confirm('Bersihkan seluruh riwayat pesan di demo ini?')) {
+      if (confirm('Bersihkan seluruh riwayat pesan dan mulai sesi percakapan baru?')) {
         messages = [];
+        slots = { order_id: null, amount: null, payment_method: null, transaction_time: null };
+        currentStage = 'greeting';
         localStorage.removeItem('gaga_messages');
+        localStorage.removeItem('gaga_conv_id');
+        conversationId = '';
         renderMessages();
+        if (ws) {
+          ws.close();
+        }
+        connectWS();
       }
     }
 
-    // Init
+    // View Mode Switching
+    function switchViewMode(mode) {
+      const splitBtn = document.getElementById('btnModeSplit');
+      const ingameBtn = document.getElementById('btnModeInGame');
+      const inGameScreen = document.getElementById('inGameScreen');
+      const splitMain = document.getElementById('splitMain');
+      const floatingContainer = document.getElementById('floatingWidgetContainer');
+      const widgetCard = document.getElementById('chatWidgetInner');
+      const widgetColumn = document.getElementById('widgetContainer');
+
+      if (mode === 'ingame') {
+        splitBtn.classList.remove('active');
+        ingameBtn.classList.add('active');
+        inGameScreen.classList.add('active');
+        floatingContainer.style.display = 'block';
+        floatingContainer.appendChild(widgetCard);
+      } else {
+        ingameBtn.classList.remove('active');
+        splitBtn.classList.add('active');
+        inGameScreen.classList.remove('active');
+        widgetColumn.appendChild(widgetCard);
+      }
+    }
+
+    function toggleFloatingWidget() {
+      const fc = document.getElementById('floatingWidgetContainer');
+      if (fc.style.display === 'none' || !fc.style.display) {
+        fc.style.display = 'block';
+      } else {
+        fc.style.display = 'none';
+      }
+    }
+
+    function openMockupModal() {
+      document.getElementById('mockupModal').classList.add('show');
+    }
+
+    function closeMockupModal() {
+      document.getElementById('mockupModal').classList.remove('show');
+    }
+
+    // Initialize
     updateUIStrings();
     connectWS();
   </script>

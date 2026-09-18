@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Gaga LiveChat Portal</title>
+  <link rel="icon" type="image/png" href="/logo-mark.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/agent-strings.js"></script>
+  <style>
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.8; }
+    }
+    .glow-bg {
+      background: radial-gradient(circle at 50% 30%, rgba(37, 184, 132, 0.12) 0%, rgba(15, 23, 42, 0) 70%);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-4 font-sans relative overflow-hidden glow-bg">
+  <div class="w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-2xl shadow-2xl p-8 backdrop-blur relative z-10">
+    <!-- Brand Header -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center p-3 bg-slate-800/80 rounded-2xl border border-slate-700/60 mb-4 shadow-inner">
+        <img src="/logo-mark.png" alt="Gaga Games Logo" class="h-10 w-auto object-contain">
+      </div>
+      <h1 class="text-2xl font-bold tracking-tight text-white">Gaga LiveChat</h1>
+      <p class="text-xs text-slate-400 mt-1.5 font-medium">Agent Panel &amp; AI Studio Access Portal</p>
+    </div>
+
+    <!-- Alert Box -->
+    <div id="alertBox" class="hidden mb-6 p-3.5 rounded-xl text-xs font-medium border flex items-start gap-2.5">
+      <span class="text-base leading-none">⚠️</span>
+      <span id="alertMessage" class="flex-1 leading-relaxed"></span>
+    </div>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="space-y-5" onsubmit="return handleLogin(event)">
+      <div>
+        <label for="email" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+          Corporate Email
+        </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          autocomplete="email"
+          placeholder="name@gagagames.com"
+          class="w-full px-4 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#25B884] focus:ring-1 focus:ring-[#25B884] transition"
+        >
+      </div>
+
+      <div>
+        <label for="password" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+          Password
+        </label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          required
+          autocomplete="current-password"
+          placeholder="••••••••••••"
+          class="w-full px-4 py-2.5 bg-slate-950/80 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#25B884] focus:ring-1 focus:ring-[#25B884] transition"
+        >
+      </div>
+
+      <div class="pt-2">
+        <button
+          type="submit"
+          id="submitBtn"
+          class="w-full py-3 bg-[#167956] hover:bg-[#126346] text-white font-semibold text-sm rounded-xl transition-all duration-150 shadow-lg shadow-[#167956]/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+        >
+          <span id="btnText">Sign In</span>
+          <svg id="btnSpinner" class="hidden animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </button>
+      </div>
+    </form>
+
+    <!-- Security Notice -->
+    <div class="mt-8 pt-6 border-t border-slate-800/80 text-center">
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-950/60 rounded-full border border-slate-800 text-[11px] text-slate-400 mb-2">
+        <span>🔒</span>
+        <span>Authorized Personnel Only</span>
+      </div>
+      <p class="text-[11px] text-slate-500 leading-relaxed">
+        This system is restricted to authorized Gaga Games support personnel. All activities are monitored and logged.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const submitBtn = document.getElementById('submitBtn');
+      const btnText = document.getElementById('btnText');
+      const btnSpinner = document.getElementById('btnSpinner');
+      const alertBox = document.getElementById('alertBox');
+      const alertMessage = document.getElementById('alertMessage');
+
+      alertBox.classList.add('hidden');
+      submitBtn.disabled = true;
+      btnText.textContent = 'Verifying credentials...';
+      btnSpinner.classList.remove('hidden');
+
+      try {
+        const res = await fetch('/v1/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Sign in failed. Please check your corporate email and password.');
+        }
+
+        btnText.textContent = 'Success! Redirecting...';
+        btnSpinner.classList.add('hidden');
+
+        // Parse query redirect param
+        const urlParams = new URLSearchParams(window.location.search);
+        let redirectUrl = urlParams.get('redirect');
+
+        if (!redirectUrl) {
+          if (data.agent && data.agent.role === 'admin') {
+            redirectUrl = '/studio';
+          } else {
+            redirectUrl = '/agent';
+          }
+        }
+
+        window.location.href = redirectUrl;
+      } catch (err) {
+        alertBox.className = 'mb-6 p-3.5 rounded-xl text-xs font-medium border border-rose-500/30 bg-rose-500/10 text-rose-300 flex items-start gap-2.5';
+        alertMessage.textContent = err.message || 'System error encountered during authentication.';
+        alertBox.classList.remove('hidden');
+        submitBtn.disabled = false;
+        btnText.textContent = 'Sign In';
+        btnSpinner.classList.add('hidden');
+      }
+      return false;
+    }
+
+    // Auto-check if already logged in
+    (async function checkExistingAuth() {
+      try {
+        const res = await fetch('/v1/auth/me', { credentials: 'include' });
+        if (res.ok) {
+          const user = await res.json();
+          const urlParams = new URLSearchParams(window.location.search);
+          const redirectUrl = urlParams.get('redirect');
+          if (redirectUrl) {
+            window.location.href = redirectUrl;
+          }
+        }
+      } catch {}
+    })();
+  </script>
+</body>
+</html>

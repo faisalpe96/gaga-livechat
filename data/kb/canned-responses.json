@@ -1,0 +1,92 @@
+[
+  {
+    "template_id": "greeting_general",
+    "locale": "th-TH",
+    "category": "greeting",
+    "body": "สวัสดีครับ/ค่ะ ยินดีต้อนรับสู่ฝ่ายบริการลูกค้า Gaga Games มีอะไรให้เราช่วยเหลือในวันนี้ไหมครับ/ค่ะ"
+  },
+  {
+    "template_id": "greeting_general",
+    "locale": "id-ID",
+    "category": "greeting",
+    "body": "Halo kak! Selamat datang di layanan bantuan pelanggan Gaga Games. Ada yang bisa kami bantu hari ini?"
+  },
+  {
+    "template_id": "greeting_general",
+    "locale": "vi-VN",
+    "category": "greeting",
+    "body": "Xin chào anh/chị! Chào mừng anh/chị đến với trung tâm hỗ trợ Gaga Games. Em có thể hỗ trợ thông tin gì cho anh/chị hôm nay?"
+  },
+  {
+    "template_id": "greeting_general",
+    "locale": "fil-PH",
+    "category": "greeting",
+    "body": "Magandang araw po! Maligayang pagdating sa Customer Support ng Gaga Games. Ano po ang maipaglilingkod namin sa inyo ngayon?"
+  },
+  {
+    "template_id": "greeting_general",
+    "locale": "ms-MY",
+    "category": "greeting",
+    "body": "Selamat sejahtera! Selamat datang ke khidmat pelanggan Gaga Games. Ada apa-apa yang boleh kami bantu hari ini?"
+  },
+  {
+    "template_id": "greeting_general",
+    "locale": "en",
+    "category": "greeting",
+    "body": "Hello! Welcome to Gaga Games Customer Support. How may we assist you today?"
+  },
+  {
+    "template_id": "wait_agent_connecting",
+    "locale": "th-TH",
+    "category": "handoff",
+    "body": "ระบบกำลังเชื่อมต่อท่านเข้ากับเจ้าหน้าที่ฝ่ายบริการลูกค้า กรุณารอสักครู่ครับ/ค่ะ"
+  },
+  {
+    "template_id": "wait_agent_connecting",
+    "locale": "id-ID",
+    "category": "handoff",
+    "body": "Mohon tunggu sebentar ya kak, kami sedang menghubungkan kakak dengan agen spesialis kami."
+  },
+  {
+    "template_id": "wait_agent_connecting",
+    "locale": "vi-VN",
+    "category": "handoff",
+    "body": "Hệ thống đang kết nối anh/chị với nhân viên hỗ trợ trực tuyến. Xin vui lòng chờ trong giây lát."
+  },
+  {
+    "template_id": "wait_agent_connecting",
+    "locale": "fil-PH",
+    "category": "handoff",
+    "body": "Sandali lamang po, ikinokonekta na po namin kayo sa aming live customer support agent."
+  },
+  {
+    "template_id": "wait_agent_connecting",
+    "locale": "ms-MY",
+    "category": "handoff",
+    "body": "Sila tunggu sebentar, sistem sedang menyambungkan anda kepada ejen bantuan kami."
+  },
+  {
+    "template_id": "wait_agent_connecting",
+    "locale": "en",
+    "category": "handoff",
+    "body": "Please hold on a moment while we connect you with a live customer support representative."
+  },
+  {
+    "template_id": "session_closing",
+    "locale": "th-TH",
+    "category": "closing",
+    "body": "ขอบคุณที่ติดต่อฝ่ายบริการลูกค้า Gaga Games หากมีข้อสงสัยเพิ่มเติม สามารถเปิดบทสนทนาใหม่ได้ตลอดเวลาครับ/ค่ะ"
+  },
+  {
+    "template_id": "session_closing",
+    "locale": "id-ID",
+    "category": "closing",
+    "body": "Terima kasih sudah menghubungi Gaga Games Support. Jika ada kendala lain, jangan ragu untuk menghubungi kami kembali ya kak!"
+  },
+  {
+    "template_id": "session_closing",
+    "locale": "en",
+    "category": "closing",
+    "body": "Thank you for contacting Gaga Games Support. Feel free to reach out anytime if you need further assistance!"
+  }
+]

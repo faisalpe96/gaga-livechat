@@ -117,6 +117,36 @@ describe('TASK-01: Database Migrations and Seed Tests', () => {
   });
 
   test('3. Rollback (DOWN) jalan bersih tanpa sisa, lalu re-migrate UP', async () => {
+    // Bersihkan data transaksi uji jika ada sebelum rollback
+    await pool.query('DROP TABLE IF EXISTS auto_reply_rules, category_field_sets CASCADE');
+    await pool.query('TRUNCATE tool_calls, bot_feedback, messages, handoffs, conversations CASCADE');
+
+    // 3.0.1 Rollback 004_auth_and_audit_log jika ada
+    const has004 = await pool.query("SELECT 1 FROM pgmigrations WHERE name = '004_auth_and_audit_log'");
+    if (has004.rows.length > 0) {
+      await runner({
+        databaseUrl,
+        dir: path.resolve(process.cwd(), 'migrations'),
+        direction: 'down',
+        count: 1,
+        migrationsTable: 'pgmigrations',
+        verbose: false,
+      });
+    }
+
+    // 3.0 Rollback 003_bot_personas jika ada
+    const has003 = await pool.query("SELECT 1 FROM pgmigrations WHERE name = '003_bot_personas'");
+    if (has003.rows.length > 0) {
+      await runner({
+        databaseUrl,
+        dir: path.resolve(process.cwd(), 'migrations'),
+        direction: 'down',
+        count: 1,
+        migrationsTable: 'pgmigrations',
+        verbose: false,
+      });
+    }
+
     // 3.1 Rollback 002_seed_markets
     await runner({
       databaseUrl,
@@ -162,5 +192,13 @@ describe('TASK-01: Database Migrations and Seed Tests', () => {
 
     const recheckMarkets = await pool.query('SELECT count(*) FROM markets');
     assert.equal(parseInt(recheckMarkets.rows[0].count, 10), 6, 'Database harus kembali memiliki 6 pasar setelah re-migrate');
+
+    // 3.4 Re-seed data pendukung agar database tetap siap
+    const { execSync } = await import('node:child_process');
+    try {
+      execSync('npm run seed:agents', { stdio: 'ignore' });
+      execSync('npm run seed:kb', { stdio: 'ignore' });
+      execSync('npm run seed:guardrails', { stdio: 'ignore' });
+    } catch {}
   });
 });

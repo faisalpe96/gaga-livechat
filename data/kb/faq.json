@@ -1,0 +1,128 @@
+[
+  {
+    "doc_key": "policy_refund",
+    "locale": "th-TH",
+    "title": "นโยบายการคืนเงิน (Refund Policy)",
+    "body": "นโยบายการคืนเงิน: การขอคืนเงินสำหรับไอเทมและสกุลเงินในเกมทั้งหมดสามารถดำเนินการได้ภายใน 7 วันหลังการสั่งซื้อ หากไอเทมยังไม่ถูกใช้งาน กรุณาติดต่อฝ่ายบริการลูกค้าพร้อมแนบใบเสร็จคำสั่งซื้อจาก Store",
+    "is_policy": true,
+    "version": 1,
+    "reviewed_by": "Legal Team TH"
+  },
+  {
+    "doc_key": "policy_refund",
+    "locale": "id-ID",
+    "title": "Kebijakan Pengembalian Dana (Refund Policy)",
+    "body": "Kebijakan Pengembalian Dana: Semua permohonan pengembalian dana atas pembelian item game hanya dapat diproses dalam waktu 7 hari kalender sejak transaksi dilakukan dengan syarat item belum terpakai. Mohon lampirkan bukti pembayaran resmi.",
+    "is_policy": true,
+    "version": 1,
+    "reviewed_by": "Legal Team ID"
+  },
+  {
+    "doc_key": "policy_refund",
+    "locale": "vi-VN",
+    "title": "Chính sách Hoàn tiền (Refund Policy)",
+    "body": "Chính sách Hoàn tiền: Mọi yêu cầu hoàn lại tiền cho các vật phẩm trong trò chơi phải được gửi trong vòng 7 ngày kể từ ngày giao dịch, với điều kiện vật phẩm chưa qua sử dụng. Vui lòng cung cấp hóa đơn giao dịch hợp lệ.",
+    "is_policy": true,
+    "version": 1,
+    "reviewed_by": "Legal Team VN"
+  },
+  {
+    "doc_key": "policy_refund",
+    "locale": "fil-PH",
+    "title": "Patakaran sa Refund (Refund Policy)",
+    "body": "Patakaran sa Refund: Ang lahat ng kahilingan sa refund para sa mga in-game item ay maaaring iproseso sa loob ng 7 araw mula sa pagbili kung hindi pa nagagamit ang item. Mangyaring magsumite ng opisyal na resibo ng tindahan.",
+    "is_policy": true,
+    "version": 1,
+    "reviewed_by": "Legal Team PH"
+  },
+  {
+    "doc_key": "policy_refund",
+    "locale": "ms-MY",
+    "title": "Dasar Bayaran Balik (Refund Policy)",
+    "body": "Dasar Bayaran Balik: Semua permohonan bayaran balik bagi pembelian item permainan hanya boleh diproses dalam tempoh 7 hari jika item tersebut belum digunakan. Sila kemukakan resit pembayaran rasmi dari platform.",
+    "is_policy": true,
+    "version": 1,
+    "reviewed_by": "Legal Team MY"
+  },
+  {
+    "doc_key": "policy_refund",
+    "locale": "en",
+    "title": "Refund Policy",
+    "body": "Refund Policy: All refund requests for in-game purchases must be submitted within 7 calendar days from the transaction date, provided the purchased items remain unconsumed. An official store receipt is required.",
+    "is_policy": true,
+    "version": 1,
+    "reviewed_by": "Legal Team Global"
+  },
+  {
+    "doc_key": "policy_unban",
+    "locale": "th-TH",
+    "title": "นโยบายการอุทธรณ์การแบนบัญชี (Ban Appeal)",
+    "body": "นโยบายการอุทธรณ์การระงับบัญชี: บัญชีที่ถูกระงับถาวรเนื่องจากการใช้โปรแกรมบุคคลที่สามหรือการโกงเกมไม่สามารถขอปลดแบนได้ หากท่านเชื่อว่าเกิดความผิดพลาด ท่านสามารถส่งหลักฐานเพื่อตรวจสอบได้หนึ่งครั้ง",
+    "is_policy": true,
+    "version": 1,
+    "reviewed_by": "Security Team TH"
+  },
+  {
+    "doc_key": "policy_unban",
+    "locale": "id-ID",
+    "title": "Kebijakan Banding Pemblokiran Akun (Ban Appeal)",
+    "body": "Kebijakan Banding Akun: Akun yang diblokir permanen akibat penggunaan aplikasi pihak ketiga tidak sah atau eksploitasi bug tidak dapat dipulihkan. Pengajuan peninjauan ulang hanya dapat dilakukan sekali melalui tiket resmi.",
+    "is_policy": true,
+    "version": 1,
+    "reviewed_by": "Security Team ID"
+  },
+  {
+    "doc_key": "policy_unban",
+    "locale": "en",
+    "title": "Account Suspension Appeal Policy",
+    "body": "Account Suspension Appeal Policy: Accounts permanently suspended for unauthorized third-party software, botting, or cheating are strictly ineligible for unbanning. Players may request a one-time audit if they suspect an error.",
+    "is_policy": true,
+    "version": 1,
+    "reviewed_by": "Security Team Global"
+  },
+  {
+    "doc_key": "faq_topup_guide",
+    "locale": "th-TH",
+    "title": "คู่มือการเติมเงินเกม (Top-up Guide)",
+    "body": "คู่มือการเติมเงิน: ไปที่เมนูร้านค้า เลือกแพ็กเกจที่ต้องการ และชำระเงินผ่าน TrueMoney Wallet, PromptPay หรือบัตรเครดิต โดยยอดเงินและเพชรจะเข้าสู่กระเป๋าเกมทันทีภายใน 3 นาที",
+    "is_policy": false,
+    "version": 1,
+    "reviewed_by": "Operations TH"
+  },
+  {
+    "doc_key": "faq_topup_guide",
+    "locale": "id-ID",
+    "title": "Panduan Pengisian Saldo / Top-Up Game",
+    "body": "Panduan Top-Up: Buka menu Store dalam game, pilih nominal diamond, lalu selesaikan pembayaran menggunakan QRIS, DANA, GoPay, OVO, atau transfer bank. Item akan otomatis masuk dalam 1-3 menit.",
+    "is_policy": false,
+    "version": 1,
+    "reviewed_by": "Operations ID"
+  },
+  {
+    "doc_key": "faq_topup_guide",
+    "locale": "en",
+    "title": "General In-Game Top-Up Guide",
+    "body": "General Top-Up Guide: Open the in-game shop, select your desired diamond pack, and choose your preferred local payment method (Credit Card, e-Wallet, or App Store balance). Items are delivered instantly upon payment confirmation.",
+    "is_policy": false,
+    "version": 1,
+    "reviewed_by": "Operations Global"
+  },
+  {
+    "doc_key": "faq_vip_benefits",
+    "locale": "en",
+    "title": "VIP Privilege System & Daily Rewards",
+    "body": "VIP Privilege Guide: Higher VIP tiers unlock increased stamina recovery speed, exclusive avatar frames, bonus guild contribution points, and priority customer service support.",
+    "is_policy": false,
+    "version": 1,
+    "reviewed_by": "Product Team"
+  },
+  {
+    "doc_key": "faq_account_link",
+    "locale": "en",
+    "title": "Account Linking and Data Backup",
+    "body": "How to link account: Go to Settings -> Account Management -> Link Account. We recommend binding your account to Google Play, Apple ID, or Gaga Passport to prevent loss of game progress.",
+    "is_policy": false,
+    "version": 1,
+    "reviewed_by": "Customer Support"
+  }
+]

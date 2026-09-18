@@ -33,6 +33,7 @@ CREATE TABLE conversations (
   market            text NOT NULL REFERENCES markets(code),
   locale            text NOT NULL,
   status            conversation_status NOT NULL DEFAULT 'bot_active',
+  stage             text NOT NULL DEFAULT 'greeting',
   assigned_agent_id uuid REFERENCES agents(id),
   category          text,
   subcategory       text,
@@ -123,7 +124,20 @@ CREATE TABLE tool_calls (
   created_at      timestamptz NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS auto_reply_rules (
+  id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  intent         text NOT NULL,
+  locale         text NOT NULL,
+  is_enabled     boolean NOT NULL DEFAULT false,
+  min_confidence numeric NOT NULL DEFAULT 0.85,
+  created_at     timestamptz NOT NULL DEFAULT now(),
+  updated_at     timestamptz NOT NULL DEFAULT now(),
+  UNIQUE(intent, locale)
+);
+
 -- Down Migration
+DROP TABLE IF EXISTS auto_reply_rules CASCADE;
+DROP TABLE IF EXISTS category_field_sets CASCADE;
 DROP TABLE IF EXISTS tool_calls CASCADE;
 DROP TABLE IF EXISTS bot_feedback CASCADE;
 DROP TABLE IF EXISTS guardrail_phrases CASCADE;

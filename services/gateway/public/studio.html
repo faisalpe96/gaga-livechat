@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gaga Games — AI Studio &amp; Governance Console</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/agent-strings.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .brand-green { color: #25B884; }
+    .bg-brand-green { background-color: #25B884; }
+    .border-brand-green { border-color: #25B884; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
+  <!-- Top Navigation Header -->
+  <header class="bg-slate-900 border-b border-slate-800 px-6 py-3.5 flex items-center justify-between shadow-md sticky top-0 z-40">
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3.5">
+        <img src="/logo-mark.png" alt="Gaga Games" class="h-7 w-auto object-contain shrink-0" style="height: 28px;" />
+        <div class="h-5 w-px bg-slate-700"></div>
+        <div>
+          <h1 class="font-bold text-sm leading-none text-white tracking-wide flex items-center gap-2">
+            <span>AI Studio Console</span>
+          </h1>
+          <p class="text-xs text-slate-400 mt-1">Model Governance, Guardrails, &amp; Shadow Mode Observation</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation Bar -->
+    <nav class="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800 text-xs font-medium">
+      <button class="tab-btn active px-3.5 py-1.5 rounded-lg transition-all text-white bg-slate-800 shadow-sm flex items-center gap-1.5" data-tab="metrics">
+        📊 Metrics &amp; Shadow Mode
+      </button>
+      <button class="tab-btn px-3.5 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200 flex items-center gap-1.5" data-tab="kb">
+        📚 Knowledge Base
+      </button>
+      <button class="tab-btn px-3.5 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200 flex items-center gap-1.5" data-tab="guardrails">
+        🛡️ Guardrails
+      </button>
+      <button class="tab-btn px-3.5 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200 flex items-center gap-1.5" data-tab="rules">
+        🔒 Triggers &amp; Locked Rules
+      </button>
+      <button class="tab-btn px-3.5 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200 flex items-center gap-1.5" data-tab="autoreply">
+        ⚡ Auto-Reply
+      </button>
+      <button class="tab-btn px-3.5 py-1.5 rounded-lg transition-all text-slate-400 hover:text-slate-200 flex items-center gap-1.5" data-tab="playground">
+        🧪 Playground Simulator
+      </button>
+    </nav>
+
+    <!-- Quick External Links & Auth Profile -->
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 bg-slate-950/80 px-2.5 py-1 rounded-lg border border-slate-800">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span id="adminProfileBadge" class="text-xs text-slate-300 font-semibold">Admin</span>
+      </div>
+      <a href="/agent" target="_blank" class="text-xs text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5">
+        <span>Agent Panel &rarr;</span>
+      </a>
+      <a href="/demo" target="_blank" class="text-xs text-white font-medium bg-[#167956] hover:bg-[#126346] px-3 py-1.5 rounded-lg shadow-sm transition-colors flex items-center gap-1.5">
+        <span>Demo Widget &rarr;</span>
+      </a>
+      <button onclick="handleStudioLogout()" class="text-xs bg-slate-800 hover:bg-rose-950 hover:text-rose-300 text-slate-300 border border-slate-700 px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer" title="Sign out of admin session">
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 p-6 overflow-y-auto custom-scrollbar max-w-7xl mx-auto w-full">
+
+    <!-- ===================================================================== -->
+    <!-- TAB 1: METRICS & SHADOW MODE OBSERVATION -->
+    <!-- ===================================================================== -->
+    <section id="panel-metrics" class="tab-panel space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span>Live Operational Metrics &amp; Shadow Mode Observation</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Quantitative observation data prior to limited auto-reply activation (Phase 3). Readiness threshold: <strong>Unedited Rate &ge; 90%</strong>.
+          </p>
+        </div>
+        <button id="btnRefreshMetrics" class="text-xs bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          Refresh Metrics
+        </button>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl shadow-sm">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+            <span>Total Conversation Volume</span>
+            <span class="text-indigo-400 font-mono">Volume</span>
+          </div>
+          <div id="statTotalVolume" class="text-2xl font-bold text-white font-mono">-</div>
+          <div class="text-[11px] text-slate-500 mt-1">6 SEA regional markets</div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl shadow-sm">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+            <span>Average Containment Rate</span>
+            <span class="text-emerald-400 font-mono">Bot Handled</span>
+          </div>
+          <div id="statAvgContainment" class="text-2xl font-bold text-emerald-400 font-mono">-</div>
+          <div class="text-[11px] text-slate-500 mt-1">Sessions resolved without agent escalation</div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl shadow-sm">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+            <span>Customer Satisfaction (CSAT)</span>
+            <span class="text-amber-400 font-mono">5.0 Scale</span>
+          </div>
+          <div id="statAvgCsat" class="text-2xl font-bold text-amber-300 font-mono">-</div>
+          <div class="text-[11px] text-slate-500 mt-1">Average from active player surveys</div>
+        </div>
+
+        <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl shadow-sm">
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+            <span>Unedited Draft Usage</span>
+            <span class="text-[#25B884] font-mono">Draft Accuracy</span>
+          </div>
+          <div id="statAvgUnedited" class="text-2xl font-bold text-[#25B884] font-mono">-</div>
+          <div class="text-[11px] text-slate-500 mt-1"><span id="statEligibleCount" class="font-semibold text-white">0</span> markets meet &ge; 90% threshold</div>
+        </div>
+      </div>
+
+      <!-- Metrics Breakdown Table -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div class="px-6 py-3.5 border-b border-slate-800 bg-slate-950/40 flex items-center justify-between">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">Metrics Breakdown by Market &amp; Locale</h3>
+          <span class="text-[11px] text-slate-500 font-mono">Updated in real time from PostgreSQL</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 bg-slate-950/60 text-slate-400 font-medium">
+                <th class="py-3 px-4">Market</th>
+                <th class="py-3 px-4">Locale</th>
+                <th class="py-3 px-4 text-center">Session Volume</th>
+                <th class="py-3 px-4 text-center">Contained Sessions</th>
+                <th class="py-3 px-4 text-right">Containment Rate</th>
+                <th class="py-3 px-4 text-center">CSAT</th>
+                <th class="py-3 px-4 text-center">Drafts Reviewed</th>
+                <th class="py-3 px-4 text-center">Unedited</th>
+                <th class="py-3 px-4 text-center">Edited</th>
+                <th class="py-3 px-4 text-right">% Unedited</th>
+                <th class="py-3 px-4 text-center">Auto-Reply Eligibility</th>
+              </tr>
+            </thead>
+            <tbody id="metricsTableBody" class="divide-y divide-slate-800/60 font-mono">
+              <tr><td colspan="11" class="py-8 text-center text-slate-500">Loading metrics data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 2: KNOWLEDGE BASE -->
+    <!-- ===================================================================== -->
+    <section id="panel-kb" class="tab-panel space-y-6 hidden">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-white">Knowledge Base Management</h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Language-isolated policy documents, general FAQ guidelines, and canned responses repository with 1536-dimensional embedding index.
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <select id="filterKbLocale" class="bg-slate-900 text-xs text-slate-300 border border-slate-700 rounded-lg px-3 py-1.5">
+            <option value="">All Languages (6 Locales)</option>
+            <option value="id-ID">id-ID (Indonesia)</option>
+            <option value="th-TH">th-TH (Thailand)</option>
+            <option value="vi-VN">vi-VN (Vietnam)</option>
+            <option value="fil-PH">fil-PH (Philippines)</option>
+            <option value="ms-MY">ms-MY (Malaysia)</option>
+            <option value="en">en (English)</option>
+          </select>
+          <select id="filterKbPolicy" class="bg-slate-900 text-xs text-slate-300 border border-slate-700 rounded-lg px-3 py-1.5">
+            <option value="">All Types</option>
+            <option value="true">Policy Documents Only</option>
+            <option value="false">General FAQ Only</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- KB Document Table -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div class="px-6 py-3.5 border-b border-slate-800 bg-slate-950/40 flex items-center justify-between">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">FAQ &amp; Policy Documents (kb_documents)</h3>
+          <span id="kbDocCountBadge" class="text-xs bg-slate-800 text-slate-300 px-2.5 py-0.5 rounded font-mono">0 Documents</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 bg-slate-950/60 text-slate-400 font-medium">
+                <th class="py-3 px-4">Doc Key</th>
+                <th class="py-3 px-4">Locale</th>
+                <th class="py-3 px-4">Document Title</th>
+                <th class="py-3 px-4 text-center">Document Type</th>
+                <th class="py-3 px-4 text-center">Version</th>
+                <th class="py-3 px-4">Native Speaker Reviewer</th>
+                <th class="py-3 px-4 text-center">Vector Embedding</th>
+                <th class="py-3 px-4">Content Summary</th>
+              </tr>
+            </thead>
+            <tbody id="kbTableBody" class="divide-y divide-slate-800/60">
+              <tr><td colspan="8" class="py-8 text-center text-slate-500">Loading knowledge base data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Canned Responses Table -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div class="px-6 py-3.5 border-b border-slate-800 bg-slate-950/40 flex items-center justify-between">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">Canned Responses Repository (canned_responses)</h3>
+          <span id="cannedCountBadge" class="text-xs bg-slate-800 text-slate-300 px-2.5 py-0.5 rounded font-mono">0 Templates</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 bg-slate-950/60 text-slate-400 font-medium">
+                <th class="py-3 px-4">Template ID</th>
+                <th class="py-3 px-4">Locale</th>
+                <th class="py-3 px-4">Category</th>
+                <th class="py-3 px-4">Standard Response Text</th>
+              </tr>
+            </thead>
+            <tbody id="cannedTableBody" class="divide-y divide-slate-800/60">
+              <tr><td colspan="4" class="py-8 text-center text-slate-500">Loading canned responses...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 3: GUARDRAILS -->
+    <!-- ===================================================================== -->
+    <section id="panel-guardrails" class="tab-panel space-y-6 hidden">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-white">Guardrail Health &amp; Coverage Status</h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Native speaker guardrail phrase compliance check across all 6 SEA regional markets.
+          </p>
+        </div>
+        <button id="btnRefreshGuardrails" class="text-xs bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg transition-colors">
+          Check Status
+        </button>
+      </div>
+
+      <!-- Safety Alert Box -->
+      <div class="bg-amber-950/30 border border-amber-800/50 rounded-xl p-4 flex items-start gap-3.5">
+        <div class="p-2 rounded-lg bg-amber-900/40 text-amber-300">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold text-amber-200">Critical Startup Safety Gate</h4>
+          <p class="text-xs text-amber-300/80 mt-1 leading-relaxed">
+            The system automatically blocks bot activation (<code class="bg-amber-950 px-1 py-0.5 rounded text-amber-200">is_bot_enabled = false</code>) if any locale lacks verified native-speaker <strong>self-harm</strong> phrases. Zero silent failures allowed.
+          </p>
+        </div>
+      </div>
+
+      <!-- Guardrail Health Grid per Locale -->
+      <div id="guardrailGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="col-span-3 py-12 text-center text-slate-500 text-xs">Loading guardrail status...</div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 4: HANDOFF TRIGGERS & LOCKED RULES -->
+    <!-- ===================================================================== -->
+    <section id="panel-rules" class="tab-panel space-y-6 hidden">
+      <div>
+        <h2 class="text-lg font-bold text-white">Rule Governance &amp; Handoff Trigger Catalog</h2>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Core output filter rules are permanently locked at the API level. Hard triggers route immediately without calling the language model.
+        </p>
+      </div>
+
+      <!-- Locked Rules Protection Section -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div class="px-6 py-3.5 border-b border-slate-800 bg-rose-950/20 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-rose-400 font-bold text-sm">🔒 Locked Rules</span>
+            <span class="text-[10px] bg-rose-950 text-rose-300 border border-rose-800 px-2 py-0.5 rounded font-mono font-semibold">API Modification Immune (HTTP 403)</span>
+          </div>
+          <button id="btnTestLockedRuleApi" class="text-xs bg-rose-950 hover:bg-rose-900 text-rose-200 border border-rose-800 px-3 py-1 rounded transition-colors font-medium">
+            Test API Rejection (PATCH &rarr; 403)
+          </button>
+        </div>
+        <div id="lockedRulesContainer" class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Operational Rules Section -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div class="px-6 py-3.5 border-b border-slate-800 bg-slate-950/40 flex items-center justify-between">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">Dynamic Operational Rules (Configurable)</h3>
+          <span class="text-[11px] text-slate-500 font-mono">Can be enabled/disabled via API</span>
+        </div>
+        <div id="dynamicRulesContainer" class="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Catalog of Handoff Triggers -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Hard Triggers -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+          <div class="px-6 py-3.5 border-b border-slate-800 bg-slate-950/40">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-rose-400 flex items-center gap-2">
+              <span>🛑 Hard Triggers</span>
+              <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-normal font-sans">LLM Bypassed</span>
+            </h3>
+          </div>
+          <div id="hardTriggersList" class="p-4 space-y-2.5">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Soft Triggers -->
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+          <div class="px-6 py-3.5 border-b border-slate-800 bg-slate-950/40">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+              <span>⚠️ Soft Triggers</span>
+              <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-normal font-sans">Model Evaluation &amp; Thresholds</span>
+            </h3>
+          </div>
+          <div id="softTriggersList" class="p-4 space-y-2.5">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 5: PLAYGROUND SIMULATOR -->
+    <!-- ===================================================================== -->
+    <section id="panel-playground" class="tab-panel space-y-6 hidden">
+      <div>
+        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <span>Model &amp; Pipeline Dry-Run Playground</span>
+        </h2>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Simulate player message inputs in isolation without affecting live player queues, inspecting guardrail decisions, intent classifier, KB retrieval, and bot replies.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Input Form (Left 5 Cols) -->
+        <div class="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300 border-b border-slate-800 pb-2.5">Simulation Parameters</h3>
+          
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">Select Target Language (Locale)</label>
+            <select id="simLocale" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#25B884]">
+              <option value="id-ID">id-ID (Indonesia)</option>
+              <option value="th-TH">th-TH (Thailand)</option>
+              <option value="vi-VN">vi-VN (Vietnam)</option>
+              <option value="fil-PH">fil-PH (Philippines)</option>
+              <option value="ms-MY">ms-MY (Malaysia)</option>
+              <option value="en" selected>en (English)</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1.5">Player UID</label>
+              <input id="simUid" type="text" value="sim_player_99" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1.5">VIP Tier</label>
+              <input id="simVip" type="number" value="4" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white font-mono" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">Test Player Message</label>
+            <textarea id="simMessage" rows="4" placeholder="Type your test question or scenario here..." class="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#25B884] leading-relaxed">Halo, berapa peluang dapat karakter SSR di event saat ini?</textarea>
+          </div>
+
+          <div>
+            <span class="block text-[11px] font-medium text-slate-400 mb-2">Quick Test Presets:</span>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" class="preset-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700 transition-colors" data-msg="Halo, berapa peluang dapat karakter SSR di event saat ini?" data-loc="id-ID">Gacha FAQ (ID)</button>
+              <button type="button" class="preset-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700 transition-colors" data-msg="Saya mau refund uang saya karena salah beli item!" data-loc="id-ID">Refund Trigger (ID)</button>
+              <button type="button" class="preset-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700 transition-colors" data-msg="gặp người thật" data-loc="vi-VN">Ask Human (VN)</button>
+              <button type="button" class="preset-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700 transition-colors" data-msg="Saya sangat depresi dan ingin bunuh diri" data-loc="id-ID">Self-Harm (ID)</button>
+              <button type="button" class="preset-btn text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded border border-slate-700 transition-colors" data-msg="Cek UID 99999999 punya teman saya" data-loc="en">UID Injection (EN)</button>
+            </div>
+          </div>
+
+          <button id="btnRunSim" class="w-full bg-[#167956] hover:bg-[#126346] text-white py-2.5 rounded-lg text-xs font-semibold shadow-md transition-colors flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            Run Pipeline Simulation (Dry-Run)
+          </button>
+        </div>
+
+        <!-- Simulation Result Output (Right 7 Cols) -->
+        <div class="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-xl p-5 space-y-4 shadow-sm flex flex-col">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Pipeline Diagnostic Results</h3>
+            <span id="simStatusBadge" class="text-[11px] px-2.5 py-0.5 rounded font-mono font-semibold bg-slate-800 text-slate-400">Ready</span>
+          </div>
+
+          <div id="simDiagnosticsGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+              <span class="block text-[10px] text-slate-500 uppercase">AI Action</span>
+              <span id="diagAction" class="font-bold text-xs text-white font-mono">-</span>
+            </div>
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+              <span class="block text-[10px] text-slate-500 uppercase">Detected Intent</span>
+              <span id="diagIntent" class="font-bold text-xs text-indigo-300 font-mono">-</span>
+            </div>
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+              <span class="block text-[10px] text-slate-500 uppercase">Confidence</span>
+              <span id="diagConfidence" class="font-bold text-xs text-emerald-400 font-mono">-</span>
+            </div>
+            <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+              <span class="block text-[10px] text-slate-500 uppercase">Hard Trigger</span>
+              <span id="diagHardTrigger" class="font-bold text-xs text-slate-400 font-mono">None</span>
+            </div>
+          </div>
+
+          <div class="flex-1 flex flex-col">
+            <span class="block text-xs font-semibold text-slate-300 mb-1.5">AI Reply Response:</span>
+            <div id="simResultText" class="flex-1 bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-200 font-sans leading-relaxed whitespace-pre-wrap min-h-[140px] flex items-center justify-center text-slate-600">
+              Click 'Run Pipeline Simulation' to view model response and diagnostics.
+            </div>
+          </div>
+
+          <div class="border-t border-slate-800 pt-3 flex items-center justify-between text-[11px] text-slate-400">
+            <div>
+              <span>Reference Sources (meta.sources): </span>
+              <strong id="diagSources" class="text-slate-300 font-mono font-normal">-</strong>
+            </div>
+            <span id="simTimeTaken" class="font-mono text-slate-500"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- TAB 6: LIMITED AUTO-REPLY WHITELIST -->
+    <!-- ===================================================================== -->
+    <section id="panel-autoreply" class="tab-panel hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+            <span>Limited Auto-Reply Whitelist by Intent &amp; Locale</span>
+            <span class="text-xs font-mono font-semibold bg-emerald-950 text-emerald-300 border border-emerald-700 px-2 py-0.5 rounded">Phase 3</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Auto-reply only runs if the market bot is active, the intent is whitelisted, and confidence &ge; threshold. Hard triggers never auto-reply.
+          </p>
+        </div>
+        <button id="btnRefreshAutoReply" class="text-xs bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          Refresh Auto-Reply Data
+        </button>
+      </div>
+
+      <!-- Alert Info -->
+      <div class="bg-amber-950/30 border border-amber-800/60 rounded-xl p-4 text-xs text-amber-300 flex items-start gap-3">
+        <span class="text-base">⚠️</span>
+        <div class="space-y-1">
+          <div class="font-bold text-amber-200">Auto-Reply Readiness Requirement (90% Threshold):</div>
+          <div class="text-amber-300/90 leading-relaxed">
+            Per specification, auto-reply is only recommended for intents whose unedited draft usage has reached <strong>&ge; 90%</strong> in shadow mode. Enabling intents below 90% risks degrading player satisfaction (CSAT). Hard triggers (refund, account ban, etc.) are strictly prohibited from auto-reply.
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Controls -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <select id="filterAutoReplyLocale" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2">
+            <option value="">All Locales (6 Markets)</option>
+            <option value="id-ID">🇮🇩 id-ID (Indonesia)</option>
+            <option value="th-TH">🇹🇭 th-TH (Thailand)</option>
+            <option value="vi-VN">🇻🇳 vi-VN (Vietnam)</option>
+            <option value="fil-PH">🇵🇭 fil-PH (Philippines)</option>
+            <option value="ms-MY">🇲🇾 ms-MY (Malaysia)</option>
+            <option value="en">🌐 en (Global/Singapore)</option>
+          </select>
+          <span id="autoReplySummaryText" class="text-xs text-slate-400"></span>
+        </div>
+        <div id="autoReplyToast" class="text-xs px-3 py-1.5 rounded-lg hidden font-medium"></div>
+      </div>
+
+      <!-- Auto-Reply Rules Table -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 bg-slate-950/60 text-slate-400 font-semibold text-[11px] uppercase tracking-wider">
+                <th class="py-3 px-4">Locale / Market</th>
+                <th class="py-3 px-4">Intent</th>
+                <th class="py-3 px-4 text-center">Market Bot Status</th>
+                <th class="py-3 px-4 text-center">Agent Reviewed</th>
+                <th class="py-3 px-4 text-right">Draft Accuracy (&ge; 90%)</th>
+                <th class="py-3 px-4 text-center">Confidence Threshold</th>
+                <th class="py-3 px-4 text-center">Auto-Reply Status</th>
+                <th class="py-3 px-4 text-center">Toggle Action</th>
+              </tr>
+            </thead>
+            <tbody id="autoReplyTableBody" class="divide-y divide-slate-800/60 text-slate-300 font-mono">
+              <tr><td colspan="8" class="py-8 text-center text-slate-500">Loading auto-reply rules...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const API_BASE = window.location.origin;
+
+    // Elements
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    // Metrics elements
+    const statTotalVolume = document.getElementById('statTotalVolume');
+    const statAvgContainment = document.getElementById('statAvgContainment');
+    const statAvgCsat = document.getElementById('statAvgCsat');
+    const statAvgUnedited = document.getElementById('statAvgUnedited');
+    const statEligibleCount = document.getElementById('statEligibleCount');
+    const metricsTableBody = document.getElementById('metricsTableBody');
+    const btnRefreshMetrics = document.getElementById('btnRefreshMetrics');
+
+    // KB elements
+    const kbDocCountBadge = document.getElementById('kbDocCountBadge');
+    const cannedCountBadge = document.getElementById('cannedCountBadge');
+    const kbTableBody = document.getElementById('kbTableBody');
+    const cannedTableBody = document.getElementById('cannedTableBody');
+    const filterKbLocale = document.getElementById('filterKbLocale');
+    const filterKbPolicy = document.getElementById('filterKbPolicy');
+
+    // Guardrails elements
+    const guardrailGrid = document.getElementById('guardrailGrid');
+    const btnRefreshGuardrails = document.getElementById('btnRefreshGuardrails');
+
+    // Rules elements
+    const lockedRulesContainer = document.getElementById('lockedRulesContainer');
+    const dynamicRulesContainer = document.getElementById('dynamicRulesContainer');
+    const hardTriggersList = document.getElementById('hardTriggersList');
+    const softTriggersList = document.getElementById('softTriggersList');
+    const btnTestLockedRuleApi = document.getElementById('btnTestLockedRuleApi');
+
+    // Playground elements
+    const simLocale = document.getElementById('simLocale');
+    const simUid = document.getElementById('simUid');
+    const simVip = document.getElementById('simVip');
+    const simMessage = document.getElementById('simMessage');
+    const btnRunSim = document.getElementById('btnRunSim');
+    const simStatusBadge = document.getElementById('simStatusBadge');
+    const diagAction = document.getElementById('diagAction');
+    const diagIntent = document.getElementById('diagIntent');
+    const diagConfidence = document.getElementById('diagConfidence');
+    const diagHardTrigger = document.getElementById('diagHardTrigger');
+    const diagSources = document.getElementById('diagSources');
+    const simResultText = document.getElementById('simResultText');
+    const simTimeTaken = document.getElementById('simTimeTaken');
+    const presetBtns = document.querySelectorAll('.preset-btn');
+
+    // Auto-Reply elements (TASK-09)
+    const autoReplyTableBody = document.getElementById('autoReplyTableBody');
+    const btnRefreshAutoReply = document.getElementById('btnRefreshAutoReply');
+    const filterAutoReplyLocale = document.getElementById('filterAutoReplyLocale');
+    const autoReplySummaryText = document.getElementById('autoReplySummaryText');
+    const autoReplyToast = document.getElementById('autoReplyToast');
+
+    // Tab Switching
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        tabBtns.forEach(b => {
+          b.classList.remove('active', 'text-white', 'bg-slate-800');
+          b.classList.add('text-slate-400');
+        });
+        btn.classList.add('active', 'text-white', 'bg-slate-800');
+        btn.classList.remove('text-slate-400');
+
+        tabPanels.forEach(p => p.classList.add('hidden'));
+        document.getElementById(`panel-${tab}`).classList.remove('hidden');
+
+        // Lazy load tab data
+        if (tab === 'metrics') loadMetrics();
+        if (tab === 'kb') loadKnowledgeBase();
+        if (tab === 'guardrails') loadGuardrails();
+        if (tab === 'rules') loadRulesAndTriggers();
+        if (tab === 'autoreply') loadAutoReplyRules();
+      });
+    });
+
+    // 1. Load Metrics
+    async function loadMetrics() {
+      try {
+        metricsTableBody.innerHTML = '<tr><td colspan="11" class="py-8 text-center text-slate-500">Loading metrics data...</td></tr>';
+        const res = await fetch(`${API_BASE}/v1/studio/metrics`);
+        const data = await res.json();
+
+        statTotalVolume.textContent = data.summary.total_volume.toLocaleString();
+        statAvgContainment.textContent = `${data.summary.avg_containment_rate}%`;
+        statAvgCsat.textContent = `${data.summary.avg_csat} / 5.0`;
+        statAvgUnedited.textContent = `${data.summary.avg_unedited_rate}%`;
+        statEligibleCount.textContent = data.summary.eligible_locales_count;
+
+        metricsTableBody.innerHTML = '';
+        data.metrics.forEach(m => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-800/40 transition-colors';
+          const isEligible = m.auto_reply_eligible;
+
+          tr.innerHTML = `
+            <td class="py-3 px-4 font-sans font-semibold text-white">${m.market}</td>
+            <td class="py-3 px-4 text-indigo-300 font-bold">${m.locale}</td>
+            <td class="py-3 px-4 text-center text-slate-300">${m.total_conversations}</td>
+            <td class="py-3 px-4 text-center text-slate-300">${m.contained_conversations}</td>
+            <td class="py-3 px-4 text-right font-bold ${m.containment_rate_percentage >= 50 ? 'text-emerald-400' : 'text-amber-400'}">${m.containment_rate_percentage}%</td>
+            <td class="py-3 px-4 text-center text-amber-300">${m.csat_score.toFixed(1)}</td>
+            <td class="py-3 px-4 text-center text-slate-300">${m.total_reviewed_drafts}</td>
+            <td class="py-3 px-4 text-center text-emerald-400 font-semibold">${m.used_unedited_drafts}</td>
+            <td class="py-3 px-4 text-center text-amber-400">${m.edited_drafts}</td>
+            <td class="py-3 px-4 text-right font-bold ${
+              m.unedited_rate_percentage >= 90 ? 'text-[#25B884]' :
+              m.unedited_rate_percentage >= 75 ? 'text-amber-400' : 'text-rose-400'
+            }">${m.unedited_rate_percentage}%</td>
+            <td class="py-3 px-4 text-center">
+              <span class="text-[10px] px-2.5 py-0.5 rounded font-sans font-semibold ${
+                isEligible 
+                  ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' 
+                  : 'bg-slate-800 text-slate-400 border border-slate-700'
+              }">${isEligible ? '✓ Eligible for Auto-Reply' : 'Needs Observation'}</span>
+            </td>
+          `;
+          metricsTableBody.appendChild(tr);
+        });
+      } catch (err) {
+        metricsTableBody.innerHTML = `<tr><td colspan="11" class="py-8 text-center text-rose-400">Failed to load metrics: ${err.message}</td></tr>`;
+      }
+    }
+
+    // 2. Load Knowledge Base
+    async function loadKnowledgeBase() {
+      const loc = filterKbLocale.value;
+      const isPolicy = filterKbPolicy.value;
+      const url = new URL(`${API_BASE}/v1/studio/knowledge-base`);
+      if (loc) url.searchParams.set('locale', loc);
+      if (isPolicy) url.searchParams.set('is_policy', isPolicy);
+
+      try {
+        kbTableBody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-slate-500">Loading documents...</td></tr>';
+        cannedTableBody.innerHTML = '<tr><td colspan="4" class="py-8 text-center text-slate-500">Loading canned responses...</td></tr>';
+
+        const res = await fetch(url.toString());
+        const data = await res.json();
+
+        kbDocCountBadge.textContent = `${data.documents.length} Documents`;
+        cannedCountBadge.textContent = `${data.canned_responses.length} Templates`;
+
+        // Render Docs
+        kbTableBody.innerHTML = '';
+        data.documents.forEach(doc => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-800/40 transition-colors';
+          tr.innerHTML = `
+            <td class="py-3 px-4 font-mono font-bold text-slate-200">${doc.doc_key}</td>
+            <td class="py-3 px-4 font-mono text-indigo-300 font-bold">${doc.locale}</td>
+            <td class="py-3 px-4 font-semibold text-white">${doc.title}</td>
+            <td class="py-3 px-4 text-center">
+              <span class="text-[10px] px-2 py-0.5 rounded font-mono font-medium ${
+                doc.is_policy 
+                  ? 'bg-rose-950 text-rose-300 border border-rose-800' 
+                  : 'bg-indigo-950 text-indigo-300 border border-indigo-700/60'
+              }">${doc.is_policy ? 'Policy' : 'FAQ Guideline'}</span>
+            </td>
+            <td class="py-3 px-4 text-center font-mono text-slate-400">v${doc.version}</td>
+            <td class="py-3 px-4 text-slate-300">${doc.reviewed_by || '<span class="text-slate-500 italic">Not reviewed</span>'}</td>
+            <td class="py-3 px-4 text-center">
+              <span class="text-[10px] px-2 py-0.5 rounded font-mono ${
+                doc.has_embedding 
+                  ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' 
+                  : 'bg-rose-950 text-rose-300 border border-rose-800'
+              }">${doc.has_embedding ? 'Vector 1536d OK' : 'Not Indexed'}</span>
+            </td>
+            <td class="py-3 px-4 text-slate-400 line-clamp-1 max-w-xs">${doc.body_preview}...</td>
+          `;
+          kbTableBody.appendChild(tr);
+        });
+
+        // Render Canned
+        cannedTableBody.innerHTML = '';
+        data.canned_responses.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-800/40 transition-colors';
+          tr.innerHTML = `
+            <td class="py-3 px-4 font-mono font-bold text-slate-200">${c.template_id}</td>
+            <td class="py-3 px-4 font-mono text-indigo-300 font-bold">${c.locale}</td>
+            <td class="py-3 px-4 font-mono text-slate-300">${c.category}</td>
+            <td class="py-3 px-4 text-slate-300 leading-relaxed">${c.body_preview}</td>
+          `;
+          cannedTableBody.appendChild(tr);
+        });
+      } catch (err) {
+        kbTableBody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-rose-400">Failed to load KB: ${err.message}</td></tr>`;
+      }
+    }
+
+    // 3. Load Guardrails
+    async function loadGuardrails() {
+      try {
+        guardrailGrid.innerHTML = '<div class="col-span-3 py-12 text-center text-slate-500 text-xs">Checking phrase completeness...</div>';
+        const res = await fetch(`${API_BASE}/v1/studio/guardrails/status`);
+        const data = await res.json();
+
+        guardrailGrid.innerHTML = '';
+        data.locales.forEach(loc => {
+          const card = document.createElement('div');
+          const isCritical = loc.status === 'critical';
+          const isWarning = loc.status === 'warning';
+          card.className = `p-4 rounded-xl border bg-slate-900/90 shadow-sm ${
+            isCritical ? 'border-rose-700 ring-1 ring-rose-700/40' :
+            isWarning ? 'border-amber-700' : 'border-slate-800'
+          }`;
+
+          card.innerHTML = `
+            <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2.5">
+              <div>
+                <span class="text-sm font-bold text-white">${loc.market} (${loc.locale})</span>
+                <span class="block text-[11px] text-slate-400 mt-0.5">${loc.phrase_count} registered phrases</span>
+              </div>
+              <button class="btn-toggle-market text-[10px] px-2 py-0.5 rounded font-mono font-semibold transition-all cursor-pointer ${
+                loc.is_bot_enabled ? 'bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-700' : 'bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800'
+              }" data-code="${loc.market}" data-enabled="${loc.is_bot_enabled}" title="Click to toggle market bot status">
+                ${loc.is_bot_enabled ? '✓ Bot Active' : '✗ Bot Inactive'}
+              </button>
+            </div>
+            <div class="space-y-2 text-xs">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Self-Harm Phrases:</span>
+                <span class="font-mono font-bold ${loc.has_self_harm ? 'text-emerald-400' : 'text-rose-400'}">${loc.has_self_harm ? '✓ Complete' : '✗ MISSING (Required)'}</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-400">Ask Human Phrases:</span>
+                <span class="font-mono ${loc.has_ask_human ? 'text-emerald-400' : 'text-amber-400'}">${loc.has_ask_human ? '✓ Complete' : '✗ None Yet'}</span>
+              </div>
+              <div class="pt-2 border-t border-slate-800/80">
+                <span class="text-[11px] text-slate-400">Missing Hard Triggers:</span>
+                <div class="mt-1 flex flex-wrap gap-1">
+                  ${
+                    loc.missing_hard_triggers.length === 0 
+                      ? '<span class="text-[10px] text-emerald-400 font-mono">All hard triggers fully configured</span>'
+                      : loc.missing_hard_triggers.map(m => `<span class="text-[10px] bg-rose-950 text-rose-300 border border-rose-800 px-1.5 py-0.5 rounded font-mono">${m}</span>`).join('')
+                  }
+                </div>
+              </div>
+            </div>
+          `;
+          guardrailGrid.appendChild(card);
+        });
+
+        // Add click listeners to toggle market bot status
+        document.querySelectorAll('.btn-toggle-market').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const code = btn.dataset.code;
+            const current = btn.dataset.enabled === 'true';
+            await toggleMarketBot(code, !current);
+          });
+        });
+      } catch (err) {
+        guardrailGrid.innerHTML = `<div class="col-span-3 py-12 text-center text-rose-400 text-xs">Failed: ${err.message}</div>`;
+      }
+    }
+
+    // 4. Load Rules & Triggers
+    async function loadRulesAndTriggers() {
+      try {
+        // Fetch Rules
+        const resRules = await fetch(`${API_BASE}/v1/studio/rules`);
+        const dataRules = await resRules.json();
+
+        lockedRulesContainer.innerHTML = '';
+        dynamicRulesContainer.innerHTML = '';
+
+        dataRules.rules.forEach(rule => {
+          if (rule.locked) {
+            const card = document.createElement('div');
+            card.className = 'p-4 rounded-lg bg-slate-950 border border-rose-900/60 shadow-sm relative';
+            card.innerHTML = `
+              <div class="flex items-start justify-between gap-3 mb-2">
+                <h4 class="text-xs font-bold text-white">${rule.name}</h4>
+                <span class="text-[10px] bg-rose-950 text-rose-300 border border-rose-800 px-2 py-0.5 rounded font-mono font-semibold shrink-0">🔒 Locked</span>
+              </div>
+              <p class="text-xs text-slate-400 leading-relaxed mb-3">${rule.description}</p>
+              <div class="flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-900">
+                <span class="font-mono">key: ${rule.key}</span>
+                <span class="italic text-rose-400/80">Toggle disabled in UI &amp; rejected at API level</span>
+              </div>
+            `;
+            lockedRulesContainer.appendChild(card);
+          } else {
+            const card = document.createElement('div');
+            card.className = 'p-4 rounded-lg bg-slate-950 border border-slate-800 shadow-sm flex flex-col justify-between';
+            card.innerHTML = `
+              <div>
+                <div class="flex items-start justify-between gap-3 mb-2">
+                  <h4 class="text-xs font-bold text-white">${rule.name}</h4>
+                  <input type="checkbox" ${rule.enabled ? 'checked' : ''} class="rule-toggle h-4 w-4 rounded accent-[#25B884] cursor-pointer" data-key="${rule.key}" />
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed mb-3">${rule.description}</p>
+              </div>
+              <span class="font-mono text-[10px] text-slate-500">key: ${rule.key}</span>
+            `;
+            dynamicRulesContainer.appendChild(card);
+          }
+        });
+
+        // Add listeners for dynamic toggles
+        document.querySelectorAll('.rule-toggle').forEach(chk => {
+          chk.addEventListener('change', async (e) => {
+            const key = e.target.dataset.key;
+            const enabled = e.target.checked;
+            try {
+              const res = await fetch(`${API_BASE}/v1/studio/rules/${key}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ enabled }),
+              });
+              if (!res.ok) {
+                const err = await res.json();
+                alert('Failed to update rule: ' + err.error);
+                e.target.checked = !enabled;
+              }
+            } catch (err) {
+              alert('Connection failed: ' + err.message);
+              e.target.checked = !enabled;
+            }
+          });
+        });
+
+        // Fetch Triggers
+        const resTriggers = await fetch(`${API_BASE}/v1/studio/handoff-triggers`);
+        const dataTriggers = await resTriggers.json();
+
+        hardTriggersList.innerHTML = '';
+        dataTriggers.hard_triggers.forEach(t => {
+          const item = document.createElement('div');
+          item.className = 'p-3 rounded-lg bg-slate-950 border border-slate-800/80';
+          item.innerHTML = `
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-mono font-bold text-rose-300">${t.key}</span>
+              <span class="text-[10px] bg-rose-950/80 text-rose-300 border border-rose-800 px-1.5 py-0.2 rounded">Instant Handoff</span>
+            </div>
+            <p class="text-xs text-slate-400">${t.description}</p>
+          `;
+          hardTriggersList.appendChild(item);
+        });
+
+        softTriggersList.innerHTML = '';
+        dataTriggers.soft_triggers.forEach(t => {
+          const item = document.createElement('div');
+          item.className = 'p-3 rounded-lg bg-slate-950 border border-slate-800/80';
+          item.innerHTML = `
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs font-mono font-bold text-amber-300">${t.key}</span>
+              <span class="text-[10px] bg-amber-950/80 text-amber-300 border border-amber-800 px-1.5 py-0.2 rounded">Conditional Escalation</span>
+            </div>
+            <p class="text-xs text-slate-400">${t.description}</p>
+          `;
+          softTriggersList.appendChild(item);
+        });
+      } catch (err) {
+        console.error('Failed to load rules:', err);
+      }
+    }
+
+    // Test Locked Rule API Rejection (Proof of Acceptance Criteria)
+    btnTestLockedRuleApi.addEventListener('click', async () => {
+      try {
+        const res = await fetch(`${API_BASE}/v1/studio/rules/no_promise`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ enabled: false }),
+        });
+        const data = await res.json();
+        if (res.status === 403) {
+          alert(`✓ PROOF OF CRITERIA SUCCESSFUL (HTTP 403 FORBIDDEN):\n\nError Code: ${data.code}\nMessage: ${data.error}\n\nServer rejected disabling locked rule at API level!`);
+        } else {
+          alert(`Violation: Locked rule was not rejected! Status: ${res.status}`);
+        }
+      } catch (err) {
+        alert('Request error: ' + err.message);
+      }
+    });
+
+    // 5. Playground Simulation
+    btnRunSim.addEventListener('click', runSimulation);
+
+    presetBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        simMessage.value = btn.dataset.msg;
+        simLocale.value = btn.dataset.loc;
+        runSimulation();
+      });
+    });
+
+    async function runSimulation() {
+      const message = simMessage.value.trim();
+      if (!message) return alert('Please enter a simulation message first.');
+
+      const startTime = performance.now();
+      btnRunSim.disabled = true;
+      btnRunSim.textContent = 'Processing Pipeline...';
+      simStatusBadge.textContent = 'Running';
+      simStatusBadge.className = 'text-[11px] px-2.5 py-0.5 rounded font-mono font-semibold bg-indigo-950 text-indigo-300 animate-pulse';
+
+      try {
+        const res = await fetch(`${API_BASE}/v1/studio/playground/simulate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message,
+            locale: simLocale.value,
+            player: {
+              uid: simUid.value,
+              vip_tier: parseInt(simVip.value, 10) || 0,
+            }
+          })
+        });
+
+        const data = await res.json();
+        const duration = Math.round(performance.now() - startTime);
+        simTimeTaken.textContent = `Execution time: ${duration}ms`;
+
+        if (!res.ok) {
+          simStatusBadge.textContent = 'Error';
+          simStatusBadge.className = 'text-[11px] px-2.5 py-0.5 rounded font-mono font-semibold bg-rose-950 text-rose-300';
+          simResultText.textContent = `Simulation error: ${data.error}`;
+          return;
+        }
+
+        const isReply = data.result.action === 'reply';
+        simStatusBadge.textContent = isReply ? '✓ REPLY GENERATED' : '🛑 HANDOFF TRIGGERED';
+        simStatusBadge.className = `text-[11px] px-2.5 py-0.5 rounded font-mono font-semibold ${
+          isReply ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' : 'bg-rose-950 text-rose-300 border border-rose-800'
+        }`;
+
+        diagAction.textContent = data.result.action.toUpperCase();
+        diagAction.className = `font-bold text-xs font-mono ${isReply ? 'text-emerald-400' : 'text-rose-400'}`;
+        diagIntent.textContent = data.diagnostics.intent || (data.result.action === 'handoff' ? data.result.reason : '-');
+        diagConfidence.textContent = data.diagnostics.confidence ? `${Math.round(data.diagnostics.confidence * 100)}%` : '-';
+        diagHardTrigger.textContent = data.diagnostics.is_hard_trigger ? `Hard Trigger (${data.diagnostics.triggered_rule})` : 'None';
+        diagHardTrigger.className = `font-bold text-xs font-mono ${data.diagnostics.is_hard_trigger ? 'text-rose-400' : 'text-slate-400'}`;
+
+        const sources = data.diagnostics.sources || [];
+        diagSources.textContent = sources.length > 0 ? sources.join(', ') : 'No KB sources used';
+
+        simResultText.textContent = isReply 
+          ? data.result.text 
+          : `[CS HANDOFF TRIGGERED]\nReason: ${data.result.reason}\nBot Summary: ${data.result.bot_summary}`;
+      } catch (err) {
+        simResultText.textContent = 'Connection failed: ' + err.message;
+      } finally {
+        btnRunSim.disabled = false;
+        btnRunSim.textContent = 'Run Pipeline Simulation (Dry-Run)';
+      }
+    }
+
+    // 6. Auto-Reply Rules per Intent & Locale (TASK-09)
+    async function loadAutoReplyRules() {
+      try {
+        autoReplyTableBody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-slate-500">Loading auto-reply rules...</td></tr>';
+        const res = await fetch(`${API_BASE}/v1/studio/auto-reply-rules`);
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || `HTTP ${res.status}`);
+        }
+        const data = await res.json();
+
+        const selectedLocale = filterAutoReplyLocale.value;
+        const filteredRules = selectedLocale 
+          ? data.rules.filter(r => r.locale === selectedLocale)
+          : data.rules;
+
+        if (autoReplySummaryText) {
+          autoReplySummaryText.textContent = `${data.summary.active_rules} active of ${data.summary.total_rules} rules (${data.summary.eligible_rules} meet 90% threshold)`;
+        }
+
+        autoReplyTableBody.innerHTML = '';
+        if (filteredRules.length === 0) {
+          autoReplyTableBody.innerHTML = '<tr><td colspan="8" class="py-8 text-center text-slate-500">No rules match current filter.</td></tr>';
+          return;
+        }
+
+        const flagMap = {
+          'id-ID': '🇮🇩',
+          'th-TH': '🇹🇭',
+          'vi-VN': '🇻🇳',
+          'fil-PH': '🇵🇭',
+          'ms-MY': '🇲🇾',
+          'en': '🌐',
+        };
+
+        filteredRules.forEach(rule => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-800/40 transition-colors';
+
+          const flag = flagMap[rule.locale] || '🌐';
+          const isEligible = rule.is_eligible_90;
+          const rateColor = rule.unedited_rate_percentage >= 90.0 
+            ? 'text-[#25B884]' 
+            : (rule.unedited_rate_percentage >= 70 ? 'text-amber-400' : 'text-slate-400');
+
+          tr.innerHTML = `
+            <td class="py-3 px-4 font-sans font-semibold text-white">
+              <span>${flag} ${rule.locale}</span>
+              <span class="text-[10px] text-slate-400 font-mono ml-1">(${rule.market})</span>
+            </td>
+            <td class="py-3 px-4 font-mono font-bold text-indigo-300">
+              ${rule.intent}
+            </td>
+            <td class="py-3 px-4 text-center">
+              <button class="btn-toggle-market text-[10px] px-2 py-0.5 rounded font-mono font-semibold transition-all cursor-pointer ${
+                rule.is_market_bot_enabled
+                  ? 'bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-700'
+                  : 'bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800'
+              }" data-code="${rule.market}" data-enabled="${rule.is_market_bot_enabled}" title="Click to change market bot status (${rule.market})">
+                ${rule.is_market_bot_enabled ? '✓ Bot Active' : '✗ Inactive'}
+              </button>
+            </td>
+            <td class="py-3 px-4 text-center font-mono text-slate-300">
+              ${rule.total_reviewed} drafts
+            </td>
+            <td class="py-3 px-4 text-right font-mono font-bold ${rateColor}">
+              ${rule.unedited_rate_percentage}%
+              <span class="text-[10px] block font-sans ${isEligible ? 'text-emerald-400' : 'text-slate-500'}">
+                ${isEligible ? '✓ Passed 90%' : 'Below 90%'}
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center font-mono text-slate-300">
+              ${Math.round(rule.min_confidence * 100)}%
+            </td>
+            <td class="py-3 px-4 text-center">
+              <span class="text-[10px] px-2.5 py-0.5 rounded font-mono font-semibold ${
+                rule.is_enabled 
+                  ? 'bg-emerald-950 text-emerald-300 border border-emerald-700 animate-pulse' 
+                  : 'bg-slate-800 text-slate-400 border border-slate-700'
+              }">${rule.is_enabled ? '⚡ AUTO-REPLY' : 'Agent Draft'}</span>
+            </td>
+            <td class="py-3 px-4 text-center">
+              <button 
+                class="btn-toggle-autoreply px-2.5 py-1 rounded text-xs font-sans font-semibold transition-all ${
+                  rule.is_enabled
+                    ? 'bg-rose-900/60 hover:bg-rose-800 text-rose-200 border border-rose-700'
+                    : 'bg-[#167956] hover:bg-[#126346] text-white border border-[#25B884]/40 shadow-sm'
+                }"
+                data-intent="${rule.intent}"
+                data-locale="${rule.locale}"
+                data-current="${rule.is_enabled}"
+                data-eligible="${rule.is_eligible_90}"
+                data-rate="${rule.unedited_rate_percentage}"
+                data-bot-enabled="${rule.is_market_bot_enabled}"
+              >
+                ${rule.is_enabled ? 'Disable' : 'Enable'}
+              </button>
+            </td>
+          `;
+          autoReplyTableBody.appendChild(tr);
+        });
+
+        // Add click listener to all toggle buttons
+        document.querySelectorAll('.btn-toggle-autoreply').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            const intent = btn.dataset.intent;
+            const locale = btn.dataset.locale;
+            const current = btn.dataset.current === 'true';
+            const nextStatus = !current;
+            const isEligible = btn.dataset.eligible === 'true';
+            const rate = btn.dataset.rate;
+
+            if (nextStatus && !isEligible) {
+              const proceed = confirm(
+                `⚠️ AUTO-REPLY ELIGIBILITY WARNING:\n\n` +
+                `Intent '${intent}' in locale '${locale}' has only reached ${rate}% accuracy, below the safe 90% standard.\n\n` +
+                `Enabling auto-reply risks player complaints.\n\n` +
+                `Are you sure you want to enable it anyway?`
+              );
+              if (!proceed) return;
+            }
+
+            await toggleAutoReply(intent, locale, nextStatus, btn);
+          });
+        });
+
+        // Add click listeners to toggle market bot status directly from auto-reply table
+        document.querySelectorAll('#autoReplyTableBody .btn-toggle-market').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const code = btn.dataset.code;
+            const current = btn.dataset.enabled === 'true';
+            await toggleMarketBot(code, !current);
+          });
+        });
+      } catch (err) {
+        autoReplyTableBody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-rose-400">Failed to load auto-reply rules: ${err.message}</td></tr>`;
+      }
+    }
+
+    async function toggleAutoReply(intent, locale, is_enabled, triggerBtn) {
+      if (triggerBtn) {
+        triggerBtn.disabled = true;
+        triggerBtn.textContent = 'Saving...';
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/v1/studio/auto-reply-rules`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ intent, locale, is_enabled }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(`🛑 API REJECTION (${res.status} ${data.code || ''}):\n\n${data.error}`);
+          return;
+        }
+
+        if (data.warning) {
+          alert(`⚠️ SYSTEM WARNING:\n\n${data.warning}`);
+        }
+
+        showToast(
+          `Rule '${intent}' (${locale}) successfully ${is_enabled ? 'enabled' : 'disabled'}.`,
+          'success'
+        );
+        await loadAutoReplyRules();
+      } catch (err) {
+        alert('Connection failed: ' + err.message);
+      } finally {
+        if (triggerBtn) {
+          triggerBtn.disabled = false;
+        }
+      }
+    }
+
+    async function toggleMarketBot(code, newStatus) {
+      try {
+        const res = await fetch(`${API_BASE}/v1/studio/markets/${code}/bot-status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ is_bot_enabled: newStatus }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(`🛑 FAILED TO CHANGE MARKET BOT STATUS (${res.status}):\n\n${data.error}`);
+          return;
+        }
+        showToast(`Market bot status for ${code} successfully ${newStatus ? 'enabled' : 'disabled'}.`);
+        await loadGuardrails();
+        await loadAutoReplyRules();
+      } catch (err) {
+        alert('Connection failed: ' + err.message);
+      }
+    }
+
+    function showToast(msg, type = 'success') {
+      if (!autoReplyToast) return;
+      autoReplyToast.textContent = msg;
+      autoReplyToast.className = `text-xs px-3 py-1.5 rounded-lg font-medium ${
+        type === 'success' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-rose-950 text-rose-300 border border-rose-800'
+      }`;
+      autoReplyToast.classList.remove('hidden');
+      setTimeout(() => {
+        autoReplyToast.classList.add('hidden');
+      }, 4000);
+    }
+
+    // Intercept fetch untuk menyertakan cookie sesi httpOnly
+    const originalFetch = window.fetch;
+    window.fetch = function (url, options = {}) {
+      options.credentials = options.credentials || 'include';
+      return originalFetch(url, options);
+    };
+
+    async function checkAdminAuth() {
+      try {
+        const res = await fetch('/v1/auth/me');
+        if (!res.ok) throw new Error('Unauthorized');
+        const data = await res.json();
+        if (!data.agent || data.agent.role !== 'admin') {
+          window.location.href = '/login?redirect=/studio';
+          return;
+        }
+        const badge = document.getElementById('adminProfileBadge');
+        if (badge) badge.textContent = `${data.agent.name} (ADMIN)`;
+      } catch {
+        window.location.href = '/login?redirect=/studio';
+      }
+    }
+
+    async function handleStudioLogout() {
+      if (!confirm('Are you sure you want to sign out of the AI Studio console?')) return;
+      try {
+        await fetch('/v1/auth/logout', { method: 'POST' });
+      } catch {}
+      window.location.href = '/login';
+    }
+
+    // Refresh buttons
+    btnRefreshMetrics.addEventListener('click', loadMetrics);
+    btnRefreshGuardrails.addEventListener('click', loadGuardrails);
+    btnRefreshAutoReply.addEventListener('click', loadAutoReplyRules);
+    filterKbLocale.addEventListener('change', loadKnowledgeBase);
+    filterKbPolicy.addEventListener('change', loadKnowledgeBase);
+    filterAutoReplyLocale.addEventListener('change', loadAutoReplyRules);
+
+    // Initial Load
+    window.addEventListener('DOMContentLoaded', () => {
+      checkAdminAuth();
+      loadMetrics();
+    });
+  </script>
+</body>
+</html>

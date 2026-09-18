@@ -66,6 +66,13 @@ describe('TASK-03: Chat Widget Tests', { timeout: 15000 }, () => {
       assert.ok(strings.sendButton, `sendButton untuk ${loc} wajib terisi`);
       assert.ok(strings.translatedBadge, `translatedBadge untuk ${loc} wajib terisi`);
       assert.ok(strings.selectLanguage, `selectLanguage untuk ${loc} wajib terisi`);
+      assert.ok(strings.liveChatChip, `liveChatChip untuk ${loc} wajib terisi`);
+      assert.equal(strings.liveChatChip, 'Live Chat', `liveChatChip untuk ${loc} harus bernilai 'Live Chat'`);
+      assert.ok(strings.categoryAccount, `categoryAccount untuk ${loc} wajib terisi`);
+      assert.ok(strings.categoryPayment, `categoryPayment untuk ${loc} wajib terisi`);
+      assert.ok(strings.categoryTechnical, `categoryTechnical untuk ${loc} wajib terisi`);
+      assert.ok(strings.categoryGameplay, `categoryGameplay untuk ${loc} wajib terisi`);
+      assert.ok(strings.categoryFeedback, `categoryFeedback untuk ${loc} wajib terisi`);
     }
 
     // 1.3 Verifikasi spesifik kata kunci bahasa lokal
@@ -259,6 +266,37 @@ describe('TASK-03: Chat Widget Tests', { timeout: 15000 }, () => {
 
     const badgeLabel = getTranslations('id-ID').translatedBadge;
     assert.equal(badgeLabel, 'Diterjemahkan otomatis');
+
+    client.disconnect();
+  });
+
+  test('6. setCategory mengubah kategori percakapan di server dan WebSocket', { timeout: 6000 }, async () => {
+    const playerUid = 'player_cat_test_' + Date.now();
+    const conv = await db.getOrCreateActiveConversation(
+      { uid: playerUid },
+      { market: 'ID', locale: 'id-ID' }
+    );
+
+    const client = new ChatWebSocketClient({
+      url: `ws://127.0.0.1:${gatewayPort}/v1/socket`,
+      token: 'token_' + playerUid,
+      player: { uid: playerUid },
+      context: { locale: 'id-ID', market: 'ID' },
+      customWebSocket: WebSocket,
+    });
+
+    await new Promise<void>((resolve) => {
+      client.onSessionStarted = () => resolve();
+      client.connect();
+    });
+
+    client.setCategory('account_login');
+    assert.equal(client.getCategory(), 'account_login');
+
+    // Tunggu pesan diproses di DB
+    await new Promise((r) => setTimeout(r, 400));
+    const updatedConv = await db.getConversation(conv.id);
+    assert.equal(updatedConv?.category, 'account_login');
 
     client.disconnect();
   });

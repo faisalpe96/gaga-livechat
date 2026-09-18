@@ -6,6 +6,9 @@ export interface Agent {
   locales: string[];
   max_concurrent: number;
   status: string;
+  email?: string | null;
+  role?: 'agent' | 'supervisor' | 'admin';
+  external_id?: string | null;
 }
 
 export interface QueueItem {

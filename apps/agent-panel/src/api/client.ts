@@ -1,11 +1,38 @@
 import { Agent, QueueItem, Message } from '../types.js';
 
-const API_BASE = window.location.origin.includes(':3002')
-  ? 'http://127.0.0.1:3001'
-  : window.location.origin;
+export const API_BASE =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GATEWAY_URL)
+    ? (import.meta.env.VITE_GATEWAY_URL as string).replace(/\/$/, '')
+    : window.location.origin.includes(':3002')
+    ? 'http://127.0.0.1:3001'
+    : window.location.origin;
+
+export async function fetchCurrentUser(): Promise<Agent | null> {
+  try {
+    const res = await fetch(`${API_BASE}/v1/auth/me`, {
+      credentials: 'include',
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.agent || null;
+  } catch {
+    return null;
+  }
+}
+
+export async function logout(): Promise<void> {
+  try {
+    await fetch(`${API_BASE}/v1/auth/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+  } catch {}
+}
 
 export async function fetchAgents(): Promise<Agent[]> {
-  const res = await fetch(`${API_BASE}/v1/agents`);
+  const res = await fetch(`${API_BASE}/v1/agents`, {
+    credentials: 'include',
+  });
   if (!res.ok) throw new Error('Failed to fetch agents');
   const data = await res.json();
   return data.agents || [];
@@ -16,7 +43,9 @@ export async function fetchQueue(options: { agentId?: string; locale?: string })
   if (options.agentId) url.searchParams.set('agent_id', options.agentId);
   if (options.locale) url.searchParams.set('locale', options.locale);
 
-  const res = await fetch(url.toString());
+  const res = await fetch(url.toString(), {
+    credentials: 'include',
+  });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error || 'Failed to fetch queue');
@@ -25,10 +54,11 @@ export async function fetchQueue(options: { agentId?: string; locale?: string })
   return data.queue || [];
 }
 
-export async function claimConversation(conversationId: string, agentId: string): Promise<QueueItem> {
+export async function claimConversation(conversationId: string, agentId?: string): Promise<QueueItem> {
   const res = await fetch(`${API_BASE}/v1/conversations/${conversationId}/claim`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify({ agent_id: agentId }),
   });
   const data = await res.json();
@@ -39,7 +69,9 @@ export async function claimConversation(conversationId: string, agentId: string)
 }
 
 export async function fetchMessages(conversationId: string): Promise<Message[]> {
-  const res = await fetch(`${API_BASE}/v1/conversations/${conversationId}/messages`);
+  const res = await fetch(`${API_BASE}/v1/conversations/${conversationId}/messages`, {
+    credentials: 'include',
+  });
   if (!res.ok) throw new Error('Failed to fetch messages');
   const data = await res.json();
   return data.messages || [];
@@ -53,6 +85,7 @@ export async function sendAgentMessage(
   const res = await fetch(`${API_BASE}/v1/conversations/${conversationId}/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify({
       text,
       sender_id: agentId,
@@ -72,6 +105,7 @@ export async function resolveConversation(
   const res = await fetch(`${API_BASE}/v1/conversations/${conversationId}/resolve`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify({
       resolution_reason: resolutionReason,
       ticket_id: ticketId,

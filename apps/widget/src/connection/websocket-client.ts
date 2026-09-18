@@ -4,6 +4,7 @@ import {
   InboundMessage,
   InboundSessionStart,
   InboundSetLocale,
+  InboundSetCategory,
   OutboundEvent,
   PlayerInfo,
   SupportedLocale,
@@ -28,7 +29,8 @@ export class ChatWebSocketClient {
   private state: ConnectionState = 'disconnected';
   private conversationId: string | null = null;
   private currentLocale: SupportedLocale;
-  private offlineQueue: Array<InboundMessage | InboundSetLocale> = [];
+  private currentCategory: string | null = null;
+  private offlineQueue: Array<InboundMessage | InboundSetLocale | InboundSetCategory> = [];
   private messages: ChatMessage[] = [];
   private reconnectAttempts = 0;
   private reconnectTimer: any = null;
@@ -36,10 +38,16 @@ export class ChatWebSocketClient {
 
   // Event Listeners
   public onMessage?: (msg: ChatMessage) => void;
-  public onSessionStarted?: (convId: string, locale: string, market: string) => void;
-  public onStatusChange?: (status: string, reason?: string) => void;
+  public onTyping?: (data: { is_typing: boolean; sender_type?: string; sender_name?: string; avatar_url?: string }) => void;
+  public onSessionStarted?: (convId: string, locale: string, market: string, sessionData?: any) => void;
+  public onStatusChange?: (status: string, reason?: string, data?: any) => void;
+  public onCategoryChange?: (category: string) => void;
   public onConnectionChange?: (state: ConnectionState) => void;
   public onError?: (err: any) => void;
+
+  private botPersona: string = 'mira';
+  private botName: string = 'Mira';
+  private botAvatar: string = '/assets/agent-mira.png';
 
   constructor(private options: WebSocketClientOptions) {
     this.currentLocale = (options.context.locale || 'id-ID') as SupportedLocale;
@@ -58,8 +66,24 @@ export class ChatWebSocketClient {
     return this.currentLocale;
   }
 
+  public getCategory(): string | null {
+    return this.currentCategory;
+  }
+
   public getState(): ConnectionState {
     return this.state;
+  }
+
+  public getBotPersona(): string {
+    return this.botPersona;
+  }
+
+  public getBotName(): string {
+    return this.botName;
+  }
+
+  public getBotAvatar(): string {
+    return this.botAvatar;
   }
 
   public connect(): void {
@@ -134,23 +158,26 @@ export class ChatWebSocketClient {
     this.setState('disconnected');
   }
 
-  public sendMessage(text: string): void {
-    if (!text || text.trim() === '') return;
+  public getConversationId(): string | null {
+    return this.conversationId;
+  }
+
+  public sendMessage(text: string, meta?: any): void {
+    if ((!text || text.trim() === '') && !meta?.attachment_url) return;
+
+    const payload: any = {
+      event: 'message',
+      conversation_id: this.conversationId || '',
+      text: text || (meta?.attachment_url ? `[Attachment: ${meta?.filename || 'image'}]` : ''),
+      category: this.currentCategory || undefined,
+      ...(meta || {}),
+    };
 
     if (this.state === 'connected' && this.ws && this.conversationId) {
-      const payload: InboundMessage = {
-        event: 'message',
-        conversation_id: this.conversationId,
-        text,
-      };
       this.ws.send(JSON.stringify(payload));
     } else {
       // Masukkan ke antrean offline jika koneksi putus
-      this.offlineQueue.push({
-        event: 'message',
-        conversation_id: this.conversationId || '',
-        text,
-      });
+      this.offlineQueue.push(payload);
     }
   }
 
@@ -175,6 +202,23 @@ export class ChatWebSocketClient {
     }
   }
 
+  public setCategory(category: string, subcategory?: string, promptText?: string): void {
+    this.currentCategory = category;
+    const payload: InboundSetCategory = {
+      event: 'set_category',
+      conversation_id: this.conversationId || '',
+      category,
+      subcategory,
+      text: promptText,
+    };
+
+    if (this.state === 'connected' && this.ws && this.conversationId) {
+      this.ws.send(JSON.stringify(payload));
+    } else {
+      this.offlineQueue.push(payload);
+    }
+  }
+
   private sendSessionStart(): void {
     const payload: InboundSessionStart = {
       event: 'session_start',
@@ -196,6 +240,15 @@ export class ChatWebSocketClient {
       if (data.event === 'session_started') {
         this.conversationId = data.conversation_id;
         this.currentLocale = data.locale as SupportedLocale;
+        if (data.bot_persona) this.botPersona = data.bot_persona;
+        if (data.bot_name) this.botName = data.bot_name;
+        if (data.bot_avatar) this.botAvatar = data.bot_avatar;
+        if ((data as any).category) {
+          this.currentCategory = (data as any).category;
+          if (this.onCategoryChange) {
+            this.onCategoryChange((data as any).category);
+          }
+        }
         this.saveHistory();
         this.fetchHistoryFromServer().then((msgs) => {
           if (this.onHistoryLoaded) {
@@ -203,7 +256,7 @@ export class ChatWebSocketClient {
           }
         });
         if (this.onSessionStarted) {
-          this.onSessionStarted(data.conversation_id, data.locale, data.market);
+          this.onSessionStarted(data.conversation_id, data.locale, data.market, data);
         }
       } else if (data.event === 'message') {
         const chatMsg: ChatMessage = {
@@ -211,6 +264,8 @@ export class ChatWebSocketClient {
           conversation_id: data.conversation_id,
           sender_type: data.sender_type,
           sender_name: data.sender_name,
+          avatar_url: (data as any).avatar_url,
+          bot_persona: (data as any).bot_persona,
           text: data.text,
           created_at: data.created_at,
           translated: data.translated,
@@ -225,7 +280,19 @@ export class ChatWebSocketClient {
         }
       } else if (data.event === 'status_change') {
         if (this.onStatusChange) {
-          this.onStatusChange(data.new_status, data.resolution_reason);
+          this.onStatusChange(data.new_status, data.resolution_reason, data);
+        }
+      } else if (data.event === 'typing') {
+        if (this.onTyping) {
+          this.onTyping(data);
+        }
+      } else if ((data as any).event === 'category_set' || (data as any).event === 'category_changed') {
+        const cat = (data as any).category;
+        if (cat) {
+          this.currentCategory = cat;
+          if (this.onCategoryChange) {
+            this.onCategoryChange(cat);
+          }
         }
       }
     } catch (e) {
@@ -287,16 +354,34 @@ export class ChatWebSocketClient {
       );
       if (res.ok) {
         const data = await res.json();
+        if (data.bot_persona) this.botPersona = data.bot_persona;
+        if (data.bot_name) this.botName = data.bot_name;
+        if (data.bot_avatar) this.botAvatar = data.bot_avatar;
+
         if (Array.isArray(data.messages)) {
-          this.messages = data.messages.map((m: any) => ({
-            id: m.id,
-            conversation_id: m.conversation_id,
-            sender_type: m.sender_type,
-            sender_name: m.sender_name || (m.sender_type === 'player' ? 'You' : 'Gaga Assist'),
-            text: m.text,
-            created_at: m.created_at,
-            translated: !!m.translated,
-          }));
+          this.messages = data.messages.map((m: any) => {
+            let sName = m.sender_name;
+            if (m.sender_type === 'bot') {
+              if (!sName || sName.toLowerCase().includes('bot') || sName.toLowerCase().includes('gaga') || sName.toLowerCase().includes('assist')) {
+                sName = this.botName || (this.botPersona === 'reza' ? 'Reza' : 'Mira');
+              }
+            } else if (m.sender_type === 'player') {
+              sName = 'You';
+            } else if (m.sender_type === 'agent') {
+              sName = sName || 'Support Agent';
+            }
+            return {
+              id: m.id,
+              conversation_id: m.conversation_id,
+              sender_type: m.sender_type,
+              sender_name: sName,
+              avatar_url: m.avatar_url || (m.sender_type === 'bot' ? this.botAvatar : undefined),
+              bot_persona: m.bot_persona || this.botPersona,
+              text: m.text,
+              created_at: m.created_at,
+              translated: !!m.translated,
+            };
+          });
           return [...this.messages];
         }
       }

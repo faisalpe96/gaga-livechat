@@ -39,6 +39,15 @@ export class RedisPubSub {
     await this.pub.publish(channel, JSON.stringify(event));
   }
 
+  async ping(): Promise<boolean> {
+    try {
+      const res = await this.pub.ping();
+      return res === 'PONG';
+    } catch {
+      return false;
+    }
+  }
+
   async close(): Promise<void> {
     try {
       await this.sub.punsubscribe('livechat:conv:*');

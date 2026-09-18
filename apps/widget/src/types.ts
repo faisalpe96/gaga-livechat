@@ -83,9 +83,12 @@ export interface ChatMessage {
   conversation_id: string;
   sender_type: 'player' | 'bot' | 'agent' | 'system';
   sender_name?: string;
+  avatar_url?: string;
+  bot_persona?: string;
   text: string;
   created_at: string;
   translated?: boolean;
+  meta?: any;
 }
 
 export interface InboundSessionStart {
@@ -98,6 +101,7 @@ export interface InboundMessage {
   event: 'message';
   conversation_id: string;
   text: string;
+  category?: string;
 }
 
 export interface InboundSetLocale {
@@ -106,12 +110,23 @@ export interface InboundSetLocale {
   locale: string;
 }
 
+export interface InboundSetCategory {
+  event: 'set_category';
+  conversation_id: string;
+  category: string;
+  subcategory?: string;
+  text?: string;
+}
+
 export interface OutboundSessionStarted {
   event: 'session_started';
   conversation_id: string;
   status: string;
   locale: string;
   market: string;
+  bot_persona?: string;
+  bot_name?: string;
+  bot_avatar?: string;
 }
 
 export interface OutboundMessage {
@@ -140,8 +155,25 @@ export interface OutboundError {
   message: string;
 }
 
+export interface InboundTyping {
+  event: 'typing';
+  conversation_id: string;
+  is_typing?: boolean;
+}
+
+export interface OutboundTyping {
+  event: 'typing';
+  conversation_id: string;
+  sender_type: 'bot' | 'agent' | 'player';
+  is_typing: boolean;
+  bot_persona?: string;
+  sender_name?: string;
+  avatar_url?: string;
+}
+
 export type OutboundEvent =
   | OutboundSessionStarted
   | OutboundMessage
   | OutboundStatusChange
-  | OutboundError;
+  | OutboundError
+  | OutboundTyping;

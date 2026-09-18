@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gaga LiveChat — Agent Panel</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/agent-strings.js"></script>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -15,27 +16,34 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col">
   <!-- Top Navigation -->
   <header class="bg-slate-900 border-b border-slate-800 px-6 py-3 flex items-center justify-between shadow-md">
-    <div class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded bg-indigo-600 flex items-center justify-center font-bold text-white shadow-sm">G</div>
+    <div class="flex items-center gap-3.5">
+      <img src="/logo-mark.png" alt="Gaga Games" class="h-7 w-auto object-contain shrink-0" style="height: 28px;" />
       <div>
         <h1 class="font-bold text-base leading-none text-white tracking-wide">Gaga LiveChat — Agent Console</h1>
-        <p class="text-xs text-slate-400 mt-1">TASK-04 Queue, Claim & Agent Stream</p>
+        <p class="text-xs text-slate-400 mt-1">Real-time Queue &amp; Stream</p>
       </div>
     </div>
     <div class="flex items-center gap-4">
       <div class="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
         <span class="text-xs text-slate-400 font-medium">Logged in as:</span>
-        <select id="agentSelect" class="bg-slate-900 text-xs text-indigo-300 font-semibold rounded px-2 py-1 border border-slate-700 focus:outline-none focus:border-indigo-500 cursor-pointer">
+        <select id="agentSelect" class="bg-slate-900 text-xs text-[#25B884] font-semibold rounded px-2 py-1 border border-slate-700 focus:outline-none focus:border-[#25B884] cursor-pointer">
           <option value="">Loading agents...</option>
         </select>
-        <span id="agentLocalesBadge" class="text-[11px] bg-indigo-950 text-indigo-300 border border-indigo-700/50 px-2 py-0.5 rounded font-mono"></span>
+        <span id="agentLocalesBadge" class="text-[11px] bg-[#167956]/20 text-[#25B884] border border-[#25B884]/40 px-2 py-0.5 rounded font-mono"></span>
       </div>
       <button id="btnRefresh" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
         Refresh Queue
       </button>
-      <a href="/demo" target="_blank" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm">
-        Buka Widget Demo &rarr;
+      <button id="btnShowReport" class="text-xs bg-slate-800 hover:bg-slate-700 text-[#25B884] border border-[#25B884]/30 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        AI Draft Reports
+      </button>
+      <a href="/studio" target="_blank" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 font-medium">
+        <span>⚙️ AI Studio</span>
+      </a>
+      <a href="/demo" target="_blank" class="text-xs bg-[#167956] hover:bg-[#126346] text-white font-medium px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm">
+        Open Demo Widget &rarr;
       </a>
     </div>
   </header>
@@ -47,13 +55,13 @@
       <div class="p-4 border-b border-slate-800 flex items-center justify-between">
         <div>
           <h2 class="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
-            <span>Antrean Percakapan</span>
-            <span id="queueCount" class="bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 text-xs px-2 py-0.2 rounded-full font-mono">0</span>
+            <span>CONVERSATION QUEUE</span>
+            <span id="queueCount" class="bg-[#25B884]/15 text-[#25B884] border border-[#25B884]/30 text-xs px-2 py-0.2 rounded-full font-mono">0</span>
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">Urut berdasarkan sisa SLA (tercepat pertama)</p>
+          <p class="text-xs text-slate-400 mt-0.5">Sorted by remaining SLA (shortest first)</p>
         </div>
         <select id="localeFilter" class="bg-slate-800 text-xs text-slate-300 border border-slate-700 rounded px-2 py-1">
-          <option value="">Semua Bahasa Agent</option>
+          <option value="">All Agent Languages</option>
           <option value="id-ID">id-ID (Indonesia)</option>
           <option value="th-TH">th-TH (Thailand)</option>
           <option value="vi-VN">vi-VN (Vietnam)</option>
@@ -66,7 +74,7 @@
       <!-- Queue List Scrollable -->
       <div id="queueListContainer" class="flex-1 overflow-y-auto p-3 space-y-2.5 custom-scrollbar">
         <div class="text-center py-12 text-slate-500 text-xs">
-          Memuat data antrean...
+          Loading queue data...
         </div>
       </div>
     </section>
@@ -80,18 +88,18 @@
             ?
           </div>
           <div>
-            <h3 class="text-sm font-semibold text-slate-300">Pilih sesi antrean di sisi kiri untuk memulai</h3>
-            <p class="text-xs text-slate-500">Klaim percakapan untuk mengambil alih dari bot.</p>
+            <h3 class="text-sm font-semibold text-slate-300">Select a conversation from the queue on the left to start</h3>
+            <p class="text-xs text-slate-500">Claim conversation to take over from the bot.</p>
           </div>
         </div>
         <div id="chatActions" class="flex items-center gap-2 hidden">
           <button id="btnClaim" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-            Klaim Percakapan (Ambil Alih)
+            Claim Conversation (Take Over)
           </button>
           <button id="btnResolve" class="bg-rose-600/90 hover:bg-rose-600 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm hidden">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            Selesaikan (Resolve)
+            Resolve Conversation
           </button>
         </div>
       </div>
@@ -99,30 +107,117 @@
       <!-- Messages Stream -->
       <div id="messagesContainer" class="flex-1 overflow-y-auto p-6 space-y-3.5 custom-scrollbar flex flex-col justify-end">
         <div class="flex-1 flex items-center justify-center text-slate-600 text-sm">
-          Tidak ada percakapan yang dipilih
+          No conversation selected
         </div>
       </div>
 
-      <!-- Message Input Box -->
-      <div id="inputSection" class="p-4 bg-slate-900/60 border-t border-slate-800 hidden">
+      <!-- Message Input Box & AI Suggestion Card -->
+      <div id="inputSection" class="p-4 bg-slate-900/60 border-t border-slate-800 hidden flex flex-col">
+        <!-- AI Suggestion Card (Shadow Mode) -->
+        <div id="aiDraftCard" class="mb-3 p-4 bg-slate-900/90 border border-[#25B884]/50 rounded-xl shadow-lg relative hidden transition-all">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#167956]/20 text-[#25B884] border border-[#25B884]/40">
+                <span class="w-2 h-2 rounded-full bg-[#25B884] animate-pulse"></span>
+                🤖 AI Suggested Draft (Shadow Mode)
+              </span>
+              <span id="aiDraftIntentBadge" class="text-[11px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700 font-mono">
+                Intent: -
+              </span>
+              <span id="aiDraftConfidenceBadge" class="text-[11px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-800 font-mono">
+                Confidence: -
+              </span>
+              <span id="aiDraftPersonaBadge" class="text-[11px] bg-indigo-950 text-indigo-300 px-2 py-0.5 rounded border border-indigo-800 flex items-center gap-1.5 font-medium">
+                <img id="aiDraftPersonaImg" src="/assets/agent-mira.png" class="w-4 h-4 rounded-full object-cover" />
+                <span id="aiDraftPersonaName">Mira</span>
+              </span>
+            </div>
+            <span class="text-[10px] text-slate-400 italic">Confidential bot draft — not visible to player until approved by an agent</span>
+          </div>
+          <p id="aiDraftText" class="text-sm text-slate-100 bg-slate-950/80 p-3 rounded-lg border border-slate-800 whitespace-pre-wrap leading-relaxed mb-3">
+          </p>
+          <div class="flex items-center justify-between">
+            <div id="aiDraftMeta" class="text-[11px] text-slate-400 flex gap-2">
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btnRejectDraft" type="button" class="px-3 py-1.5 bg-slate-800 hover:bg-rose-950 hover:text-rose-300 hover:border-rose-800 text-slate-300 text-xs font-medium rounded-lg border border-slate-700 transition-colors">
+                ✕ Reject
+              </button>
+              <button id="btnEditDraft" type="button" class="px-3 py-1.5 bg-amber-600/20 hover:bg-amber-600/30 text-amber-300 border border-amber-600/50 text-xs font-medium rounded-lg transition-colors flex items-center gap-1">
+                ✏️ Edit &amp; Send
+              </button>
+              <button id="btnAcceptDraft" type="button" class="px-4 py-1.5 bg-[#167956] hover:bg-[#126346] text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-1">
+                ✓ Use Draft
+              </button>
+            </div>
+          </div>
+        </div>
+
         <form id="replyForm" class="flex gap-2">
           <input
             id="replyInput"
             type="text"
-            placeholder="Ketik balasan sebagai agent..."
-            class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500 placeholder-slate-500"
+            placeholder="Type a reply as an agent..."
+            class="flex-1 bg-slate-950 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#25B884] placeholder-slate-500"
             autocomplete="off"
           />
           <button
             type="submit"
-            class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm"
+            class="bg-[#167956] hover:bg-[#126346] text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-sm cursor-pointer"
           >
-            Kirim
+            Send
           </button>
         </form>
       </div>
     </section>
   </main>
+
+  <!-- Modal Laporan Mode Bayangan (Draft Usage Report) -->
+  <div id="reportModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <span>📊 AI Bot Draft Usage Report</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">Draft acceptance rate metrics broken down by intent and locale</p>
+        </div>
+        <button id="btnCloseReportModal" class="text-slate-400 hover:text-white text-xl px-2 py-1 rounded transition-colors">&times;</button>
+      </div>
+      <div class="flex-1 overflow-y-auto p-6 custom-scrollbar">
+        <div class="mb-4 bg-[#167956]/15 border border-[#25B884]/30 rounded-lg p-3 text-xs text-emerald-300 flex items-center gap-2">
+          <svg class="w-4 h-4 shrink-0 text-[#25B884]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <span>Auto-reply is only activated for intents &amp; locales with <strong>Unedited Rate &ge; 90%</strong> after 2&ndash;4 weeks of observation.</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400 font-semibold bg-slate-950/40">
+                <th class="py-2.5 px-3">Intent</th>
+                <th class="py-2.5 px-3">Locale</th>
+                <th class="py-2.5 px-3">Persona</th>
+                <th class="py-2.5 px-3 text-center">Total Reviewed</th>
+                <th class="py-2.5 px-3 text-center">Unedited</th>
+                <th class="py-2.5 px-3 text-center">Edited</th>
+                <th class="py-2.5 px-3 text-center">Rejected</th>
+                <th class="py-2.5 px-3 text-right">% Unedited</th>
+                <th class="py-2.5 px-3 text-center">Auto-Reply Eligibility</th>
+              </tr>
+            </thead>
+            <tbody id="reportBody" class="divide-y divide-slate-800/60">
+              <tr>
+                <td colspan="9" class="py-8 text-center text-slate-500">Loading report data...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="px-6 py-3 border-t border-slate-800 bg-slate-950/60 flex items-center justify-between text-xs text-slate-400">
+        <span id="reportTimestamp"></span>
+        <button id="btnRefreshReport" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded font-medium transition-colors">Refresh Data</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     const API_BASE = window.location.origin;
@@ -132,6 +227,9 @@
     let activeMessages = [];
     let queueItems = [];
     let pollInterval = null;
+    let currentDraft = null;
+    let pendingDraft = null;
+    let agentSocket = null;
 
     // Elements
     const agentSelect = document.getElementById('agentSelect');
@@ -149,6 +247,24 @@
     const inputSection = document.getElementById('inputSection');
     const replyForm = document.getElementById('replyForm');
     const replyInput = document.getElementById('replyInput');
+
+    // Shadow Mode Elements
+    const aiDraftCard = document.getElementById('aiDraftCard');
+    const aiDraftIntentBadge = document.getElementById('aiDraftIntentBadge');
+    const aiDraftConfidenceBadge = document.getElementById('aiDraftConfidenceBadge');
+    const aiDraftText = document.getElementById('aiDraftText');
+    const aiDraftMeta = document.getElementById('aiDraftMeta');
+    const btnAcceptDraft = document.getElementById('btnAcceptDraft');
+    const btnEditDraft = document.getElementById('btnEditDraft');
+    const btnRejectDraft = document.getElementById('btnRejectDraft');
+
+    // Report Modal Elements
+    const btnShowReport = document.getElementById('btnShowReport');
+    const reportModal = document.getElementById('reportModal');
+    const btnCloseReportModal = document.getElementById('btnCloseReportModal');
+    const btnRefreshReport = document.getElementById('btnRefreshReport');
+    const reportBody = document.getElementById('reportBody');
+    const reportTimestamp = document.getElementById('reportTimestamp');
 
     async function init() {
       await loadAgents();
@@ -171,6 +287,16 @@
       btnClaim.addEventListener('click', handleClaim);
       btnResolve.addEventListener('click', handleResolve);
       replyForm.addEventListener('submit', handleSendReply);
+
+      // Shadow Mode Listeners
+      btnAcceptDraft.addEventListener('click', handleAcceptDraft);
+      btnEditDraft.addEventListener('click', handleEditDraft);
+      btnRejectDraft.addEventListener('click', handleRejectDraft);
+
+      // Report Modal Listeners
+      btnShowReport.addEventListener('click', openReportModal);
+      btnCloseReportModal.addEventListener('click', closeReportModal);
+      btnRefreshReport.addEventListener('click', loadReport);
     }
 
     async function loadAgents() {
@@ -224,7 +350,7 @@
       if (queueItems.length === 0) {
         queueListContainer.innerHTML = `
           <div class="text-center py-12 text-slate-500 text-xs">
-            Tidak ada antrean percakapan untuk bahasa agent ini (${currentAgent.locales.join(', ')}).
+            No conversations in queue for this agent's languages (${currentAgent.locales.join(', ')}).
           </div>
         `;
         return;
@@ -236,7 +362,7 @@
         const card = document.createElement('div');
         card.className = `p-3 rounded-lg border cursor-pointer transition-all ${
           isSelected 
-            ? 'bg-slate-800 border-indigo-500 shadow-md ring-1 ring-indigo-500/50' 
+            ? 'bg-slate-800 border-[#25B884] shadow-md ring-1 ring-[#25B884]/50' 
             : 'bg-slate-900 border-slate-800 hover:border-slate-700'
         }`;
 
@@ -246,26 +372,29 @@
           const diffMs = new Date(item.sla_due_at).getTime() - Date.now();
           const diffMin = Math.round(diffMs / 60000);
           if (diffMin < 0) {
-            slaBadge = `<span class="bg-rose-950 text-rose-300 border border-rose-800 text-[10px] px-1.5 py-0.5 rounded font-bold">SLA Terlewat (${Math.abs(diffMin)}m lalu)</span>`;
+            slaBadge = `<span class="bg-rose-950 text-rose-300 border border-rose-800 text-[10px] px-1.5 py-0.5 rounded font-bold">SLA Overdue (${Math.abs(diffMin)}m ago)</span>`;
           } else if (diffMin <= 5) {
-            slaBadge = `<span class="bg-amber-950 text-amber-300 border border-amber-800 text-[10px] px-1.5 py-0.5 rounded font-bold">SLA Mendasak (${diffMin}m)</span>`;
+            slaBadge = `<span class="bg-amber-950 text-amber-300 border border-amber-800 text-[10px] px-1.5 py-0.5 rounded font-bold">SLA Urgent (${diffMin}m left)</span>`;
           } else {
-            slaBadge = `<span class="bg-slate-800 text-slate-400 border border-slate-700 text-[10px] px-1.5 py-0.5 rounded">SLA: ${diffMin}m</span>`;
+            slaBadge = `<span class="bg-slate-800 text-slate-400 border border-slate-700 text-[10px] px-1.5 py-0.5 rounded">SLA: ${diffMin}m left</span>`;
           }
         } else {
-          slaBadge = `<span class="bg-slate-800 text-slate-500 border border-slate-700 text-[10px] px-1.5 py-0.5 rounded">SLA Normal</span>`;
+          slaBadge = `<span class="bg-slate-800 text-slate-500 border border-slate-700 text-[10px] px-1.5 py-0.5 rounded">Normal SLA</span>`;
         }
 
         card.innerHTML = `
           <div class="flex items-center justify-between mb-1.5">
             <span class="text-xs font-bold text-white flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+              <span class="w-2 h-2 rounded-full ${item.status === 'bot_active' ? 'bg-emerald-400' : 'bg-amber-400'} animate-pulse"></span>
               Player UID: ${item.player_uid}
             </span>
-            <span class="text-[10px] bg-indigo-950 text-indigo-300 border border-indigo-700/40 px-1.5 py-0.5 rounded font-mono font-medium">${item.locale}</span>
+            <div class="flex items-center gap-1">
+              <span class="text-[10px] px-1.5 py-0.5 rounded font-mono ${item.status === 'bot_active' ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-700/50' : 'bg-amber-950/80 text-amber-300 border border-amber-700/50'}">${item.status === 'bot_active' ? 'Shadow Mode' : 'Handoff Queue'}</span>
+              <span class="text-[10px] bg-[#167956]/20 text-[#25B884] border border-[#25B884]/40 px-1.5 py-0.5 rounded font-mono font-medium">${item.locale}</span>
+            </div>
           </div>
           <p class="text-xs text-slate-300 font-medium line-clamp-1 mb-2">
-            ${item.bot_summary || item.handoff_reason || 'Pemain menunggu bantuan CS'}
+            ${item.bot_summary || item.handoff_reason || 'Player waiting for CS support'}
           </p>
           <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-800/80">
             <span>Market: <strong class="text-slate-300 font-normal">${item.market}</strong></span>
@@ -280,9 +409,255 @@
 
     async function selectConversation(item) {
       activeConversation = item;
+      hideAiDraft();
+      pendingDraft = null;
       renderQueue();
       updateActiveState();
       await fetchMessages(item.id);
+      await fetchDrafts(item.id);
+      connectAgentSocket(item.id);
+    }
+
+    function connectAgentSocket(convId) {
+      if (agentSocket) {
+        try { agentSocket.close(); } catch {}
+        agentSocket = null;
+      }
+      const wsProto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${wsProto}//${window.location.host}/v1/socket?token=token_agent_${currentAgent.id}&agent=true&conversation_id=${convId}`;
+      agentSocket = new WebSocket(wsUrl);
+
+      agentSocket.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.event === 'message') {
+            if (activeConversation && data.conversation_id === activeConversation.id) {
+              const exists = activeMessages.some(m => m.id === data.message_id);
+              if (!exists) {
+                activeMessages.push({
+                  id: data.message_id,
+                  sender_type: data.sender_type,
+                  sender_name: data.sender_name,
+                  text: data.text,
+                  created_at: data.created_at,
+                  translated: data.translated
+                });
+                renderMessages();
+              }
+            }
+          } else if (data.event === 'bot_draft') {
+            if (activeConversation && data.conversation_id === activeConversation.id) {
+              showAiDraft(data);
+            }
+          }
+        } catch (e) {
+          console.error('WS parse error:', e);
+        }
+      };
+    }
+
+    async function fetchDrafts(convId) {
+      try {
+        const res = await fetch(`${API_BASE}/v1/conversations/${convId}/drafts`);
+        const data = await res.json();
+        const drafts = data.drafts || [];
+        if (drafts.length > 0) {
+          showAiDraft(drafts[0]);
+        } else {
+          hideAiDraft();
+        }
+      } catch (err) {
+        console.error('Failed to fetch drafts:', err);
+      }
+    }
+
+    function showAiDraft(draft) {
+      currentDraft = draft;
+      aiDraftCard.classList.remove('hidden');
+      aiDraftCard.classList.remove('opacity-50');
+      aiDraftText.textContent = draft.text;
+      const intent = draft.meta?.intent || 'FAQ';
+      const conf = draft.meta?.confidence ? Math.round(draft.meta.confidence * 100) : 90;
+      aiDraftIntentBadge.textContent = `Intent: ${intent}`;
+      aiDraftConfidenceBadge.textContent = `Confidence: ${conf}%`;
+
+      const persona = draft.bot_persona || draft.meta?.bot_persona || 'mira';
+      const personaName = draft.sender_name || draft.meta?.bot_name || (persona === 'reza' ? 'Reza' : 'Mira');
+      const avatarUrl = draft.avatar_url || draft.meta?.avatar_url || (persona === 'reza' ? '/assets/agent-reza.png' : '/assets/agent-mira.png');
+      const personaEl = document.getElementById('aiDraftPersonaName');
+      const personaImg = document.getElementById('aiDraftPersonaImg');
+      if (personaEl) personaEl.textContent = personaName;
+      if (personaImg) personaImg.src = avatarUrl;
+
+      const sources = (draft.meta?.sources || []).join(', ');
+      const tools = (draft.meta?.tools_used || []).join(', ');
+      let metaStr = '';
+      if (sources) metaStr += `<span>Sources: <strong>${sources}</strong></span>`;
+      if (tools) metaStr += `<span>Tools: <strong>${tools}</strong></span>`;
+      aiDraftMeta.innerHTML = metaStr;
+    }
+
+    function hideAiDraft() {
+      currentDraft = null;
+      aiDraftCard.classList.add('hidden');
+      aiDraftCard.classList.remove('opacity-50');
+    }
+
+    async function handleAcceptDraft() {
+      if (!currentDraft || !activeConversation || !currentAgent) return;
+      const draftId = currentDraft.id || currentDraft.message_id;
+      const draftText = currentDraft.text;
+
+      try {
+        btnAcceptDraft.disabled = true;
+
+        // Automatically claim conversation first if not yet assigned
+        if (!activeConversation.assigned_agent_id) {
+          const claimRes = await fetch(`${API_BASE}/v1/conversations/${activeConversation.id}/claim`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ agent_id: currentAgent.id }),
+          });
+          if (claimRes.ok) {
+            activeConversation = await claimRes.json();
+            updateActiveState();
+            fetchQueue();
+          }
+        }
+
+        await fetch(`${API_BASE}/v1/messages/${draftId}/feedback`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            verdict: 'accepted',
+            reviewer_id: currentAgent.id,
+          }),
+        });
+
+        await fetch(`${API_BASE}/v1/conversations/${activeConversation.id}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text: draftText,
+            sender_id: currentAgent.id,
+            sender_type: 'agent',
+          }),
+        });
+
+        hideAiDraft();
+        await fetchMessages(activeConversation.id);
+      } catch (err) {
+        alert('Failed to apply draft: ' + err.message);
+      } finally {
+        btnAcceptDraft.disabled = false;
+      }
+    }
+
+    function handleEditDraft() {
+      if (!currentDraft) return;
+      pendingDraft = currentDraft;
+      replyInput.value = currentDraft.text;
+      replyInput.focus();
+      aiDraftCard.classList.add('opacity-50');
+    }
+
+    async function handleRejectDraft() {
+      if (!currentDraft || !currentAgent) return;
+      const draftId = currentDraft.id || currentDraft.message_id;
+
+      try {
+        btnRejectDraft.disabled = true;
+        await fetch(`${API_BASE}/v1/messages/${draftId}/feedback`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            verdict: 'rejected',
+            reviewer_id: currentAgent.id,
+          }),
+        });
+        hideAiDraft();
+      } catch (err) {
+        alert('Failed to reject draft: ' + err.message);
+      } finally {
+        btnRejectDraft.disabled = false;
+      }
+    }
+
+    function openReportModal() {
+      reportModal.classList.remove('hidden');
+      loadReport();
+    }
+
+    function closeReportModal() {
+      reportModal.classList.add('hidden');
+    }
+
+    async function loadReport() {
+      try {
+        reportBody.innerHTML = `
+          <tr>
+            <td colspan="9" class="py-8 text-center text-slate-500">Loading report data...</td>
+          </tr>
+        `;
+        const res = await fetch(`${API_BASE}/v1/reports/draft-usage`);
+        const data = await res.json();
+        reportTimestamp.textContent = `Updated: ${new Date().toLocaleTimeString()} (${data.total_categories} categories)`;
+
+        const list = data.report || [];
+        if (list.length === 0) {
+          reportBody.innerHTML = `
+            <tr>
+              <td colspan="9" class="py-8 text-center text-slate-500">No bot draft feedback recorded in shadow mode period yet.</td>
+            </tr>
+          `;
+          return;
+        }
+
+        reportBody.innerHTML = '';
+        list.forEach(r => {
+          const isEligible = r.unedited_rate_percentage >= 90;
+          const persona = r.bot_persona || 'mira';
+          const isReza = persona === 'reza';
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-800/40 transition-colors font-mono';
+          tr.innerHTML = `
+            <td class="py-2.5 px-3 font-sans font-semibold text-white">${r.intent}</td>
+            <td class="py-2.5 px-3 text-[#25B884] font-bold">${r.locale}</td>
+            <td class="py-2.5 px-3">
+              <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-sans font-medium ${
+                isReza
+                  ? 'bg-blue-950 text-blue-300 border border-blue-800'
+                  : 'bg-purple-950 text-purple-300 border border-purple-800'
+              }">
+                <img src="${isReza ? '/assets/agent-reza.png' : '/assets/agent-mira.png'}" class="w-3.5 h-3.5 rounded-full object-cover" />
+                ${isReza ? 'Reza' : 'Mira'}
+              </span>
+            </td>
+            <td class="py-2.5 px-3 text-center text-slate-300">${r.total_reviewed}</td>
+            <td class="py-2.5 px-3 text-center text-emerald-400 font-semibold">${r.used_unedited_count}</td>
+            <td class="py-2.5 px-3 text-center text-amber-400">${r.edited_count}</td>
+            <td class="py-2.5 px-3 text-center text-rose-400">${r.rejected_count}</td>
+            <td class="py-2.5 px-3 text-right font-bold ${
+              r.unedited_rate_percentage >= 90 ? 'text-emerald-400' :
+              r.unedited_rate_percentage >= 75 ? 'text-amber-400' : 'text-rose-400'
+            }">${r.unedited_rate_percentage}%</td>
+            <td class="py-2.5 px-3 text-center">
+              <span class="text-[10px] px-2 py-0.5 rounded font-sans font-semibold ${
+                isEligible 
+                  ? 'bg-emerald-950 text-emerald-300 border border-emerald-700' 
+                  : 'bg-slate-800 text-slate-400 border border-slate-700'
+              }">${isEligible ? '✓ Eligible for Auto-Reply' : 'Needs Observation'}</span>
+            </td>
+          `;
+          reportBody.appendChild(tr);
+        });
+      } catch (err) {
+        reportBody.innerHTML = `
+          <tr>
+            <td colspan="9" class="py-8 text-center text-rose-400">Failed to load report: ${err.message}</td>
+          </tr>
+        `;
+      }
     }
 
     function updateActiveState() {
@@ -294,7 +669,7 @@
       const isResolved = activeConversation.status === 'resolved';
 
       activeConvInfo.innerHTML = `
-        <div class="w-9 h-9 rounded-full bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-300 font-bold text-xs">
+        <div class="w-9 h-9 rounded-full bg-[#167956]/20 border border-[#25B884]/40 flex items-center justify-center text-[#25B884] font-bold text-xs">
           ${activeConversation.player_uid.slice(-2)}
         </div>
         <div>
@@ -322,17 +697,17 @@
       } else if (isClaimedByOther) {
         btnClaim.classList.remove('hidden');
         btnClaim.disabled = true;
-        btnClaim.textContent = 'Diklaim Agen Lain';
+        btnClaim.textContent = 'Claimed by Another Agent';
         btnClaim.className = 'bg-slate-800 text-slate-500 text-xs font-semibold px-4 py-2 rounded-lg cursor-not-allowed border border-slate-700';
         btnResolve.classList.add('hidden');
         inputSection.classList.add('hidden');
       } else {
         btnClaim.classList.remove('hidden');
         btnClaim.disabled = false;
-        btnClaim.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Klaim Percakapan (Ambil Alih)`;
+        btnClaim.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Claim Conversation (Take Over)`;
         btnClaim.className = 'bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm cursor-pointer';
         btnResolve.classList.add('hidden');
-        inputSection.classList.add('hidden');
+        inputSection.classList.remove('hidden');
       }
     }
 
@@ -351,7 +726,7 @@
       if (activeMessages.length === 0) {
         messagesContainer.innerHTML = `
           <div class="flex-1 flex items-center justify-center text-slate-600 text-sm">
-            Belum ada pesan dalam percakapan ini
+            No messages in this conversation yet
           </div>
         `;
         return;
@@ -377,7 +752,7 @@
             <span class="text-[11px] text-slate-500 mb-1 px-1">${msg.sender_type === 'agent' ? (msg.sender_name || 'Agent') : 'Player'}</span>
             <div class="max-w-md px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
               isAgent 
-                ? 'bg-indigo-600 text-white rounded-br-none shadow-sm' 
+                ? 'bg-[#167956] text-white rounded-br-none shadow-sm' 
                 : 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700/60'
             }">
               ${msg.text}
@@ -395,7 +770,7 @@
       if (!activeConversation || !currentAgent) return;
       try {
         btnClaim.disabled = true;
-        btnClaim.textContent = 'Mengklaim...';
+        btnClaim.textContent = 'Claiming...';
         const res = await fetch(`${API_BASE}/v1/conversations/${activeConversation.id}/claim`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -403,18 +778,38 @@
         });
         const data = await res.json();
         if (!res.ok) {
-          alert('Gagal klaim: ' + (data.error || 'Terjadi kesalahan'));
+          alert('Failed to claim conversation: ' + (data.error || 'An error occurred'));
         } else {
           activeConversation = data;
           await fetchQueue();
           updateActiveState();
         }
       } catch (err) {
-        alert('Koneksi gagal saat mengklaim: ' + err.message);
+        alert('Connection failed during claim: ' + err.message);
       } finally {
         btnClaim.disabled = false;
       }
     }
+
+    let agentTypingTimer = null;
+    replyInput.addEventListener('input', () => {
+      if (!activeConversation) return;
+      fetch(`${API_BASE}/v1/conversations/${activeConversation.id}/typing`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_typing: true, agent_name: currentAgent?.name || 'Support Agent' }),
+      }).catch(() => {});
+
+      clearTimeout(agentTypingTimer);
+      agentTypingTimer = setTimeout(() => {
+        if (!activeConversation) return;
+        fetch(`${API_BASE}/v1/conversations/${activeConversation.id}/typing`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ is_typing: false, agent_name: currentAgent?.name || 'Support Agent' }),
+        }).catch(() => {});
+      }, 2500);
+    });
 
     async function handleSendReply(e) {
       e.preventDefault();
@@ -422,7 +817,45 @@
       if (!text || !activeConversation || !currentAgent) return;
 
       try {
+        clearTimeout(agentTypingTimer);
+        fetch(`${API_BASE}/v1/conversations/${activeConversation.id}/typing`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ is_typing: false }),
+        }).catch(() => {});
+
         replyInput.value = '';
+
+        // Automatically claim conversation first if not yet assigned
+        if (!activeConversation.assigned_agent_id) {
+          const claimRes = await fetch(`${API_BASE}/v1/conversations/${activeConversation.id}/claim`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ agent_id: currentAgent.id }),
+          });
+          if (claimRes.ok) {
+            activeConversation = await claimRes.json();
+            updateActiveState();
+            fetchQueue();
+          }
+        }
+
+        // Handle bot draft feedback if sending edited draft:
+        if (pendingDraft) {
+          const draftId = pendingDraft.id || pendingDraft.message_id;
+          await fetch(`${API_BASE}/v1/messages/${draftId}/feedback`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              verdict: 'edited',
+              corrected_text: text,
+              reviewer_id: currentAgent.id,
+            }),
+          });
+          pendingDraft = null;
+          hideAiDraft();
+        }
+
         const res = await fetch(`${API_BASE}/v1/conversations/${activeConversation.id}/messages`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -436,7 +869,7 @@
           await fetchMessages(activeConversation.id);
         } else {
           const err = await res.json();
-          alert('Gagal mengirim pesan: ' + err.error);
+          alert('Failed to send message: ' + err.error);
         }
       } catch (err) {
         alert('Error: ' + err.message);
@@ -445,7 +878,7 @@
 
     async function handleResolve() {
       if (!activeConversation) return;
-      if (!confirm('Apakah Anda yakin ingin menyelesaikan dan menutup percakapan ini?')) return;
+      if (!confirm('Are you sure you want to resolve and close this conversation?')) return;
 
       try {
         const res = await fetch(`${API_BASE}/v1/conversations/${activeConversation.id}/resolve`, {
@@ -454,22 +887,28 @@
           body: JSON.stringify({ resolution_reason: 'agent_resolved' }),
         });
         if (res.ok) {
-          alert('Percakapan berhasil diselesaikan (resolved).');
+          alert('Conversation resolved successfully.');
           await fetchQueue();
           activeConversation = null;
           activeConvInfo.innerHTML = `
             <div class="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 border border-slate-700 font-mono text-xs">?</div>
             <div>
-              <h3 class="text-sm font-semibold text-slate-300">Pilih sesi antrean di sisi kiri untuk memulai</h3>
-              <p class="text-xs text-slate-500">Klaim percakapan untuk mengambil alih dari bot.</p>
+              <h3 class="text-sm font-semibold text-slate-300">Select a conversation from the queue on the left to start</h3>
+              <p class="text-xs text-slate-500">Claim conversation to take over from the bot.</p>
             </div>
           `;
+          if (agentSocket) {
+            try { agentSocket.close(); } catch {}
+            agentSocket = null;
+          }
+          hideAiDraft();
+          pendingDraft = null;
           chatActions.classList.add('hidden');
           inputSection.classList.add('hidden');
-          messagesContainer.innerHTML = '<div class="flex-1 flex items-center justify-center text-slate-600 text-sm">Percakapan telah diselesaikan.</div>';
+          messagesContainer.innerHTML = '<div class="flex-1 flex items-center justify-center text-slate-600 text-sm">Conversation has been resolved.</div>';
         } else {
           const err = await res.json();
-          alert('Gagal menyelesaikan: ' + err.error);
+          alert('Failed to resolve: ' + err.error);
         }
       } catch (err) {
         alert('Error: ' + err.message);

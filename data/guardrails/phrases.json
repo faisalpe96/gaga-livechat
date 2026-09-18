@@ -1,0 +1,1280 @@
+[
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "suicide",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "kill myself",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "end my life",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "self-harm",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "want to die",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "account locked",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "hacked",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "cannot login",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "cant login",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "forgot password",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "refund",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "money back",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "chargeback",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "return my money",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "unban",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "ban appeal",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "account banned",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "lift my ban",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "bought by my kid",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "child purchase",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "accidental purchase by child",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "minor purchase",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "lawyer",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "police",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "sue you",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "media",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "lawsuit",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "talk to human",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "human agent",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "live person",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "real person",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "speak to agent",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "live representative",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "terrible service",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "you scammers",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "worst game ever",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "i promise refund",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "guaranteed unban",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "i assure your money back",
+    "author": "John (EN Native)",
+    "locale": "en"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "magpakamatay",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "saktan ang sarili",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "ayaw ko nang mabuhay",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "gusto ko nang mamatay",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "naka-lock ang account",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "na-hack",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "hindi makapasok sa account",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "nakalimutan ang password",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "ibalik ang pera",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "refund",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "bawiin ang bayad",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "money back",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "i-unban",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "apela sa ban",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "tanggalin ang ban",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "nabili ng bata",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "anak ko ang bumili",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "aksidenteng nabili ng anak",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "pulis",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "abogado",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "ipapa-tulfo",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "kakalat ko sa media",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "gusto ko ng tao",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "kausapin ang agent",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "totoong tao naman",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "makausap ang live support",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "ayaw ko sa bot",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "scammer kayo",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "bulok ang serbisyo",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "nakakainis",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "ipapangako ang refund",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "tiyak na ma-uunban",
+    "author": "Maria (PH Native)",
+    "locale": "fil-PH"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "bunuh diri",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "akhiri hidup",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "menyakiti diri",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "ingin mati",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "akun terkunci",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "kena hack",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "tidak bisa login",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "lupa password",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "di-hack",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "refund",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "kembalikan dana",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "minta duit kembali",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "tarik saldo",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "banding ban",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "unban",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "buka blokir",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "akun diblokir",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "anak saya beli",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "dibeli adik tanpa izin",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "anak kecil tidak sengaja beli",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "lapor polisi",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "somasi",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "pengacara",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "viralkan ke media",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "viral di medsos",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "bicara dengan orang",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "mau bicara dengan manusia",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "hubungkan ke agen",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "panggil cs asli",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "panggil cs",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "hubungkan dengan cs manusia",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "hubungkan ke cs manusia",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "hubungkan dengan cs",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "hubungkan ke cs",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "bicara dengan cs",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "cs manusia",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "jangan bot saya mau orang",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "live agent",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "agen manusia",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "pelayanan buruk sekali",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "game sampah",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "penipu kalian",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "kami jamin uang kembali",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "pasti kami unban",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "saya pastikan dana kembali",
+    "author": "Budi (ID Native)",
+    "locale": "id-ID"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "bunuh diri",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "cederakan diri",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "nak mati",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "tamatkan riwayat",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "akaun dikunci",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "kena godam",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "tidak boleh log masuk",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "lupa kata laluan",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "bayaran balik",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "pulangkan wang",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "refund",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "minta duit balik",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "batal sekatan",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "rayuan sekatan",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "akaun kena sekat",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "anak beli tanpa izin",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "dibeli oleh anak kecil",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "anak tak sengaja tekan",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "lapor polis",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "peguam",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "mahkamah",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "viral di media",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "bercakap dengan manusia",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "sambungkan ke ejen",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "nak cakap dengan orang",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "ejen sebenar",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "tak nak bot",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "penipu kamu semua",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "servis teruk gila",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "game teruk",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "kami jamin bayaran balik",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "pasti akan buka sekatan",
+    "author": "Siti (MY Native)",
+    "locale": "ms-MY"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "ฆ่าตัวตาย",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "ไม่อยากมีชีวิตอยู่",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "ทำร้ายตัวเอง",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "อยากตาย",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "บัญชีถูกล็อค",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "เข้าเกมไม่ได้",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "โดนแฮก",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "ลืมรหัสผ่าน",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "ถูกระงับ",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "ขอคืนเงิน",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "คืนเงิน",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "ขอเงินคืน",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "refund",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "ปลดแบน",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "อุทธรณ์การแบน",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "โดนแบน",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "ลูกกดซื้อ",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "เด็กกดซื้อ",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "เด็กกดโดยไม่ได้ตั้งใจ",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "แจ้งความ",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "ทนาย",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "นักข่าว",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "สื่อ",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "คุยกับคน",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "เจ้าหน้าที่คนจริง",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "แอดมินคน",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "ขอสายเจ้าหน้าที่",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "ไม่อยากคุยกับบอท",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "เกมห่วย",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "บริการแย่มาก",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "โกง",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "จะคืนเงินให้แน่นอน",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "จะปลดแบนให้แน่นอน",
+    "author": "Somchai (TH Native)",
+    "locale": "th-TH"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "tự tử",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "tự hại",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "không muốn sống nữa",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "bahaya_diri",
+    "phrase": "muốn chết",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "tài khoản bị khóa",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "bị hack",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "không đăng nhập được",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "akun_terkunci",
+    "phrase": "mất mật khẩu",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "hoàn tiền",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "lấy lại tiền",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "đòi lại tiền",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "refund",
+    "phrase": "refund",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "mở khóa tài khoản",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "kháng cáo ban",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "banding_banned",
+    "phrase": "bị ban oan",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "trẻ em mua nhầm",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "con tôi mua",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "pembelian_anak",
+    "phrase": "trẻ con tự ý mua",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "báo công an",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "luật sư",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "kiện ra tòa",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "hukum_media",
+    "phrase": "báo chí",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "gặp người thật",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "nói chuyện với nhân viên",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "chuyển sang nhân viên",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "kết nối tổng đài viên",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "minta_manusia",
+    "phrase": "không muốn nói với bot",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "game rác",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "lừa đảo",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "frustrasi",
+    "phrase": "dịch vụ quá tệ",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "chắc chắn sẽ hoàn tiền",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  },
+  {
+    "rule_key": "no_promise",
+    "phrase": "cam kết mở khóa tài khoản",
+    "author": "Nguyen (VN Native)",
+    "locale": "vi-VN"
+  }
+]
