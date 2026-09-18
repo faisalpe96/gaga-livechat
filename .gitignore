@@ -52,3 +52,9 @@ Thumbs.db
 files.zip
 *.tar.gz
 *.tgz
+node_modules/
+.env
+.env.*
+dist/
+build/
+*.log
