@@ -10,6 +10,13 @@ FROM node:20-bookworm-slim AS builder
 
 WORKDIR /app
 
+# Install system dependencies if required for native addons
+# (npm ci di sini memasang dependency yang sama dengan gateway - argon2, sharp -
+# jadi toolchain kompilasi tetap dibutuhkan bila prebuilt binary tidak tersedia)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 make g++ \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy root dependency manifests
 COPY package.json package-lock.json ./
 
@@ -21,6 +28,10 @@ COPY tsconfig.json ./
 COPY data/ ./data/
 COPY scripts/ ./scripts/
 COPY services/orchestrator/ ./services/orchestrator/
+# PENTING: orchestrator/src/pipeline/{orchestrator,waiting-companion}.ts
+# meng-import AttachmentService dari services/gateway, jadi folder gateway
+# wajib ikut disalin atau runtime gagal ERR_MODULE_NOT_FOUND.
+COPY services/gateway/ ./services/gateway/
 
 # -----------------------------------------------------------------------------
 # Stage 2: Production Runtime
@@ -44,6 +55,7 @@ COPY --from=builder /app/tsconfig.json ./tsconfig.json
 COPY --from=builder /app/data ./data
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/services/orchestrator ./services/orchestrator
+COPY --from=builder /app/services/gateway ./services/gateway
 
 # Assign ownership to gaga user
 RUN chown -R gaga:gaga /app

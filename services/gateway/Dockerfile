@@ -27,6 +27,10 @@ COPY migrations/ ./migrations/
 COPY scripts/ ./scripts/
 COPY data/ ./data/
 COPY services/gateway/ ./services/gateway/
+# PENTING: gateway/src/index.ts meng-import kelas dari services/orchestrator
+# (AIOrchestrator, KnowledgeBaseRetriever, GuardrailEngine, dst.), jadi folder
+# orchestrator wajib ikut disalin atau runtime gagal ERR_MODULE_NOT_FOUND.
+COPY services/orchestrator/ ./services/orchestrator/
 
 # -----------------------------------------------------------------------------
 # Stage 2: Production Runtime
@@ -55,6 +59,7 @@ COPY --from=builder /app/migrations ./migrations
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/data ./data
 COPY --from=builder /app/services/gateway ./services/gateway
+COPY --from=builder /app/services/orchestrator ./services/orchestrator
 
 # Assign ownership to gaga user
 RUN chown -R gaga:gaga /app
