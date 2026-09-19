@@ -1550,6 +1550,7 @@
   <script>
     const I18N = {
       'id-ID': {
+        sessionClosedNote: 'Percakapan ini sudah ditutup. Ketik pesan untuk memulai sesi baru.',
         title: 'Gaga Live Support',
         statusOnline: 'Online • Siap membantu',
         statusConnecting: 'Menghubungkan...',
@@ -1573,6 +1574,7 @@
         categoryFeedback: 'Feedback & Lainnya'
       },
       'th-TH': {
+        sessionClosedNote: 'การสนทนานี้ปิดแล้ว พิมพ์ข้อความเพื่อเริ่มเซสชันใหม่',
         title: 'Gaga Live Support',
         statusOnline: 'ออนไลน์ • พร้อมช่วยเหลือ',
         statusConnecting: 'กำลังเชื่อมต่อ...',
@@ -1596,6 +1598,7 @@
         categoryFeedback: 'ข้อเสนอแนะและอื่นๆ'
       },
       'fil-PH': {
+        sessionClosedNote: 'Sarado na ang usapang ito. Mag-type ng mensahe para magsimula ng bagong session.',
         title: 'Gaga Live Support',
         statusOnline: 'Online po • Handa tumulong',
         statusConnecting: 'Kumokonekta...',
@@ -1619,6 +1622,7 @@
         categoryFeedback: 'Puna at Iba pa'
       },
       'ms-MY': {
+        sessionClosedNote: 'Perbualan ini telah ditutup. Taip mesej untuk memulakan sesi baharu.',
         title: 'Gaga Live Support',
         statusOnline: 'Dalam Talian • Sedia membantu',
         statusConnecting: 'Menyambung...',
@@ -1642,6 +1646,7 @@
         categoryFeedback: 'Maklum Balas & Lain-lain'
       },
       'vi-VN': {
+        sessionClosedNote: 'Cuộc trò chuyện này đã kết thúc. Nhập tin nhắn để bắt đầu phiên mới.',
         title: 'Gaga Live Support',
         statusOnline: 'Trực tuyến • Sẵn sàng hỗ trợ',
         statusConnecting: 'Đang kết nối...',
@@ -1665,6 +1670,7 @@
         categoryFeedback: 'Góp ý & Khác'
       },
       'en': {
+        sessionClosedNote: 'This conversation has been closed. Type a message to start a new session.',
         title: 'Gaga Live Support',
         statusOnline: 'Online • Ready to assist',
         statusConnecting: 'Connecting...',
@@ -1699,6 +1705,10 @@
     let currentBotName = currentBotPersona === 'reza' ? 'Reza' : 'Mira';
     let currentBotAvatar = currentBotPersona === 'reza' ? '/assets/agent-reza.png' : '/assets/agent-mira.png';
     let isHumanAgent = false;
+    // Sesi ditutup (resolved) oleh agen/bot: pesan berikutnya harus membuka sesi baru
+    let conversationClosed = false;
+    let pendingOutgoingText = null;
+    let lastOutgoingText = null;
     let selectedCategory = null;
     let slots = {
       order_id: null,
@@ -2139,6 +2149,29 @@
       }
     }
 
+    // Kirim session_start di socket aktif (dipakai saat connect dan saat membuka sesi baru)
+    function sendSessionStart() {
+      ws.send(JSON.stringify({
+        event: 'session_start',
+        player: {
+          uid: '77124490',
+          nickname: 'RyuHunter',
+          server: 'SEA-3',
+          level: 48,
+          vip_tier: 4
+        },
+        context: {
+          page: '/topup',
+          platform: 'web',
+          app_version: '1.0.0',
+          locale: currentLocale,
+          market: 'ID',
+          client_tz: 'Asia/Jakarta',
+          bot_persona: currentBotPersona
+        }
+      }));
+    }
+
     function connectWS() {
       const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
       const host = location.host || '127.0.0.1:3001';
@@ -2153,25 +2186,7 @@
           reconnectAttempts = 0;
           setConnState('connected');
 
-          ws.send(JSON.stringify({
-            event: 'session_start',
-            player: {
-              uid: '77124490',
-              nickname: 'RyuHunter',
-              server: 'SEA-3',
-              level: 48,
-              vip_tier: 4
-            },
-            context: {
-              page: '/topup',
-              platform: 'web',
-              app_version: '1.0.0',
-              locale: currentLocale,
-              market: 'ID',
-              client_tz: 'Asia/Jakarta',
-              bot_persona: currentBotPersona
-            }
-          }));
+          sendSessionStart();
         };
 
         ws.onmessage = (event) => {
@@ -2201,10 +2216,31 @@
                   category: selectedCategory
                 }));
               }
+              conversationClosed = false;
               updatePersonaUI();
               fetchHistoryFromServer(conversationId);
+              if (pendingOutgoingText) {
+                const text = pendingOutgoingText;
+                pendingOutgoingText = null;
+                sendMessageText(text);
+              }
             } else if (data.event === 'status_change') {
-              if (data.new_status === 'agent_active') {
+              if (data.new_status === 'resolved') {
+                // Percakapan ditutup: tandai, beri tahu pemain, kembalikan header ke bot.
+                conversationClosed = true;
+                isHumanAgent = false;
+                const t = I18N[currentLocale] || I18N['en'];
+                messages.push({
+                  id: 'local-resolved-' + Date.now(),
+                  sender_type: 'system',
+                  text: t.sessionClosedNote,
+                  created_at: new Date().toISOString(),
+                  meta: {}
+                });
+                renderMessages();
+                updatePersonaUI();
+                updateStageUI('resolution');
+              } else if (data.new_status === 'agent_active') {
                 isHumanAgent = true;
                 const agentName = data.agent_name || 'Support Agent';
                 document.getElementById('botHeaderName').textContent = agentName;
@@ -2213,6 +2249,15 @@
                 const typingEl = document.getElementById('typingSenderLabel');
                 if (typingEl) typingEl.textContent = `${agentName} sedang membalas...`;
                 updateStageUI('escalation');
+              }
+            } else if (data.event === 'error') {
+              if (data.code === 'CONVERSATION_RESOLVED') {
+                // Widget tidak sempat menerima status_change (mis. saat terputus):
+                // buka sesi baru dan kirim ulang pesan terakhir agar tidak hilang.
+                conversationClosed = true;
+                startNewSession(lastOutgoingText);
+              } else {
+                console.warn('Gateway error:', data.code, data.message);
               }
             } else if (data.event === 'typing') {
               setTyping(data.is_typing, data);
@@ -2361,21 +2406,48 @@
       const text = input.value.trim();
       if (!text) return;
 
-      if (ws && ws.readyState === WebSocket.OPEN && conversationId) {
-        extractSlotsFromText(text);
-        const payload = {
-          event: 'message',
-          conversation_id: conversationId,
-          text: text
-        };
-        if (selectedCategory) {
-          payload.category = selectedCategory;
-        }
-        ws.send(JSON.stringify(payload));
-        input.value = '';
-        playChime(480);
-      } else {
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
         alert('Koneksi sedang terputus atau sesi belum dimulai!');
+        return;
+      }
+
+      input.value = '';
+      if (conversationClosed || !conversationId) {
+        // Sesi sebelumnya sudah ditutup: buka sesi baru, pesan dikirim setelah session_started
+        startNewSession(text);
+        return;
+      }
+      sendMessageText(text);
+    }
+
+    function sendMessageText(text) {
+      extractSlotsFromText(text);
+      lastOutgoingText = text;
+      const payload = {
+        event: 'message',
+        conversation_id: conversationId,
+        text: text
+      };
+      if (selectedCategory) {
+        payload.category = selectedCategory;
+      }
+      ws.send(JSON.stringify(payload));
+      playChime(480);
+    }
+
+    // Buka sesi baru di socket yang sama (server membuat percakapan baru bila yang lama resolved).
+    // Teks yang tertunda dikirim begitu session_started diterima.
+    function startNewSession(text) {
+      pendingOutgoingText = text || null;
+      conversationClosed = false;
+      conversationId = '';
+      localStorage.removeItem('gaga_conv_id');
+      slots = { order_id: null, amount: null, payment_method: null, transaction_time: null };
+      isHumanAgent = false;
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        sendSessionStart();
+      } else {
+        connectWS();
       }
     }
 

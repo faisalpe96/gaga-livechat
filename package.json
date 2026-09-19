@@ -22,6 +22,7 @@
     "test:db": "node --test --import tsx test/db-migration.test.ts",
     "test:gateway": "node --test --test-timeout=10000 --import tsx services/gateway/test/gateway.test.ts",
     "test:widget": "node --test --test-timeout=15000 --import tsx apps/widget/test/widget.test.ts",
+    "test:widget-resolved": "node --test --import tsx apps/widget/test/widget-resolved.test.ts",
     "test:agent": "node --test --test-timeout=15000 --import tsx services/gateway/test/agent-panel.test.ts",
     "test:kb": "node --test --test-timeout=15000 --import tsx services/orchestrator/test/kb.test.ts",
     "test:orchestrator": "node --test --test-timeout=15000 --import tsx services/orchestrator/test/orchestrator.test.ts",
@@ -36,7 +37,7 @@
     "test:attachment": "node --test --test-timeout=20000 --import tsx services/gateway/test/attachment-evidence.test.ts",
     "test:secrets": "node --test --import tsx services/gateway/test/secrets.test.ts",
     "test:auth": "node --test --test-timeout=25000 --import tsx services/gateway/test/auth-production.test.ts",
-    "test": "node --test --test-timeout=15000 --test-concurrency=1 --import tsx services/gateway/test/gateway.test.ts apps/widget/test/widget.test.ts services/gateway/test/agent-panel.test.ts services/orchestrator/test/kb.test.ts services/orchestrator/test/orchestrator.test.ts services/orchestrator/test/guardrails.test.ts services/orchestrator/test/llm-anthropic.test.ts services/orchestrator/test/continuous-conversation.test.ts services/gateway/test/shadow-mode.test.ts services/gateway/test/studio.test.ts services/gateway/test/auto-reply.test.ts services/gateway/test/proactive-greeting.test.ts services/gateway/test/investigation-checklist.test.ts services/gateway/test/attachment-evidence.test.ts services/gateway/test/auth-production.test.ts services/gateway/test/secrets.test.ts test/db-migration.test.ts"
+    "test": "node --test --test-timeout=15000 --test-concurrency=1 --import tsx services/gateway/test/gateway.test.ts apps/widget/test/widget.test.ts apps/widget/test/widget-resolved.test.ts services/gateway/test/agent-panel.test.ts services/orchestrator/test/kb.test.ts services/orchestrator/test/orchestrator.test.ts services/orchestrator/test/guardrails.test.ts services/orchestrator/test/llm-anthropic.test.ts services/orchestrator/test/continuous-conversation.test.ts services/gateway/test/shadow-mode.test.ts services/gateway/test/studio.test.ts services/gateway/test/auto-reply.test.ts services/gateway/test/proactive-greeting.test.ts services/gateway/test/investigation-checklist.test.ts services/gateway/test/attachment-evidence.test.ts services/gateway/test/auth-production.test.ts services/gateway/test/secrets.test.ts test/db-migration.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.127.0",

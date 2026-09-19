@@ -102,6 +102,10 @@ export function ChatWidget({ client }: ChatWidgetProps) {
         const name = data?.agent_name || 'Support Agent';
         setActiveAgentName(name);
         setActiveAgentAvatar('/assets/agent-avatar.png');
+      } else if (newStatus === 'resolved') {
+        // Sesi ditutup: kembalikan header ke bot; pesan berikutnya membuka sesi baru
+        setActiveAgentName(null);
+        setActiveAgentAvatar(null);
       }
     };
 

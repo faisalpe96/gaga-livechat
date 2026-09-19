@@ -9,6 +9,7 @@ import {
   PlayerInfo,
   SupportedLocale,
 } from '../types.js';
+import { getTranslations } from '../i18n/translations.js';
 
 export type ConnectionState = 'connected' | 'connecting' | 'disconnected';
 
@@ -32,6 +33,9 @@ export class ChatWebSocketClient {
   private currentCategory: string | null = null;
   private offlineQueue: Array<InboundMessage | InboundSetLocale | InboundSetCategory> = [];
   private messages: ChatMessage[] = [];
+  // Percakapan ditutup (resolved) oleh agen/bot: pesan berikutnya membuka sesi baru
+  private conversationClosed = false;
+  private lastSentMessage: InboundMessage | null = null;
   private reconnectAttempts = 0;
   private reconnectTimer: any = null;
   private isExplicitlyClosed = false;
@@ -173,12 +177,32 @@ export class ChatWebSocketClient {
       ...(meta || {}),
     };
 
-    if (this.state === 'connected' && this.ws && this.conversationId) {
+    if (this.state === 'connected' && this.ws && this.conversationId && !this.conversationClosed) {
+      this.lastSentMessage = payload;
       this.ws.send(JSON.stringify(payload));
+    } else if (this.state === 'connected' && this.ws) {
+      // Sesi sebelumnya sudah ditutup (atau belum ada): buka sesi baru,
+      // pesan dikirim setelah session_started diterima.
+      this.startNewSession(payload);
     } else {
       // Masukkan ke antrean offline jika koneksi putus
       this.offlineQueue.push(payload);
     }
+  }
+
+  /**
+   * Buka sesi baru di socket yang sama. Server membuat percakapan baru bila yang
+   * lama sudah resolved. Payload yang tertunda dikirim begitu session_started diterima.
+   */
+  private startNewSession(pending?: InboundMessage | null): void {
+    this.conversationClosed = false;
+    this.conversationId = null;
+    this.saveHistory();
+    if (pending) {
+      pending.conversation_id = '';
+      this.offlineQueue.push(pending);
+    }
+    this.sendSessionStart();
   }
 
   public setLocale(newLocale: SupportedLocale): void {
@@ -239,6 +263,7 @@ export class ChatWebSocketClient {
 
       if (data.event === 'session_started') {
         this.conversationId = data.conversation_id;
+        this.conversationClosed = false;
         this.currentLocale = data.locale as SupportedLocale;
         if (data.bot_persona) this.botPersona = data.bot_persona;
         if (data.bot_name) this.botName = data.bot_name;
@@ -258,6 +283,8 @@ export class ChatWebSocketClient {
         if (this.onSessionStarted) {
           this.onSessionStarted(data.conversation_id, data.locale, data.market, data);
         }
+        // Kirim pesan yang tertunda (mis. pesan yang memicu sesi baru)
+        this.flushOfflineQueue();
       } else if (data.event === 'message') {
         const chatMsg: ChatMessage = {
           id: data.message_id,
@@ -279,8 +306,31 @@ export class ChatWebSocketClient {
           }
         }
       } else if (data.event === 'status_change') {
+        if (data.new_status === 'resolved') {
+          this.conversationClosed = true;
+          const note: ChatMessage = {
+            id: `local-resolved-${Date.now()}`,
+            conversation_id: this.conversationId || '',
+            sender_type: 'system',
+            text: getTranslations(this.currentLocale).sessionClosed,
+            created_at: new Date().toISOString(),
+          };
+          this.messages.push(note);
+          if (this.onMessage) this.onMessage(note);
+        }
         if (this.onStatusChange) {
           this.onStatusChange(data.new_status, data.resolution_reason, data);
+        }
+      } else if ((data as any).event === 'error') {
+        const err = data as any;
+        if (err.code === 'CONVERSATION_RESOLVED') {
+          // Widget tidak sempat menerima status_change (mis. saat terputus):
+          // buka sesi baru dan kirim ulang pesan terakhir agar tidak hilang.
+          this.conversationClosed = true;
+          this.startNewSession(this.lastSentMessage);
+          this.lastSentMessage = null;
+        } else if (this.onError) {
+          this.onError(new Error(`${err.code || 'GATEWAY_ERROR'}: ${err.message || ''}`));
         }
       } else if (data.event === 'typing') {
         if (this.onTyping) {
