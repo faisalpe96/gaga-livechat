@@ -311,13 +311,40 @@
           opt.textContent = `${agent.name} [${agent.locales.join(', ')}]`;
           agentSelect.appendChild(opt);
         });
-        if (agentsList.length > 0) {
+        // Identitas aktif = agent yang sedang login (sesi cookie). Server memakai
+        // req.agent.id untuk claim/balas, jadi dropdown harus cocok dengan sesi —
+        // kalau tidak, panel salah menampilkan "Claimed by Another Agent".
+        const sessionAgent = await loadSessionAgent();
+        if (sessionAgent) {
+          if (!agentsList.some(a => a.id === sessionAgent.id)) {
+            agentsList.unshift(sessionAgent);
+            const opt = document.createElement('option');
+            opt.value = sessionAgent.id;
+            opt.textContent = `${sessionAgent.name} [${(sessionAgent.locales || []).join(', ')}]`;
+            agentSelect.prepend(opt);
+          }
+          currentAgent = agentsList.find(a => a.id === sessionAgent.id);
+        } else if (agentsList.length > 0) {
           currentAgent = agentsList[0];
+        }
+        if (currentAgent) {
           agentSelect.value = currentAgent.id;
-          agentLocalesBadge.textContent = 'Locales: ' + currentAgent.locales.join(', ');
+          agentLocalesBadge.textContent = 'Locales: ' + (currentAgent.locales || []).join(', ');
         }
       } catch (err) {
         console.error('Failed to load agents:', err);
+      }
+    }
+
+    // Agent dari sesi login (/v1/auth/me). null bila belum login / mode tanpa auth.
+    async function loadSessionAgent() {
+      try {
+        const res = await fetch(`${API_BASE}/v1/auth/me`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.agent || null;
+      } catch {
+        return null;
       }
     }
 
