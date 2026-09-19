@@ -764,9 +764,18 @@
         const isAgent = msg.sender_type === 'agent';
         const isPlayer = msg.sender_type === 'player';
         const isSystem = msg.sender_type === 'system';
+        const isBot = msg.sender_type === 'bot';
+
+        // Label & posisi: pemain di kiri; bot dan agent di kanan (sisi "kami"),
+        // bot dibedakan lewat nama persona dan warna gelembung.
+        const senderLabel = isAgent
+          ? (msg.sender_name || 'Agent')
+          : isBot
+            ? `${msg.sender_name || 'Bot'} · Bot`
+            : 'Player';
 
         const wrapper = document.createElement('div');
-        wrapper.className = `flex flex-col ${isAgent ? 'items-end' : isPlayer ? 'items-start' : 'items-center my-2'}`;
+        wrapper.className = `flex flex-col ${(isAgent || isBot) ? 'items-end' : isPlayer ? 'items-start' : 'items-center my-2'}`;
 
         if (isSystem) {
           wrapper.innerHTML = `
@@ -776,11 +785,13 @@
           `;
         } else {
           wrapper.innerHTML = `
-            <span class="text-[11px] text-slate-500 mb-1 px-1">${msg.sender_type === 'agent' ? (msg.sender_name || 'Agent') : 'Player'}</span>
+            <span class="text-[11px] text-slate-500 mb-1 px-1">${senderLabel}</span>
             <div class="max-w-md px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
-              isAgent 
-                ? 'bg-[#167956] text-white rounded-br-none shadow-sm' 
-                : 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700/60'
+              isAgent
+                ? 'bg-[#167956] text-white rounded-br-none shadow-sm'
+                : isBot
+                  ? 'bg-slate-700/70 text-slate-100 rounded-br-none border border-[#25B884]/40'
+                  : 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700/60'
             }">
               ${msg.text}
             </div>
