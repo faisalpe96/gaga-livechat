@@ -2218,12 +2218,15 @@
               }
               conversationClosed = false;
               updatePersonaUI();
-              fetchHistoryFromServer(conversationId);
-              if (pendingOutgoingText) {
-                const text = pendingOutgoingText;
-                pendingOutgoingText = null;
-                sendMessageText(text);
-              }
+              // Pesan tertunda dikirim SETELAH riwayat sesi baru dimuat, agar gelembungnya
+              // tidak tertimpa oleh hasil fetch riwayat yang belum memuatnya.
+              Promise.resolve(fetchHistoryFromServer(conversationId)).finally(() => {
+                if (pendingOutgoingText) {
+                  const text = pendingOutgoingText;
+                  pendingOutgoingText = null;
+                  sendMessageText(text);
+                }
+              });
             } else if (data.event === 'status_change') {
               if (data.new_status === 'resolved') {
                 // Percakapan ditutup: tandai, beri tahu pemain, kembalikan header ke bot.

@@ -275,16 +275,20 @@ export class ChatWebSocketClient {
           }
         }
         this.saveHistory();
-        this.fetchHistoryFromServer().then((msgs) => {
-          if (this.onHistoryLoaded) {
-            this.onHistoryLoaded(msgs);
-          }
-        });
+        this.fetchHistoryFromServer()
+          .then((msgs) => {
+            if (this.onHistoryLoaded) {
+              this.onHistoryLoaded(msgs);
+            }
+          })
+          .finally(() => {
+            // Kirim pesan tertunda (mis. pesan yang memicu sesi baru) SETELAH riwayat
+            // dimuat, agar gelembungnya tidak tertimpa oleh hasil fetch riwayat.
+            this.flushOfflineQueue();
+          });
         if (this.onSessionStarted) {
           this.onSessionStarted(data.conversation_id, data.locale, data.market, data);
         }
-        // Kirim pesan yang tertunda (mis. pesan yang memicu sesi baru)
-        this.flushOfflineQueue();
       } else if (data.event === 'message') {
         const chatMsg: ChatMessage = {
           id: data.message_id,

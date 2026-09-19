@@ -25,14 +25,19 @@ function makeClient() {
   });
   (client as any).ws = fakeWs;
   (client as any).state = 'connected';
-  const inbound = (obj: any) => (client as any).handleInboundRaw(JSON.stringify(obj));
+  // Tanpa server: riwayat kosong. Pesan tertunda dikirim setelah promise ini selesai.
+  (client as any).fetchHistoryFromServer = async () => [];
+  const inbound = async (obj: any) => {
+    (client as any).handleInboundRaw(JSON.stringify(obj));
+    await new Promise((r) => setTimeout(r, 0));
+  };
   return { client, sent, inbound };
 }
 
 describe('Widget: percakapan resolved membuka sesi baru', () => {
-  test('status_change resolved → pesan berikutnya memicu session_start, lalu terkirim ke percakapan baru', () => {
+  test('status_change resolved → pesan berikutnya memicu session_start, lalu terkirim ke percakapan baru', async () => {
     const { client, sent, inbound } = makeClient();
-    inbound({ event: 'session_started', conversation_id: 'conv-lama', locale: 'id-ID', market: 'ID' });
+    await inbound({ event: 'session_started', conversation_id: 'conv-lama', locale: 'id-ID', market: 'ID' });
 
     client.sendMessage('pesan pertama');
     assert.equal(sent.at(-1).event, 'message');
@@ -40,7 +45,7 @@ describe('Widget: percakapan resolved membuka sesi baru', () => {
 
     const received: any[] = [];
     client.onMessage = (m) => received.push(m);
-    inbound({ event: 'status_change', conversation_id: 'conv-lama', new_status: 'resolved' });
+    await inbound({ event: 'status_change', conversation_id: 'conv-lama', new_status: 'resolved' });
 
     // Pemain diberi tahu lewat pesan sistem berbahasa sesuai locale
     assert.equal(received.length, 1);
@@ -53,7 +58,7 @@ describe('Widget: percakapan resolved membuka sesi baru', () => {
     assert.deepEqual(sent.map((s) => s.event), ['session_start']);
     assert.equal(client.getConversationId(), null);
 
-    inbound({ event: 'session_started', conversation_id: 'conv-baru', locale: 'id-ID', market: 'ID' });
+    await inbound({ event: 'session_started', conversation_id: 'conv-baru', locale: 'id-ID', market: 'ID' });
     const msg = sent.find((s) => s.event === 'message');
     assert.ok(msg, 'pesan tertunda harus dikirim setelah session_started');
     assert.equal(msg.conversation_id, 'conv-baru');
@@ -61,30 +66,30 @@ describe('Widget: percakapan resolved membuka sesi baru', () => {
     assert.equal(client.getConversationId(), 'conv-baru');
   });
 
-  test('error CONVERSATION_RESOLVED dari server → sesi baru dan pesan terakhir dikirim ulang', () => {
+  test('error CONVERSATION_RESOLVED dari server → sesi baru dan pesan terakhir dikirim ulang', async () => {
     const { client, sent, inbound } = makeClient();
-    inbound({ event: 'session_started', conversation_id: 'conv-lama', locale: 'id-ID', market: 'ID' });
+    await inbound({ event: 'session_started', conversation_id: 'conv-lama', locale: 'id-ID', market: 'ID' });
 
     client.sendMessage('halo, ada yang bisa dibantu?');
     sent.length = 0;
     // Widget tidak sempat menerima status_change; server menolak pesan
-    inbound({ event: 'error', code: 'CONVERSATION_RESOLVED', message: 'Percakapan sudah ditutup.' });
+    await inbound({ event: 'error', code: 'CONVERSATION_RESOLVED', message: 'Percakapan sudah ditutup.' });
     assert.deepEqual(sent.map((s) => s.event), ['session_start']);
 
-    inbound({ event: 'session_started', conversation_id: 'conv-baru', locale: 'id-ID', market: 'ID' });
+    await inbound({ event: 'session_started', conversation_id: 'conv-baru', locale: 'id-ID', market: 'ID' });
     const msg = sent.find((s) => s.event === 'message');
     assert.ok(msg, 'pesan yang ditolak harus dikirim ulang ke percakapan baru');
     assert.equal(msg.conversation_id, 'conv-baru');
     assert.equal(msg.text, 'halo, ada yang bisa dibantu?');
   });
 
-  test('error lain tidak memicu sesi baru', () => {
+  test('error lain tidak memicu sesi baru', async () => {
     const { client, sent, inbound } = makeClient();
-    inbound({ event: 'session_started', conversation_id: 'conv-1', locale: 'id-ID', market: 'ID' });
+    await inbound({ event: 'session_started', conversation_id: 'conv-1', locale: 'id-ID', market: 'ID' });
     sent.length = 0;
     let reported: Error | null = null;
     client.onError = (e: any) => (reported = e);
-    inbound({ event: 'error', code: 'MISSING_CONVERSATION_ID', message: 'x' });
+    await inbound({ event: 'error', code: 'MISSING_CONVERSATION_ID', message: 'x' });
     assert.equal(sent.length, 0);
     assert.ok(reported);
     assert.equal(client.getConversationId(), 'conv-1');
