@@ -4,7 +4,7 @@ import { Database } from './db.js';
 import { AIOrchestrator } from '../../orchestrator/src/pipeline/orchestrator.js';
 import { KnowledgeBaseRetriever } from '../../orchestrator/src/kb/retriever.js';
 import { ToolRegistry } from '../../orchestrator/src/tools/registry.js';
-import { MockLlmClient } from '../../orchestrator/src/llm/client.js';
+import { createLlmClient } from '../../orchestrator/src/llm/factory.js';
 import { GuardrailEngine } from '../../orchestrator/src/pipeline/guardrails.js';
 import { IntentClassifier } from '../../orchestrator/src/pipeline/intent-classifier.js';
 import { WaitingCompanion } from '../../orchestrator/src/pipeline/waiting-companion.js';
@@ -15,7 +15,8 @@ async function main() {
   // Inisialisasi AI Orchestrator untuk mode bayangan (TASK-08)
   const kbRetriever = new KnowledgeBaseRetriever(db.pool);
   const toolRegistry = new ToolRegistry();
-  const llmClient = new MockLlmClient();
+  // LLM_PROVIDER=mock (default) atau anthropic — lihat orchestrator/src/llm/factory.ts
+  const llmClient = createLlmClient();
   const guardrails = new GuardrailEngine(db.pool);
   try {
     await guardrails.loadAllFromDatabase();

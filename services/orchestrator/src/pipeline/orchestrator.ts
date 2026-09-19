@@ -507,6 +507,28 @@ export class AIOrchestrator {
       toolsContext,
     });
 
+    // Model bahasa boleh meminta eskalasi lewat tool request_handoff
+    // (instruksi "SUMBER & ESKALASI" di system prompt). Hormati permintaan itu.
+    const handoffCall = llmResponse.toolCalls?.find((c) => c.name === 'request_handoff');
+    if (handoffCall) {
+      const reason = String(handoffCall.args?.reason || 'llm_requested_handoff');
+      return {
+        action: 'handoff',
+        reason,
+        bot_summary: `Model bahasa meminta eskalasi ke agen manusia: ${reason}`,
+        meta: {
+          intent: intentResult.intent || llmResponse.intent || 'handoff_request',
+          confidence: intentResult.confidence ?? llmResponse.confidence,
+          stage: 'escalation',
+          emotion: emotionResult.emotion,
+          sources: [],
+          tools_used: toolsUsed,
+          locale_out: locale,
+          guardrail_flags: ['llm_requested_handoff'],
+        },
+      };
+    }
+
     // =========================================================================
     // LANGKAH 6: Filter Output
     // =========================================================================
