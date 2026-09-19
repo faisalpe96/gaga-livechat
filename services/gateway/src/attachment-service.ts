@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import sharp from 'sharp';
+import { requireSecret } from './secrets.js';
 
 export interface AttachmentUploadResult {
   file_id: string;
@@ -17,8 +18,8 @@ export class AttachmentService {
   public static readonly MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
   public static readonly MAX_FILES_PER_BATCH = 3;
   public static readonly STORAGE_DIR = path.resolve(process.cwd(), 'storage', 'attachments');
-  private static readonly SIGNING_SECRET =
-    process.env.ATTACHMENT_SIGNING_SECRET || 'gaga-livechat-secure-signing-secret-2026';
+  // Fail-fast: di produksi ATTACHMENT_SIGNING_SECRET wajib ada dan cukup panjang (lihat secrets.ts)
+  private static readonly SIGNING_SECRET = requireSecret('ATTACHMENT_SIGNING_SECRET');
 
   /**
    * Pastikan folder storage penyimpanan file di luar web root telah tersedia.

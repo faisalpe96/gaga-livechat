@@ -26,9 +26,16 @@ function parseArgs(): Record<string, string> {
 async function main() {
   const args = parseArgs();
 
-  const email = args.email || 'admin@gagagames.com';
+  // Tidak ada nilai default untuk email/password: akun admin dengan kredensial
+  // yang tertulis di repositori adalah lubang keamanan.
+  if (!args.email || !args.password || args.email === 'true' || args.password === 'true') {
+    console.error('[Error] --email dan --password wajib diisi.');
+    console.error('Contoh: npm run admin:create -- --email admin@contoh.com --password "KataSandiKuat123" --name "Nama Admin"');
+    process.exit(1);
+  }
+  const email = args.email;
   const name = args.name || 'Gaga System Administrator';
-  const password = args.password || 'AdminGaga2026!';
+  const password = args.password;
   const role: AgentRole = (args.role as AgentRole) || 'admin';
   const locales = args.locales ? args.locales.split(',').map((l) => l.trim()) : ['id-ID', 'en', 'ms-MY', 'th-TH', 'fil-PH', 'vi-VN'];
 

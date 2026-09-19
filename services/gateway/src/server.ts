@@ -21,6 +21,7 @@ import fastifyCookie from '@fastify/cookie';
 import { AttachmentService, AttachmentUploadResult } from './attachment-service.js';
 import { AuthService, AgentRole, AuthenticatedAgent, LocalPasswordAuthProvider } from './auth-service.js';
 import { AuditService } from './audit-service.js';
+import { requireSecret } from './secrets.js';
 
 export interface ServerOptions {
   port?: number;
@@ -45,8 +46,9 @@ export async function buildGatewayServer(opts: ServerOptions = {}): Promise<{
   hub: WebSocketHub;
 }> {
   const app = Fastify({ logger: false });
+  // Fail-fast: di produksi COOKIE_SECRET wajib ada dan cukup panjang (lihat secrets.ts)
   await app.register(fastifyCookie, {
-    secret: process.env.COOKIE_SECRET || 'gaga-livechat-production-cookie-secret-2026',
+    secret: requireSecret('COOKIE_SECRET'),
   });
   AttachmentService.ensureStorageDirectory();
 
